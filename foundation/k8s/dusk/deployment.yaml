@@ -6,7 +6,7 @@ metadata:
   labels:
     app: dusk
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: dusk
@@ -27,11 +27,11 @@ spec:
             name: dusk-config
         resources:
           requests:
-            cpu: 100m
-            memory: 128Mi
+            cpu: 50m
+            memory: 64Mi
           limits:
-            cpu: 500m
-            memory: 512Mi
+            cpu: 200m
+            memory: 256Mi
         livenessProbe:
           httpGet:
             path: /health
