@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: day-config
+  namespace: day-ns
+data:
+  ENVIRONMENT: "production"
+  PORT: "8001"
+  LOG_LEVEL: "info"
+  SERVICE_NAME: "Day"

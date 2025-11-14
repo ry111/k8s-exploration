@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: day-service
+  namespace: day-ns
+  labels:
+    app: day
+spec:
+  type: ClusterIP
+  selector:
+    app: day
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8001
+    protocol: TCP

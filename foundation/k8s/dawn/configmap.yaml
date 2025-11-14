@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dawn-config
+  namespace: dawn-ns
+data:
+  ENVIRONMENT: "production"
+  PORT: "8000"
+  LOG_LEVEL: "info"
+  SERVICE_NAME: "Dawn"

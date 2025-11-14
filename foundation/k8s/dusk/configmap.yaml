@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dusk-config
+  namespace: dusk-ns
+data:
+  ENVIRONMENT: "production"
+  PORT: "8002"
+  LOG_LEVEL: "info"
+  SERVICE_NAME: "Dusk"
