@@ -6,7 +6,7 @@ metadata:
   labels:
     app: day
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: day
