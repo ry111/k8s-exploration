@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dawn-rc-ns
+  labels:
+    name: dawn-rc-ns
+    environment: rc
+    tier: rc

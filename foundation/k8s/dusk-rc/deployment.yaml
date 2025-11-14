@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dusk-rc
+  namespace: dusk-rc-ns
+  labels:
+    app: dusk
+    tier: rc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dusk
+      tier: rc
+  template:
+    metadata:
+      labels:
+        app: dusk
+        tier: rc
+    spec:
+      containers:
+      - name: dusk
+        image: dusk:rc
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8002
+          name: http
+        envFrom:
+        - configMapRef:
+            name: dusk-rc-config
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8002
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

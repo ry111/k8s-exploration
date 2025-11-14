@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dawn-rc
+  namespace: dawn-rc-ns
+  labels:
+    app: dawn
+    tier: rc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dawn
+      tier: rc
+  template:
+    metadata:
+      labels:
+        app: dawn
+        tier: rc
+    spec:
+      containers:
+      - name: dawn
+        image: dawn:rc
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: dawn-rc-config
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

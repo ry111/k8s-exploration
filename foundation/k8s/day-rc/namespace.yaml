@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: day-rc-ns
+  labels:
+    name: day-rc-ns
+    environment: rc
+    tier: rc

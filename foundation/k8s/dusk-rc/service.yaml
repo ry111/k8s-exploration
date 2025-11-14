@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dusk-rc-service
+  namespace: dusk-rc-ns
+  labels:
+    app: dusk
+    tier: rc
+spec:
+  type: ClusterIP
+  selector:
+    app: dusk
+    tier: rc
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8002
+    protocol: TCP

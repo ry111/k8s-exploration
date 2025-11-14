@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: day-rc-config
+  namespace: day-rc-ns
+data:
+  ENVIRONMENT: "rc"
+  PORT: "8001"
+  LOG_LEVEL: "debug"
+  SERVICE_NAME: "Day-RC"

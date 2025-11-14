@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dawn-rc-service
+  namespace: dawn-rc-ns
+  labels:
+    app: dawn
+    tier: rc
+spec:
+  type: ClusterIP
+  selector:
+    app: dawn
+    tier: rc
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP

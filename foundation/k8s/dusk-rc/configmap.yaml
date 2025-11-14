@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dusk-rc-config
+  namespace: dusk-rc-ns
+data:
+  ENVIRONMENT: "rc"
+  PORT: "8002"
+  LOG_LEVEL: "debug"
+  SERVICE_NAME: "Dusk-RC"
