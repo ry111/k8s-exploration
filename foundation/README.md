@@ -2,6 +2,18 @@
 
 This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AWS EKS with production and RC tiers.
 
+## Quick Start Options
+
+### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED FOR LEARNING**
+- **Cost:** ~$111-121/month
+- **Time:** ~40 minutes
+- **Guide:** [QUICKSTART-DAWN.md](QUICKSTART-DAWN.md)
+
+### Option 2: All Three Clusters with On-Demand Instances
+- **Cost:** ~$388-418/month
+- **Time:** ~90 minutes
+- **Guide:** See "Deployment Steps" below
+
 ## Architecture
 
 - **3 EKS Clusters** (one per service)
@@ -181,12 +193,19 @@ foundation/
 │   ├── dusk/
 │   └── dusk-rc/
 └── scripts/          # Deployment automation
-    ├── 1-create-clusters.sh
-    ├── 2-install-alb-controller.sh
-    ├── 3-build-and-push-images.sh
-    ├── 4-update-deployment-images.sh
-    ├── 5-deploy-to-clusters.sh
-    └── cleanup.sh
+    ├── Dawn-only (Spot Instances):
+    │   ├── create-dawn-cluster.sh
+    │   ├── install-alb-controller-dawn.sh
+    │   ├── build-and-push-dawn.sh
+    │   ├── deploy-dawn.sh
+    │   └── cleanup-dawn.sh
+    └── All 3 Clusters (On-Demand):
+        ├── 1-create-clusters.sh
+        ├── 2-install-alb-controller.sh
+        ├── 3-build-and-push-images.sh
+        ├── 4-update-deployment-images.sh
+        ├── 5-deploy-to-clusters.sh
+        └── cleanup.sh
 ```
 
 ## Resource Configuration
