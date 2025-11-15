@@ -1,0 +1,8 @@
+config:
+  aws:region: us-east-1
+  dawn-infrastructure:cluster_name: dawn-cluster-dev
+  dawn-infrastructure:min_nodes: "1"
+  dawn-infrastructure:max_nodes: "3"
+  dawn-infrastructure:desired_nodes: "2"
+  dawn-infrastructure:instance_type: t3.small
+  dawn-infrastructure:use_spot: "true"

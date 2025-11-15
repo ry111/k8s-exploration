@@ -1,0 +1,8 @@
+name: dawn-infrastructure
+runtime: python
+description: EKS infrastructure for Dawn service with spot instances
+
+config:
+  aws:region:
+    description: AWS region for deployment
+    default: us-east-1
