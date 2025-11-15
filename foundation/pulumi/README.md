@@ -1,6 +1,6 @@
-# Dawn Infrastructure with Pulumi
+# Multi-Service Infrastructure with Pulumi
 
-This directory contains Infrastructure as Code (IaC) for the Dawn EKS cluster using Pulumi.
+This directory contains Infrastructure as Code (IaC) for managing EKS clusters for all services (Dawn, Day, Dusk) using Pulumi.
 
 ## What's Managed by Pulumi
 
@@ -21,27 +21,73 @@ Instead of running bash scripts manually, Pulumi declaratively manages:
 
 ```
 foundation/pulumi/
-├── __main__.py           # Main Pulumi program (EKS cluster definition)
+├── __main__.py           # Main Pulumi program (generic for all services)
 ├── Pulumi.yaml           # Project metadata
-├── Pulumi.dev.yaml       # Dev environment config
+├── Pulumi.dev.yaml       # Dawn dev environment config
+├── Pulumi.day.yaml       # Day cluster config (VPC: 10.1.0.0/16)
+├── Pulumi.dusk.yaml      # Dusk cluster config (VPC: 10.2.0.0/16)
 ├── requirements.txt      # Python dependencies
 ├── .gitignore           # Git ignore rules
 └── README.md            # This file
 ```
 
+## Multi-Service Support
+
+The same Pulumi code manages clusters for all services. Each service gets:
+- **Separate VPC** (non-overlapping CIDR blocks)
+- **Dedicated EKS cluster**
+- **Independent ALB and node groups**
+- **Separate Pulumi stack** for state management
+
+| Service | Stack Name | VPC CIDR | Cluster Name |
+|---------|------------|----------|--------------|
+| **Dawn** | dev | 10.0.0.0/16 | dawn-cluster-dev |
+| **Day** | day | 10.1.0.0/16 | day-cluster |
+| **Dusk** | dusk | 10.2.0.0/16 | dusk-cluster |
+
 ## Quick Start
 
 See **[PULUMI-SETUP.md](../PULUMI-SETUP.md)** for detailed setup instructions.
 
-**TL;DR:**
+### Deploy Dawn Cluster (dev stack)
 ```bash
 cd foundation/pulumi
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 pulumi login
-pulumi stack init dev
+pulumi stack select dev  # or: pulumi stack init dev
 pulumi up
+```
+
+### Deploy Day Cluster
+See **[DEPLOY-DAY-CLUSTER.md](../DEPLOY-DAY-CLUSTER.md)** for detailed Day cluster deployment guide.
+
+```bash
+cd foundation/pulumi
+pulumi stack select day  # or: pulumi stack init day
+pulumi up
+```
+
+### Deploy Dusk Cluster
+```bash
+cd foundation/pulumi
+pulumi stack select dusk  # or: pulumi stack init dusk
+pulumi up
+```
+
+### Switch Between Services
+```bash
+# Work on Dawn infrastructure
+pulumi stack select dev
+pulumi preview
+
+# Work on Day infrastructure
+pulumi stack select day
+pulumi preview
+
+# View all stacks
+pulumi stack ls
 ```
 
 ## Comparison: Manual vs Pulumi

@@ -1,8 +1,8 @@
 config:
   aws:region: us-east-1
-  service-infrastructure:service_name: dawn
-  service-infrastructure:vpc_cidr: 10.0.0.0/16
-  service-infrastructure:cluster_name: dawn-cluster-dev
+  service-infrastructure:service_name: dusk
+  service-infrastructure:vpc_cidr: 10.2.0.0/16
+  service-infrastructure:cluster_name: dusk-cluster
   service-infrastructure:min_nodes: "1"
   service-infrastructure:max_nodes: "3"
   service-infrastructure:desired_nodes: "2"
