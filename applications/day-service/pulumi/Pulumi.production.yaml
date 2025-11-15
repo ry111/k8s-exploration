@@ -1,0 +1,35 @@
+config:
+  # Kubernetes connection
+  kubernetes:kubeconfig:
+    # Option 1: Reference infrastructure stack output (recommended for CI/CD)
+    # Uncomment and update with your infrastructure stack name:
+    # fn::stackReference:
+    #   name: organization/infrastructure/production
+    #   output: kubeconfig
+
+    # Option 2: Use AWS EKS (via AWS credentials)
+    # The kubeconfig will be automatically fetched using aws eks get-token
+
+  # Application settings
+  day-service-app:namespace: production
+  day-service-app:image_registry: your-registry
+  day-service-app:image_tag: v1.2.3
+  day-service-app:replicas: 5
+
+  # Autoscaling (aggressive for production)
+  day-service-app:min_replicas: 3
+  day-service-app:max_replicas: 20
+  day-service-app:cpu_target: 70
+  day-service-app:memory_target: 80
+
+  # Resources (larger for production)
+  day-service-app:cpu_request: 200m
+  day-service-app:memory_request: 256Mi
+  day-service-app:cpu_limit: 1000m
+  day-service-app:memory_limit: 1Gi
+
+  # Application config
+  day-service-app:log_level: INFO
+  day-service-app:database_host: postgres.production.svc.cluster.local
+  day-service-app:cache_ttl: "300"
+  day-service-app:feature_new_ui: true
