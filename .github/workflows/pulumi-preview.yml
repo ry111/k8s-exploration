@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main, claude/**]
     paths:
-      - 'foundation/pulumi/**'
+      - 'foundation/infrastructure/pulumi/**'
       - '.github/workflows/pulumi-preview.yml'
 
 env:
@@ -28,7 +28,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        working-directory: foundation/pulumi
+        working-directory: foundation/infrastructure/pulumi
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -45,7 +45,7 @@ jobs:
         with:
           command: preview
           stack-name: dev
-          work-dir: foundation/pulumi
+          work-dir: foundation/infrastructure/pulumi
           comment-on-pr: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
         env:

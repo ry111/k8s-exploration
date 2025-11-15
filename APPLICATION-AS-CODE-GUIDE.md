@@ -8,11 +8,12 @@ This guide shows you how to manage your **Day service Kubernetes application res
 
 ```
 foundation/
-├── pulumi/                          # Infrastructure Pulumi Program
-│   ├── __main__.py                  # Manages: EKS cluster, VPC, nodes, ALB controller
-│   ├── Pulumi.yaml
-│   ├── Pulumi.day.yaml
-│   └── Pulumi.dusk.yaml
+├── infrastructure/
+│   └── pulumi/                      # Infrastructure Pulumi Program
+│       ├── __main__.py              # Manages: EKS cluster, VPC, nodes, ALB controller
+│       ├── Pulumi.yaml
+│       ├── Pulumi.day.yaml
+│       └── Pulumi.dusk.yaml
 │
 └── applications/
     └── day-service/
@@ -43,10 +44,10 @@ foundation/
 - **Ingress** - External access via ALB
 
 ### ❌ Application Pulumi Does NOT Manage:
-- EKS Cluster (managed by infrastructure program)
-- VPC/Networking (managed by infrastructure program)
-- Node Groups (managed by infrastructure program)
-- ALB Controller (managed by infrastructure program)
+- EKS Cluster (managed by `foundation/infrastructure/pulumi/`)
+- VPC/Networking (managed by `foundation/infrastructure/pulumi/`)
+- Node Groups (managed by `foundation/infrastructure/pulumi/`)
+- ALB Controller (managed by `foundation/infrastructure/pulumi/`)
 
 ## Setup
 
@@ -54,7 +55,7 @@ foundation/
 
 1. **Infrastructure already deployed**
    ```bash
-   cd foundation/pulumi
+   cd foundation/infrastructure/pulumi
    pulumi stack select day
    pulumi stack output cluster_name  # Should show: day-cluster
    ```
@@ -65,7 +66,7 @@ foundation/
    aws eks update-kubeconfig --name day-cluster --region us-east-1
 
    # Option 2: Export from infrastructure stack
-   cd foundation/pulumi
+   cd foundation/infrastructure/pulumi
    pulumi stack output kubeconfig --show-secrets > ~/.kube/day-cluster-config
    export KUBECONFIG=~/.kube/day-cluster-config
 
@@ -717,6 +718,6 @@ pulumi up
 ## Resources
 
 - Day service Pulumi code: `foundation/applications/day-service/pulumi/__main__.py`
-- Infrastructure Pulumi code: `foundation/pulumi/__main__.py`
+- Infrastructure Pulumi code: `foundation/infrastructure/pulumi/__main__.py`
 - Pulumi Kubernetes provider docs: https://www.pulumi.com/registry/packages/kubernetes/
 - Kubernetes API reference: https://kubernetes.io/docs/reference/kubernetes-api/

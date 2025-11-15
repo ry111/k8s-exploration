@@ -12,10 +12,10 @@ This directory contains the Pulumi program for managing the **Day service applic
 
 ## What This Does NOT Manage
 
-❌ **EKS Cluster** - Managed by `foundation/pulumi/` (infrastructure team)
-❌ **VPC/Networking** - Managed by `foundation/pulumi/`
-❌ **Node Groups** - Managed by `foundation/pulumi/`
-❌ **ALB Controller** - Managed by `foundation/pulumi/`
+❌ **EKS Cluster** - Managed by `foundation/infrastructure/pulumi/` (infrastructure team)
+❌ **VPC/Networking** - Managed by `foundation/infrastructure/pulumi/`
+❌ **Node Groups** - Managed by `foundation/infrastructure/pulumi/`
+❌ **ALB Controller** - Managed by `foundation/infrastructure/pulumi/`
 
 ## Setup
 
@@ -352,5 +352,5 @@ pulumi up       # Deploy all resources
 ## Resources
 
 - Main application code: `foundation/applications/day-service/src/`
-- Infrastructure Pulumi: `foundation/pulumi/`
+- Infrastructure Pulumi: `foundation/infrastructure/pulumi/`
 - Pulumi Kubernetes docs: https://www.pulumi.com/registry/packages/kubernetes/

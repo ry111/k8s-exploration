@@ -12,8 +12,8 @@ Manages:
 - Ingress
 
 Separation of Concerns:
-- Infrastructure team manages: foundation/pulumi/ (EKS, VPC, nodes)
-- Application team manages: applications/day-service/pulumi/ (this file)
+- Infrastructure team manages: foundation/infrastructure/pulumi/ (EKS, VPC, nodes)
+- Application team manages: foundation/applications/day-service/pulumi/ (this file)
 """
 
 import pulumi
