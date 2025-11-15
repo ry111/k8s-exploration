@@ -22,7 +22,7 @@ This directory contains the Pulumi program for managing the **Day service applic
 ### 1. Install Dependencies
 
 ```bash
-cd applications/day-service/pulumi
+cd foundation/applications/day-service/pulumi
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
@@ -47,7 +47,7 @@ kubernetes:kubeconfig:
 aws eks update-kubeconfig --name day-cluster --region us-east-1
 
 # Or from infrastructure Pulumi stack
-cd ../../../foundation/pulumi
+cd ../../../pulumi
 pulumi stack output kubeconfig --show-secrets > ~/.kube/day-cluster-config
 export KUBECONFIG=~/.kube/day-cluster-config
 ```
@@ -55,7 +55,7 @@ export KUBECONFIG=~/.kube/day-cluster-config
 ### 3. Initialize Stack
 
 ```bash
-cd applications/day-service/pulumi
+cd foundation/applications/day-service/pulumi
 
 # Create dev stack
 pulumi stack init dev
@@ -167,7 +167,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'applications/day-service/**'
+      - 'foundation/applications/day-service/**'
 
 jobs:
   deploy:
@@ -188,13 +188,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd applications/day-service/pulumi
+          cd foundation/applications/day-service/pulumi
           pip install -r requirements.txt
 
       - name: Deploy to Production
         uses: pulumi/actions@v4
         with:
-          work-dir: applications/day-service/pulumi
+          work-dir: foundation/applications/day-service/pulumi
           stack-name: production
           command: up
         env:
@@ -351,6 +351,6 @@ pulumi up       # Deploy all resources
 
 ## Resources
 
-- Main application code: `applications/day-service/src/`
+- Main application code: `foundation/applications/day-service/src/`
 - Infrastructure Pulumi: `foundation/pulumi/`
 - Pulumi Kubernetes docs: https://www.pulumi.com/registry/packages/kubernetes/
