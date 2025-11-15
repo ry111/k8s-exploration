@@ -116,26 +116,30 @@ public_rt_association_2 = aws.ec2.RouteTableAssociation(
     route_table_id=public_route_table.id,
 )
 
-# Create EKS cluster
-cluster_args = {
-    "vpc_id": vpc.id,
-    "subnet_ids": [public_subnet_1.id, public_subnet_2.id],
-    "instance_type": instance_type,
-    "desired_capacity": desired_nodes,
-    "min_size": min_nodes,
-    "max_size": max_nodes,
-    "node_associate_public_ip_address": True,
-    "create_oidc_provider": True,  # Required for ALB controller
-    "tags": {**common_tags, "Name": cluster_name},
-}
-
-# Add spot price if using spot instances
-if use_spot:
-    cluster_args["spot_price"] = "0.0104"  # t3.small spot price (~70% savings)
-
+# Create EKS cluster (without default node group)
 cluster = eks.Cluster(
     f"{service_name}-cluster",
-    **cluster_args,
+    vpc_id=vpc.id,
+    public_subnet_ids=[public_subnet_1.id, public_subnet_2.id],
+    skip_default_node_group=True,  # We'll create managed node group separately
+    create_oidc_provider=True,  # Required for ALB controller
+    tags={**common_tags, "Name": cluster_name},
+)
+
+# Create managed node group with spot instances
+node_group = aws.eks.NodeGroup(
+    f"{service_name}-node-group",
+    cluster_name=cluster.eks_cluster.name,
+    node_role_arn=cluster.instance_roles[0].arn,
+    subnet_ids=[public_subnet_1.id, public_subnet_2.id],
+    capacity_type="SPOT" if use_spot else "ON_DEMAND",
+    instance_types=[instance_type],
+    scaling_config=aws.eks.NodeGroupScalingConfigArgs(
+        desired_size=desired_nodes,
+        min_size=min_nodes,
+        max_size=max_nodes,
+    ),
+    tags={**common_tags, "Name": f"{service_name}-node-group"},
 )
 
 # Create Kubernetes provider using the cluster's kubeconfig
