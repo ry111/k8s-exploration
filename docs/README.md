@@ -61,8 +61,10 @@ docs/
 For code and implementation details, see:
 - **Infrastructure Pulumi:** `foundation/infrastructure/pulumi/`
 - **Application Pulumi:** `foundation/applications/day-service/pulumi/`
+- **Application Source Code:** `foundation/services/` (Dawn, Day, Dusk)
 - **Kubernetes Manifests:** `foundation/k8s/`
-- **Scripts:** Root directory (`explore-*.sh`)
+- **Deployment Scripts:** `foundation/scripts/`
+- **Exploration Scripts:** Root directory (`explore-*.sh`)
 
 ## 🚀 Recommended Learning Path
 

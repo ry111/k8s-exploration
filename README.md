@@ -33,7 +33,9 @@ k8s-exploration/
 │   ├── applications/
 │   │   └── day-service/
 │   │       └── pulumi/             # Application resources (Deployments, Services)
-│   └── k8s/                        # Kubernetes manifests
+│   ├── services/                   # Application source code (Dawn, Day, Dusk)
+│   ├── k8s/                        # Kubernetes manifests
+│   └── scripts/                    # Deployment automation scripts
 │
 ├── explore-*.sh                    # Interactive exploration scripts
 └── .github/workflows/              # CI/CD pipelines

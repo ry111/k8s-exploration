@@ -276,5 +276,5 @@ kubectl get svc
 ## Support
 
 - Main setup guide: [pulumi-setup.md](pulumi-setup.md)
-- Multi-cluster README: [pulumi/README.md](pulumi/README.md:1)
+- Infrastructure Pulumi README: [foundation/infrastructure/pulumi/README.md](../foundation/infrastructure/pulumi/README.md)
 - Pulumi docs: https://www.pulumi.com/docs/
