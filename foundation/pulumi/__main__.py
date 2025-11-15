@@ -7,7 +7,8 @@ This creates:
 - Managed node group using spot instances (t3.small)
 - ALB controller using Helm
 
-Supports multiple services (Dawn, Day, Dusk) via stack configuration.
+Supports Day and Dusk services via stack configuration.
+Note: Dawn cluster is managed manually via eksctl scripts.
 """
 
 import pulumi

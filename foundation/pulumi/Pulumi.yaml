@@ -1,13 +1,13 @@
 name: service-infrastructure
 runtime: python
-description: EKS infrastructure for microservices (Dawn/Day/Dusk) with spot instances
+description: EKS infrastructure for microservices (Day/Dusk) with spot instances
 
 config:
   aws:region:
     description: AWS region for deployment
     default: us-east-1
   service-infrastructure:service_name:
-    description: Service name (dawn, day, or dusk)
+    description: Service name (day or dusk)
   service-infrastructure:vpc_cidr:
     description: VPC CIDR block (must be unique per service)
-    default: 10.0.0.0/16
+    default: 10.1.0.0/16

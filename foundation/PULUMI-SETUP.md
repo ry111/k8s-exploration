@@ -1,6 +1,8 @@
 # Pulumi Setup Guide
 
-This guide walks you through setting up Pulumi to manage your Dawn EKS cluster infrastructure as code.
+This guide walks you through setting up Pulumi to manage your **Day** and **Dusk** EKS cluster infrastructure as code.
+
+**Note**: The Dawn cluster was created manually using eksctl and is NOT managed by Pulumi.
 
 ## Overview
 
@@ -91,15 +93,18 @@ Pulumi needs to store state. Choose one:
    pulumi login s3://your-pulumi-state-bucket  # For S3
    ```
 
-4. **Initialize the stack:**
+4. **Initialize the Day stack:**
    ```bash
-   pulumi stack init dev
+   pulumi stack init day
    ```
 
-5. **Set AWS region (if not using default):**
+   Or for Dusk:
    ```bash
-   pulumi config set aws:region us-east-1
+   pulumi stack init dusk
    ```
+
+5. **Configuration is pre-set in stack files** (Pulumi.day.yaml, Pulumi.dusk.yaml)
+   - No additional config needed - VPC CIDR, service name, etc. already set
 
 ## Deploy Infrastructure
 
@@ -179,19 +184,14 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 3. Check PR comments for Pulumi preview
 4. Merge PR → infrastructure updates automatically
 
-## Import Existing Cluster (Optional)
+## Dawn Cluster Note
 
-If you already have a Dawn cluster running and want to manage it with Pulumi:
+The existing Dawn cluster was created manually and remains managed via eksctl scripts:
+- `./foundation/scripts/create-dawn-cluster.sh`
+- `./foundation/scripts/deploy-dawn.sh`
+- `./foundation/scripts/health-check-dawn.sh`
 
-```bash
-# This is complex - contact for guidance
-# Generally: pulumi import <resource-type> <resource-name> <aws-id>
-```
-
-**Note:** Importing existing resources is advanced. It's usually easier to:
-1. Deploy a new cluster with Pulumi
-2. Migrate workloads
-3. Delete old cluster
+**No migration needed** - Dawn continues to run as-is. Pulumi only manages Day and Dusk.
 
 ## Common Operations
 
@@ -202,7 +202,7 @@ pulumi stack
 
 ### Update a configuration value:
 ```bash
-pulumi config set dawn-infrastructure:max_nodes 5
+pulumi config set service-infrastructure:max_nodes 5
 pulumi up
 ```
 
@@ -227,28 +227,28 @@ This compares Pulumi state with actual AWS resources and updates state.
 
 ## Stack Management
 
-Create separate stacks for different environments:
+The project includes pre-configured stacks for Day and Dusk services:
 
 ```bash
-# Create staging stack
-pulumi stack init staging
-pulumi config set aws:region us-east-1
+# Deploy Day cluster
+pulumi stack select day
 pulumi up
 
-# Create production stack
-pulumi stack init production
-pulumi config set aws:region us-east-1
-pulumi config set dawn-infrastructure:min_nodes 3
-pulumi config set dawn-infrastructure:max_nodes 10
+# Deploy Dusk cluster
+pulumi stack select dusk
 pulumi up
 
 # Switch between stacks
-pulumi stack select dev
-pulumi stack select staging
-pulumi stack select production
+pulumi stack select day
+pulumi stack select dusk
+
+# View all stacks
+pulumi stack ls
 ```
 
-Each stack maintains separate state and resources.
+Each stack maintains separate state and resources. Configuration is pre-defined in:
+- `Pulumi.day.yaml` - Day cluster (VPC: 10.1.0.0/16)
+- `Pulumi.dusk.yaml` - Dusk cluster (VPC: 10.2.0.0/16)
 
 ## Cost Estimate
 
@@ -301,7 +301,7 @@ aws configure
 ## Best Practices
 
 ✅ **Always run `pulumi preview` before `pulumi up`**
-✅ **Use separate stacks for dev/staging/prod**
+✅ **Use separate stacks per service (day/dusk)**
 ✅ **Store sensitive outputs as secrets**
 ✅ **Enable versioning on S3 state bucket**
 ✅ **Use Pulumi Cloud for team collaboration**
@@ -311,11 +311,11 @@ aws configure
 
 ## Next Steps
 
-After Pulumi is managing your infrastructure:
+After deploying Day cluster with Pulumi:
 
-1. **Deploy applications** - Apply K8s manifests to the Pulumi-managed cluster
-2. **Add ArgoCD** - Set up GitOps continuous deployment
-3. **Expand to Day/Dusk** - Create additional stacks for other services
+1. **Deploy Day application** - Apply K8s manifests to the Day cluster
+2. **Deploy Dusk cluster** - Run `pulumi up` with dusk stack (optional)
+3. **Add ArgoCD** - Set up GitOps continuous deployment
 4. **Monitoring** - Add CloudWatch dashboards via Pulumi
 5. **Alerts** - Define SNS topics and alarms in Pulumi code
 
