@@ -1,0 +1,7 @@
+name: day-service-app
+runtime: python
+description: Day service Kubernetes application resources (Deployment, Service, ConfigMap, HPA, Ingress)
+
+# This is SEPARATE from the infrastructure Pulumi program
+# Infrastructure: foundation/pulumi/ (manages EKS cluster)
+# Application: applications/day-service/pulumi/ (this program)
