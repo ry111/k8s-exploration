@@ -1768,4 +1768,4 @@ Update complete when new ReplicaSet has all replicas
 - `foundation/k8s/day/deployment.yaml` - Example Deployment
 - `deployment-hierarchy.md` - How Deployments create Pods
 - `configmap-relationships.md` - How ConfigMaps relate to Deployments
-- `explore-rolling-updates.sh` - Interactive demonstration script
+- `foundation/scripts/explore/explore-rolling-updates.sh` - Interactive demonstration script

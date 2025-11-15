@@ -202,6 +202,10 @@ foundation/
 │   ├── dusk/
 │   └── dusk-rc/
 └── scripts/          # Deployment automation
+    ├── explore/      # Interactive learning scripts
+    │   ├── explore-deployment-hierarchy.sh
+    │   ├── explore-configmap-relationships.sh
+    │   └── explore-rolling-updates.sh
     ├── Dawn-only (Spot Instances):
     │   ├── create-dawn-cluster.sh
     │   ├── install-alb-controller-dawn.sh

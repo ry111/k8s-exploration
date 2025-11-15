@@ -36,8 +36,9 @@ k8s-exploration/
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
 │   ├── k8s/                        # Kubernetes manifests
 │   └── scripts/                    # Deployment automation scripts
+│       ├── explore/                # Interactive learning scripts
+│       └── ...                     # Deployment scripts (create, deploy, cleanup)
 │
-├── explore-*.sh                    # Interactive exploration scripts
 └── .github/workflows/              # CI/CD pipelines
 ```
 
@@ -82,9 +83,9 @@ pulumi up
 
 Explore Kubernetes concepts hands-on:
 ```bash
-./explore-deployment-hierarchy.sh      # Visualize Deployment → Pod relationship
-./explore-configmap-relationships.sh   # See ConfigMap to Pod connections
-./explore-rolling-updates.sh           # Watch rolling updates in action
+foundation/scripts/explore/explore-deployment-hierarchy.sh      # Visualize Deployment → Pod relationship
+foundation/scripts/explore/explore-configmap-relationships.sh   # See ConfigMap to Pod connections
+foundation/scripts/explore/explore-rolling-updates.sh           # Watch rolling updates in action
 ```
 
 ## 💰 Cost Estimate

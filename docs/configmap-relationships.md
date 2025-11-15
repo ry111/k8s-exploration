@@ -1513,4 +1513,4 @@ kubectl rollout undo deployment day -n day-ns
 - `foundation/k8s/day-rc/configmap.yaml` - RC ConfigMap
 - `foundation/k8s/day/deployment.yaml` - Deployment referencing ConfigMap
 - `deployment-hierarchy.md` - How Deployments create Pods
-- `explore-configmap-relationships.sh` - Interactive demonstration script
+- `foundation/scripts/explore/explore-configmap-relationships.sh` - Interactive demonstration script

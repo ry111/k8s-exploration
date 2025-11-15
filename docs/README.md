@@ -64,7 +64,7 @@ For code and implementation details, see:
 - **Application Source Code:** `foundation/services/` (Dawn, Day, Dusk)
 - **Kubernetes Manifests:** `foundation/k8s/`
 - **Deployment Scripts:** `foundation/scripts/`
-- **Exploration Scripts:** Root directory (`explore-*.sh`)
+- **Exploration Scripts:** `foundation/scripts/explore/`
 
 ## 🚀 Recommended Learning Path
 
@@ -79,4 +79,4 @@ For code and implementation details, see:
 
 - Check the specific guide related to your task
 - Each guide includes troubleshooting sections
-- Explore the interactive scripts in the root directory (`explore-*.sh`)
+- Explore the interactive scripts in `foundation/scripts/explore/`

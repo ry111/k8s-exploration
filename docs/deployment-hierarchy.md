@@ -1238,4 +1238,4 @@ This is why Kubernetes is powerful - you focus on **what** you want, not **how**
 - `foundation/k8s/day/deployment.yaml` - Example Deployment
 - `foundation/k8s/day/service.yaml` - Service that routes to pods
 - `foundation/k8s/day/ingress.yaml` - External access via ALB
-- `explore-deployment-hierarchy.sh` - Interactive demonstration script
+- `foundation/scripts/explore/explore-deployment-hierarchy.sh` - Interactive demonstration script
