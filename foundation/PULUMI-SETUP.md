@@ -76,7 +76,7 @@ Pulumi needs to store state. Choose one:
 
 1. **Navigate to Pulumi directory:**
    ```bash
-   cd foundation/pulumi
+   cd foundation/infrastructure/pulumi
    ```
 
 2. **Install Python dependencies:**
@@ -179,7 +179,7 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 
 ### Test the Workflow
 
-1. Make a change to `foundation/pulumi/__main__.py`
+1. Make a change to `foundation/infrastructure/pulumi/__main__.py`
 2. Create a PR
 3. Check PR comments for Pulumi preview
 4. Merge PR → infrastructure updates automatically

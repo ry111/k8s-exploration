@@ -75,7 +75,7 @@ Platform Team             Application Teams
 
 ## Current Setup (Your Repository)
 
-Your current Pulumi code (`foundation/pulumi/__main__.py`) follows best practices:
+Your current Pulumi code (`foundation/infrastructure/pulumi/__main__.py`) follows best practices:
 
 ```python
 # ✅ CORRECTLY MANAGED BY PULUMI
@@ -291,7 +291,7 @@ shared_config = k8s.core.v1.ConfigMap(
 │ - VPC, Subnets, IAM Roles                                 │
 │ - Managed by: Platform/DevOps Team                        │
 │ - Change Frequency: Monthly                               │
-│ - Repository: infrastructure/pulumi/                      │
+│ - Repository: foundation/infrastructure/pulumi/           │
 └────────────────────────────────────────────────────────────┘
                          ↓
 ┌────────────────────────────────────────────────────────────┐
@@ -300,7 +300,7 @@ shared_config = k8s.core.v1.ConfigMap(
 │ - ALB Controller, Cluster Autoscaler, Metrics Server      │
 │ - Managed by: Platform/DevOps Team                        │
 │ - Change Frequency: Weekly                                │
-│ - Repository: infrastructure/pulumi/                      │
+│ - Repository: foundation/infrastructure/pulumi/           │
 └────────────────────────────────────────────────────────────┘
                          ↓
 ┌────────────────────────────────────────────────────────────┐
@@ -328,7 +328,7 @@ shared_config = k8s.core.v1.ConfigMap(
 ### Infrastructure Change (Pulumi)
 ```bash
 # 1. Platform team makes change
-cd foundation/pulumi
+cd foundation/infrastructure/pulumi
 vim __main__.py  # Add new node group
 
 # 2. Preview changes
@@ -408,7 +408,7 @@ Tracks: Deployments, Services, ConfigMaps
 
 ### Your Current Setup (Correct Approach!)
 
-**`foundation/pulumi/__main__.py`** (Platform team):
+**`foundation/infrastructure/pulumi/__main__.py`** (Platform team):
 ```python
 # ✅ Infrastructure managed here
 cluster = eks.Cluster(...)
@@ -549,7 +549,7 @@ When deciding whether to manage a resource with Pulumi, ask:
 
 ## References
 
-- Your current Pulumi code: `foundation/pulumi/__main__.py:1-318`
+- Your current Pulumi code: `foundation/infrastructure/pulumi/__main__.py:1-318`
 - Deployment hierarchy guide: `DEPLOYMENT-HIERARCHY.md`
 - ConfigMap relationships: `CONFIGMAP-RELATIONSHIPS.md`
 - Pulumi Kubernetes Best Practices: https://www.pulumi.com/docs/clouds/kubernetes/guides/

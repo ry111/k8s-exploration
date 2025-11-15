@@ -22,7 +22,7 @@ Instead of running bash scripts manually, Pulumi declaratively manages:
 ## File Structure
 
 ```
-foundation/pulumi/
+foundation/infrastructure/pulumi/
 ├── __main__.py           # Main Pulumi program (generic for all services)
 ├── Pulumi.yaml           # Project metadata
 ├── Pulumi.day.yaml       # Day cluster config (VPC: 10.1.0.0/16)
@@ -54,7 +54,7 @@ See **[PULUMI-SETUP.md](../PULUMI-SETUP.md)** for detailed setup instructions.
 See **[DEPLOY-DAY-CLUSTER.md](../DEPLOY-DAY-CLUSTER.md)** for detailed Day cluster deployment guide.
 
 ```bash
-cd foundation/pulumi
+cd foundation/infrastructure/pulumi
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -65,7 +65,7 @@ pulumi up
 
 ### Deploy Dusk Cluster
 ```bash
-cd foundation/pulumi
+cd foundation/infrastructure/pulumi
 pulumi stack select dusk  # or: pulumi stack init dusk
 pulumi up
 ```
@@ -113,7 +113,7 @@ pulumi stack ls
 ### Pulumi Deployment (New)
 ```bash
 # All-in-one deployment
-cd foundation/pulumi
+cd foundation/infrastructure/pulumi
 pulumi up
 ```
 

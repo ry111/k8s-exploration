@@ -13,7 +13,7 @@ This guide walks you through deploying the **Day cluster** using Pulumi Infrastr
 ### 1. Navigate to Pulumi directory
 
 ```bash
-cd foundation/pulumi
+cd foundation/infrastructure/pulumi
 ```
 
 ### 2. Set up Python environment
