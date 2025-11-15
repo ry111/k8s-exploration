@@ -65,7 +65,7 @@ Add these secrets:
 - `AWS_ACCESS_KEY_ID` = your access key
 - `AWS_SECRET_ACCESS_KEY` = your secret key
 
-**See [CI-SETUP.md](CI-SETUP.md) for detailed instructions**
+**See [ci-setup.md](ci-setup.md) for detailed instructions**
 
 ### 1.3 Push Code to Trigger Build
 
@@ -327,7 +327,7 @@ After Dawn is working:
 
 ## Resources
 
-- [CI Setup Guide](CI-SETUP.md) - Detailed CI configuration
+- [CI Setup Guide](ci-setup.md) - Detailed CI configuration
 - [GitHub Actions Docs](https://docs.github.com/en/actions)
 - [AWS ECR Docs](https://docs.aws.amazon.com/ecr/)
 

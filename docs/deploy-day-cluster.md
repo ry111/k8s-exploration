@@ -4,7 +4,7 @@ This guide walks you through deploying the **Day cluster** using Pulumi Infrastr
 
 ## Prerequisites
 
-1. **Pulumi CLI installed** - See [PULUMI-SETUP.md](PULUMI-SETUP.md:1) for installation
+1. **Pulumi CLI installed** - See [pulumi-setup.md](pulumi-setup.md) for installation
 2. **Pulumi login completed** - Either Pulumi Cloud or S3 backend
 3. **AWS credentials configured** - Already set up for CI/CD
 
@@ -275,6 +275,6 @@ kubectl get svc
 
 ## Support
 
-- Main setup guide: [PULUMI-SETUP.md](PULUMI-SETUP.md:1)
+- Main setup guide: [pulumi-setup.md](pulumi-setup.md)
 - Multi-cluster README: [pulumi/README.md](pulumi/README.md:1)
 - Pulumi docs: https://www.pulumi.com/docs/

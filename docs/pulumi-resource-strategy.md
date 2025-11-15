@@ -550,7 +550,7 @@ When deciding whether to manage a resource with Pulumi, ask:
 ## References
 
 - Your current Pulumi code: `foundation/infrastructure/pulumi/__main__.py:1-318`
-- Deployment hierarchy guide: `DEPLOYMENT-HIERARCHY.md`
-- ConfigMap relationships: `CONFIGMAP-RELATIONSHIPS.md`
+- Deployment hierarchy guide: `deployment-hierarchy.md`
+- ConfigMap relationships: `configmap-relationships.md`
 - Pulumi Kubernetes Best Practices: https://www.pulumi.com/docs/clouds/kubernetes/guides/
 - GitOps with ArgoCD: https://argo-cd.readthedocs.io/

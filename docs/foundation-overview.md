@@ -7,7 +7,7 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 ### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED FOR LEARNING**
 - **Cost:** ~$111-121/month
 - **Time:** ~40 minutes
-- **Guide:** [QUICKSTART-DAWN.md](QUICKSTART-DAWN.md)
+- **Guide:** [quickstart-dawn.md](quickstart-dawn.md)
 
 ### Option 2: All Three Clusters with On-Demand Instances
 - **Cost:** ~$388-418/month
