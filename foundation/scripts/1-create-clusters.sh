@@ -5,7 +5,7 @@
 
 set -e
 
-REGION=${1:-us-west-2}
+REGION=${1:-us-east-1}
 
 echo "Creating EKS clusters in region: $REGION"
 echo "This will take approximately 15-20 minutes per cluster..."

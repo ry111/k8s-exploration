@@ -126,7 +126,7 @@ You should see images tagged:
 
 ### Via AWS CLI:
 ```bash
-aws ecr list-images --repository-name dawn --region us-west-2
+aws ecr list-images --repository-name dawn --region us-east-1
 ```
 
 ## Workflow Triggers
@@ -204,7 +204,7 @@ Each build takes ~2-3 minutes:
 
 ### Images not appearing in ECR
 - Check workflow completed successfully in Actions tab
-- Verify AWS region matches (`us-west-2`)
+- Verify AWS region matches (`us-east-1`)
 - Check repository name matches service name
 
 ## Viewing Build Logs
@@ -230,15 +230,15 @@ Since images are now built automatically:
 
 ```bash
 # 1. Create EKS cluster
-./create-dawn-cluster.sh us-west-2
+./create-dawn-cluster.sh us-east-1
 
 # 2. Install ALB controller
-./install-alb-controller-dawn.sh us-west-2
+./install-alb-controller-dawn.sh us-east-1
 
 # 3. Skip build - images already in ECR from CI!
 
 # 4. Deploy to cluster
-./deploy-dawn.sh us-west-2
+./deploy-dawn.sh us-east-1
 ```
 
 No Docker installation needed on your laptop!

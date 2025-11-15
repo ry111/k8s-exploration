@@ -6,7 +6,7 @@
 
 set -e
 
-REGION=${1:-us-west-2}
+REGION=${1:-us-east-1}
 
 echo "⚠️  WARNING: This will delete the Dawn cluster and all resources!"
 echo "Region: $REGION"

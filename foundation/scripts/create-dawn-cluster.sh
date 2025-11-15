@@ -5,7 +5,7 @@
 
 set -e
 
-REGION=${1:-us-west-2}
+REGION=${1:-us-east-1}
 
 echo "Creating Dawn EKS cluster with SPOT instances..."
 echo "Region: $REGION"

@@ -5,7 +5,7 @@
 
 set -e
 
-REGION=${1:-us-west-2}
+REGION=${1:-us-east-1}
 AWS_ACCOUNT_ID=${2}
 
 if [ -z "$AWS_ACCOUNT_ID" ]; then
