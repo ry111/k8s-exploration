@@ -7,7 +7,7 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 ### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED FOR LEARNING**
 - **Cost:** ~$111-121/month
 - **Time:** ~40 minutes
-- **Guide:** [QUICKSTART-DAWN.md](QUICKSTART-DAWN.md)
+- **Guide:** [quickstart-dawn.md](quickstart-dawn.md)
 
 ### Option 2: All Three Clusters with On-Demand Instances
 - **Cost:** ~$388-418/month
@@ -181,7 +181,16 @@ curl http://$RC_ALB_URL/health
 
 ```
 foundation/
-├── services/          # Python Flask applications
+├── infrastructure/
+│   └── pulumi/       # Infrastructure as Code (Pulumi)
+│       ├── __main__.py      # EKS cluster, VPC, nodes
+│       ├── Pulumi.day.yaml  # Day cluster config
+│       └── Pulumi.dusk.yaml # Dusk cluster config
+├── applications/
+│   └── day-service/
+│       └── pulumi/   # Application resources (Pulumi)
+│           └── __main__.py  # Deployment, Service, HPA, etc.
+├── services/         # Python Flask applications
 │   ├── dawn/
 │   ├── day/
 │   └── dusk/
@@ -193,6 +202,10 @@ foundation/
 │   ├── dusk/
 │   └── dusk-rc/
 └── scripts/          # Deployment automation
+    ├── explore/      # Interactive learning scripts
+    │   ├── explore-deployment-hierarchy.sh
+    │   ├── explore-configmap-relationships.sh
+    │   └── explore-rolling-updates.sh
     ├── Dawn-only (Spot Instances):
     │   ├── create-dawn-cluster.sh
     │   ├── install-alb-controller-dawn.sh

@@ -48,10 +48,10 @@ The same Pulumi code manages Day and Dusk clusters. Each service gets:
 
 ## Quick Start
 
-See **[PULUMI-SETUP.md](../PULUMI-SETUP.md)** for detailed setup instructions.
+See **[pulumi-setup.md](../../../docs/pulumi-setup.md)** for detailed setup instructions.
 
 ### Deploy Day Cluster
-See **[DEPLOY-DAY-CLUSTER.md](../DEPLOY-DAY-CLUSTER.md)** for detailed Day cluster deployment guide.
+See **[deploy-day-cluster.md](../../../docs/deploy-day-cluster.md)** for detailed Day cluster deployment guide.
 
 ```bash
 cd foundation/infrastructure/pulumi
@@ -229,7 +229,7 @@ kubectl apply -f foundation/k8s/day/
 
 ## Next Steps
 
-1. ✅ **Set up Pulumi** - Follow PULUMI-SETUP.md
+1. ✅ **Set up Pulumi** - Follow [pulumi-setup.md](../../../docs/pulumi-setup.md)
 2. ⏭️ **Deploy Day cluster** - Run `pulumi up` with day stack
 3. ⏭️ **Deploy Day application** - Apply K8s manifests
 4. ⏭️ **Deploy Dusk cluster** - Run `pulumi up` with dusk stack (optional)
@@ -244,7 +244,7 @@ Pulumi itself is free (using Pulumi Cloud free tier or S3 backend).
 
 ## Support
 
-- Main docs: [PULUMI-SETUP.md](../PULUMI-SETUP.md)
+- Main docs: [pulumi-setup.md](../../../docs/pulumi-setup.md)
 - Pulumi docs: https://www.pulumi.com/docs/
 - AWS EKS guide: https://www.pulumi.com/registry/packages/eks/
 - Questions: Create an issue
