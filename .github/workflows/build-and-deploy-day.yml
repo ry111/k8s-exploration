@@ -78,6 +78,11 @@ jobs:
         run: |
           aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 
+          # Verify kubeconfig was created and test connection
+          echo "Kubeconfig location: $HOME/.kube/config"
+          ls -la $HOME/.kube/config
+          kubectl cluster-info
+
       - name: Install dependencies
         run: |
           cd foundation/applications/day-service/pulumi
@@ -101,6 +106,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
+          KUBECONFIG: /home/runner/.kube/config
 
   deploy-production:
     name: Deploy to Production
@@ -127,6 +133,11 @@ jobs:
         run: |
           aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 
+          # Verify kubeconfig was created and test connection
+          echo "Kubeconfig location: $HOME/.kube/config"
+          ls -la $HOME/.kube/config
+          kubectl cluster-info
+
       - name: Install dependencies
         run: |
           cd foundation/applications/day-service/pulumi
@@ -150,3 +161,4 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
+          KUBECONFIG: /home/runner/.kube/config
