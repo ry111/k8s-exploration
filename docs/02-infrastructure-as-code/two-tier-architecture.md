@@ -31,16 +31,19 @@ This project demonstrates **both approaches working successfully**:
 └─────────────────────────────────────────────────────┘
 ```
 
-### Approach 2: Pulumi + GitOps (Dawn/Dusk Services)
-**Pulumi for infrastructure, kubectl/YAML for applications**
+### Approach 2: Infrastructure Tool + GitOps (Dawn/Dusk Services)
+**Pulumi/eksctl for infrastructure, kubectl/YAML for applications**
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│ PULUMI MANAGES (Infrastructure Layer)              │
+│ INFRASTRUCTURE LAYER (Pulumi or eksctl)             │
 ├─────────────────────────────────────────────────────┤
 │ ✅ EKS Cluster, VPC, Nodes                          │
 │ ✅ IAM Roles, OIDC Provider                         │
 │ ✅ ALB Controller (Helm)                            │
+│                                                     │
+│ Dusk: Pulumi (foundation/infrastructure/pulumi/)   │
+│ Dawn: eksctl (foundation/scripts/create-dawn-...)  │
 └─────────────────────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────┐
@@ -223,17 +226,18 @@ pulumi up       # Deploy (triggers rolling update)
 ✅ **Full stack visibility** - Prefer one tool for everything
 ✅ **Strong typing** - Want compile-time validation
 
-## Approach 2: Pulumi + GitOps (Also Used in This Project)
+## Approach 2: Infrastructure Tool + GitOps (Also Used in This Project)
 
 This is what we use for Dawn and Dusk services - traditional Kubernetes YAML with kubectl/CI.
 
 ### Architecture
 
-**Infrastructure (Pulumi):**
+**Infrastructure:**
 ```
-Location: foundation/infrastructure/pulumi/
-         OR foundation/scripts/create-dawn-cluster.sh (manual)
-Manages:
+Dusk: foundation/infrastructure/pulumi/ (Pulumi managed)
+Dawn: foundation/scripts/create-dawn-cluster.sh (eksctl manual script)
+
+Both create:
   - AWS EKS Cluster
   - VPC and Networking
   - Managed Node Groups
@@ -254,15 +258,16 @@ Deploy:
   kubectl apply -f foundation/k8s/dawn/
 ```
 
-### Advantages of Pulumi + GitOps
+### Advantages of Infrastructure Tool + GitOps
 
 ✅ **Standard Kubernetes** - Pure YAML, works with any tool
 ✅ **Ecosystem compatibility** - Works with Kustomize, Helm, ArgoCD
 ✅ **Team skills** - Most teams know YAML and kubectl
 ✅ **GitOps native** - Perfect fit for ArgoCD/Flux
-✅ **Tool flexibility** - Not locked into Pulumi
+✅ **Tool flexibility** - Choose infrastructure tool that fits (Pulumi, Terraform, eksctl)
 ✅ **Clear separation** - Infrastructure vs applications very explicit
 ✅ **Declarative** - Familiar kubectl apply workflow
+✅ **Learning friendly** - Manual scripts (like eksctl) help understand each step
 
 ### Deployment Workflow
 
@@ -286,7 +291,7 @@ git commit -m "Update dawn to v1.2.3"
 git push
 ```
 
-### When to Use Pulumi + GitOps
+### When to Use Infrastructure Tool + GitOps
 
 ✅ **Large teams** - Different teams own infrastructure vs apps
 ✅ **GitOps culture** - Already using ArgoCD/Flux
@@ -294,14 +299,15 @@ git push
 ✅ **Tool diversity** - Want to use Kustomize, Helm, etc.
 ✅ **Separation of concerns** - Strict infrastructure/app boundaries
 ✅ **Existing workflows** - Don't want to change app deployment process
+✅ **Learning focus** - Manual scripts help understand each step (Dawn example)
 
 ## Current Setup (Your Repository)
 
 We demonstrate **both approaches** to show they're equally valid:
 
-### Dawn Service: Pulumi Infrastructure + kubectl Applications
+### Dawn Service: eksctl (Manual) + kubectl Applications
 ```
-Infrastructure: foundation/scripts/create-dawn-cluster.sh (manual)
+Infrastructure: foundation/scripts/create-dawn-cluster.sh (eksctl manual script)
 Applications:   foundation/k8s/dawn/*.yaml (kubectl)
 ```
 
@@ -424,11 +430,12 @@ spec:
 ❌ Pods - Managed by ReplicaSets
 ```
 
-## Comparison: Two-Tier Pulumi vs GitOps
+## Comparison: Two-Tier Pulumi vs Infrastructure + GitOps
 
-| Aspect | Two-Tier Pulumi | Pulumi + GitOps |
-|--------|----------------|-----------------|
-| **Configuration** | Python/TypeScript code | YAML manifests |
+| Aspect | Two-Tier Pulumi | Infrastructure Tool + GitOps |
+|--------|----------------|------------------------------|
+| **Infrastructure** | Pulumi | Pulumi, eksctl, Terraform, etc. |
+| **Applications** | Pulumi (Python/TypeScript) | YAML manifests + kubectl |
 | **Type Safety** | ✅ Compile-time validation | ❌ Runtime validation only |
 | **Change Preview** | `pulumi preview` | `kubectl diff` |
 | **Rollback** | `pulumi up --target-dependents` | `kubectl rollout undo` |
@@ -439,7 +446,7 @@ spec:
 | **Debugging** | Stack traces, IDE | kubectl describe |
 | **Ecosystem** | Pulumi providers | Full K8s ecosystem |
 
-**This project uses both to demonstrate neither is "wrong"!**
+**This project uses both approaches (plus manual eksctl for learning) to demonstrate all are valid!**
 
 ## Recommended Architecture (What We Implemented)
 
@@ -616,9 +623,9 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 ## What We Actually Built
 
-### Infrastructure (Always Pulumi)
-✅ `foundation/infrastructure/pulumi/` - EKS clusters for Day and Dusk
-✅ `foundation/scripts/create-dawn-cluster.sh` - Dawn cluster (manual, but could be Pulumi)
+### Infrastructure (Multiple Approaches)
+✅ `foundation/infrastructure/pulumi/` - EKS clusters for Day and Dusk (Pulumi)
+✅ `foundation/scripts/create-dawn-cluster.sh` - Dawn cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
 ✅ **Day Service** - Two-Tier Pulumi (`foundation/applications/day-service/pulumi/`)
