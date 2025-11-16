@@ -140,7 +140,7 @@ Some teams prefer infrastructure stack creates namespaces. This works if:
 ### Example Infrastructure Stack Approach:
 
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 namespaces = ["dev", "staging", "production"]
 
 for ns_name in namespaces:

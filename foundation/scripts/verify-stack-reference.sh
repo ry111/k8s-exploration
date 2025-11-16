@@ -15,7 +15,7 @@ echo ""
 
 # Step 1: Check infrastructure stack exists and has outputs
 echo "📦 Step 1: Checking infrastructure stack '${INFRA_PROJECT}/${INFRA_STACK}'..."
-cd "$(dirname "$0")/../../infrastructure/pulumi"
+cd "$(dirname "$0")/../../provisioning/pulumi"
 
 if ! pulumi stack ls | grep -q "${INFRA_STACK}"; then
     echo "❌ Infrastructure stack '${INFRA_STACK}' not found!"
@@ -35,7 +35,7 @@ if ! pulumi stack output kubeconfig &>/dev/null; then
     pulumi stack output
     echo ""
     echo "   💡 Deploy the infrastructure stack first:"
-    echo "      cd foundation/infrastructure/pulumi"
+    echo "      cd foundation/provisioning/pulumi"
     echo "      pulumi up --stack ${INFRA_STACK}"
     exit 1
 fi

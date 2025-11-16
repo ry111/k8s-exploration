@@ -69,7 +69,7 @@ aws sts get-caller-identity
 ### 1. Create EKS Clusters (~45-60 minutes)
 
 ```bash
-cd foundation/scripts
+cd foundation/provisioning/manual
 
 # Make scripts executable
 chmod +x *.sh
@@ -177,11 +177,12 @@ curl http://$RC_ALB_URL/health
 
 ```
 foundation/
-├── infrastructure/
-│   └── pulumi/       # Infrastructure as Code (Pulumi)
-│       ├── __main__.py      # EKS cluster, VPC, nodes
-│       ├── Pulumi.day.yaml  # Day cluster config
-│       └── Pulumi.dusk.yaml # Dusk cluster config
+├── provisioning/
+│   ├── pulumi/       # Infrastructure as Code (Pulumi)
+│   │   ├── __main__.py      # EKS cluster, VPC, nodes
+│   │   ├── Pulumi.day.yaml  # Day cluster config
+│   │   └── Pulumi.dusk.yaml # Dusk cluster config
+│   └── manual/       # Manual deployment scripts
 ├── gitops/
 │   └── day/          # Application resources (Pulumi)
 │       └── __main__.py  # Deployment, Service, HPA, etc.
@@ -196,24 +197,11 @@ foundation/
 │   ├── day-rc/
 │   ├── dusk/
 │   └── dusk-rc/
-└── scripts/          # Deployment automation
-    ├── explore/      # Interactive learning scripts
-    │   ├── explore-deployment-hierarchy.sh
-    │   ├── explore-configmap-relationships.sh
-    │   └── explore-rolling-updates.sh
-    ├── Dawn-only (Spot Instances):
-    │   ├── create-dawn-cluster.sh
-    │   ├── install-alb-controller-dawn.sh
-    │   ├── build-and-push-dawn.sh
-    │   ├── deploy-dawn.sh
-    │   └── cleanup-dawn.sh
-    └── All 3 Clusters (On-Demand):
-        ├── 1-create-clusters.sh
-        ├── 2-install-alb-controller.sh
-        ├── 3-build-and-push-images.sh
-        ├── 4-update-deployment-images.sh
-        ├── 5-deploy-to-clusters.sh
-        └── cleanup.sh
+└── scripts/          # Interactive learning scripts
+    └── explore/
+        ├── explore-deployment-hierarchy.sh
+        ├── explore-configmap-relationships.sh
+        └── explore-rolling-updates.sh
 ```
 
 ## Resource Configuration

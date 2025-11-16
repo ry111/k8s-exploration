@@ -76,7 +76,7 @@ Pulumi needs to store state. Choose one:
 
 1. **Navigate to Pulumi directory:**
    ```bash
-   cd foundation/infrastructure/pulumi
+   cd foundation/provisioning/pulumi
    ```
 
 2. **Install Python dependencies:**
@@ -179,7 +179,7 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 
 ### Test the Workflow
 
-1. Make a change to `foundation/infrastructure/pulumi/__main__.py`
+1. Make a change to `foundation/provisioning/pulumi/__main__.py`
 2. Create a PR
 3. Check PR comments for Pulumi preview
 4. Merge PR → infrastructure updates automatically
@@ -187,9 +187,9 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 ## Dawn Cluster Note
 
 The existing Dawn cluster was created manually and remains managed via eksctl scripts:
-- `./foundation/scripts/create-dawn-cluster.sh`
-- `./foundation/scripts/deploy-dawn.sh`
-- `./foundation/scripts/health-check-dawn.sh`
+- `./foundation/provisioning/manual/create-dawn-cluster.sh`
+- `./foundation/provisioning/manual/deploy-dawn.sh`
+- `./foundation/provisioning/manual/health-check-dawn.sh`
 
 **No migration needed** - Dawn continues to run as-is. Pulumi only manages Day and Dusk.
 

@@ -39,15 +39,16 @@ k8s-exploration/
 │   └── 07-next-steps/              # Production guidance
 │
 ├── foundation/                     # Main experiment directory
-│   ├── infrastructure/
-│   │   └── pulumi/                 # Infrastructure as Code (EKS, VPC, nodes)
+│   ├── provisioning/
+│   │   ├── pulumi/                 # Infrastructure as Code (EKS, VPC, nodes)
+│   │   └── manual/                 # Manual cluster provisioning scripts
 │   ├── gitops/
 │   │   └── day/                    # Day service application deployment (Pulumi)
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
 │   ├── k8s/                        # Kubernetes manifests
-│   └── scripts/                    # Deployment automation scripts
+│   └── scripts/                    # Application deployment scripts
 │       ├── explore/                # Interactive learning scripts
-│       └── ...                     # Deployment scripts (create, deploy, cleanup)
+│       └── ...                     # Deployment scripts (deploy, cleanup, etc.)
 │
 └── .github/workflows/              # CI/CD pipelines
 ```
@@ -58,14 +59,14 @@ k8s-exploration/
 ```bash
 # See docs/01-getting-started/first-deployment.md for full guide
 cd foundation
-./scripts/create-dawn-cluster.sh
+./provisioning/manual/create-dawn-cluster.sh
 ./scripts/deploy-dawn.sh
 ```
 
 ### Option 2: Infrastructure as Code with Pulumi
 ```bash
 # See docs/02-infrastructure-as-code/pulumi-setup.md for full guide
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 pulumi up
 ```
 

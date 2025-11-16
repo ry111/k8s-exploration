@@ -30,7 +30,7 @@ if pulumi stack output kubeconfig --stack ry111/service-infrastructure/day &>/de
 else
     echo "❌ Cannot read from infrastructure stack"
     echo "   Make sure infrastructure stack is deployed:"
-    echo "   cd foundation/infrastructure/pulumi && pulumi up --stack day"
+    echo "   cd foundation/provisioning/pulumi && pulumi up --stack day"
 fi
 echo ""
 

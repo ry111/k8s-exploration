@@ -14,7 +14,7 @@ This project demonstrates **both approaches working successfully**:
 ```
 ┌─────────────────────────────────────────────────────┐
 │ INFRASTRUCTURE PULUMI STACK                         │
-│ foundation/infrastructure/pulumi/                   │
+│ foundation/provisioning/pulumi/                   │
 ├─────────────────────────────────────────────────────┤
 │ ✅ EKS Cluster, VPC, Nodes                          │
 │ ✅ IAM Roles, OIDC Provider                         │
@@ -42,7 +42,7 @@ This project demonstrates **both approaches working successfully**:
 │ ✅ IAM Roles, OIDC Provider                         │
 │ ✅ ALB Controller (Helm)                            │
 │                                                     │
-│ Dusk: Pulumi (foundation/infrastructure/pulumi/)   │
+│ Dusk: Pulumi (foundation/provisioning/pulumi/)   │
 │ Dawn: eksctl (foundation/scripts/create-dawn-...)  │
 └─────────────────────────────────────────────────────┘
                      ↓
@@ -96,7 +96,7 @@ This is what we actually built for the Day service, proving Pulumi works great f
 
 **Tier 1: Infrastructure Pulumi Stack**
 ```
-Location: foundation/infrastructure/pulumi/
+Location: foundation/provisioning/pulumi/
 Stack: day (or dusk)
 Manages:
   - AWS EKS Cluster
@@ -129,7 +129,7 @@ References:
 
 **Infrastructure Stack:**
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 cluster = eks.Cluster("day-cluster", ...)
 node_group = aws.eks.NodeGroup(...)
 alb_controller = k8s.helm.v3.Release(...)
@@ -191,7 +191,7 @@ ingress = k8s.networking.v1.Ingress(...)
 
 **Infrastructure changes (rare):**
 ```bash
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 pulumi stack select day
 pulumi preview  # Review infrastructure changes
 pulumi up       # Apply after team review
@@ -234,8 +234,8 @@ This is what we use for Dawn and Dusk services - traditional Kubernetes YAML wit
 
 **Infrastructure:**
 ```
-Dusk: foundation/infrastructure/pulumi/ (Pulumi managed)
-Dawn: foundation/scripts/create-dawn-cluster.sh (eksctl manual script)
+Dusk: foundation/provisioning/pulumi/ (Pulumi managed)
+Dawn: foundation/provisioning/manual/create-dawn-cluster.sh (eksctl manual script)
 
 Both create:
   - AWS EKS Cluster
@@ -273,7 +273,7 @@ Deploy:
 
 **Infrastructure changes (rare):**
 ```bash
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 pulumi stack select dusk
 pulumi up
 ```
@@ -307,19 +307,19 @@ We demonstrate **both approaches** to show they're equally valid:
 
 ### Dawn Service: eksctl (Manual) + kubectl Applications
 ```
-Infrastructure: foundation/scripts/create-dawn-cluster.sh (eksctl manual script)
+Infrastructure: foundation/provisioning/manual/create-dawn-cluster.sh (eksctl manual script)
 Applications:   foundation/k8s/dawn/*.yaml (kubectl)
 ```
 
 ### Day Service: Two-Tier Pulumi
 ```
-Infrastructure: foundation/infrastructure/pulumi/ (Pulumi stack: day)
+Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: day)
 Applications:   foundation/gitops/day/ (Pulumi stacks: dev, production)
 ```
 
 ### Dusk Service: Pulumi Infrastructure + kubectl Applications
 ```
-Infrastructure: foundation/infrastructure/pulumi/ (Pulumi stack: dusk)
+Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: dusk)
 Applications:   foundation/k8s/dusk/*.yaml (kubectl)
 ```
 
@@ -456,7 +456,7 @@ spec:
 │ - VPC, Subnets, IAM Roles                                 │
 │ - Managed by: Platform Team                               │
 │ - Change Frequency: Monthly                               │
-│ - Repository: foundation/infrastructure/pulumi/           │
+│ - Repository: foundation/provisioning/pulumi/           │
 │ - Stacks: day, dusk                                       │
 └────────────────────────────────────────────────────────────┘
                          ↓
@@ -466,7 +466,7 @@ spec:
 │ - ALB Controller, Metrics Server                          │
 │ - Managed by: Platform Team                               │
 │ - Change Frequency: Weekly                                │
-│ - Repository: foundation/infrastructure/pulumi/           │
+│ - Repository: foundation/provisioning/pulumi/           │
 └────────────────────────────────────────────────────────────┘
                          ↓
 ┌────────────────────────────────────────────────────────────┐
@@ -490,7 +490,7 @@ spec:
 
 **DON'T:**
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 cluster = eks.Cluster(...)
 node_group = aws.eks.NodeGroup(...)
 
@@ -507,7 +507,7 @@ dusk_deployment = k8s.apps.v1.Deployment("dusk-service", ...)
 
 **DO:**
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 cluster = eks.Cluster(...)
 
 # Export for application stacks
@@ -539,7 +539,7 @@ We did this for Day service! Here's how:
 **Step 1: Keep infrastructure Pulumi as-is**
 ```bash
 # Already managed
-foundation/infrastructure/pulumi/
+foundation/provisioning/pulumi/
 ```
 
 **Step 2: Create application Pulumi stack**
@@ -624,8 +624,8 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 ## What We Actually Built
 
 ### Infrastructure (Multiple Approaches)
-✅ `foundation/infrastructure/pulumi/` - EKS clusters for Day and Dusk (Pulumi)
-✅ `foundation/scripts/create-dawn-cluster.sh` - Dawn cluster (eksctl manual script)
+✅ `foundation/provisioning/pulumi/` - EKS clusters for Day and Dusk (Pulumi)
+✅ `foundation/provisioning/manual/create-dawn-cluster.sh` - Dawn cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
 ✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/day/`)
@@ -653,7 +653,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 ## References
 
 - Two-tier Pulumi example: `foundation/gitops/day/`
-- Infrastructure Pulumi: `foundation/infrastructure/pulumi/__main__.py`
+- Infrastructure Pulumi: `foundation/provisioning/pulumi/__main__.py`
 - GitOps examples: `foundation/k8s/dawn/`, `foundation/k8s/dusk/`
 - Application guide: [application-as-code.md](../03-application-management/application-as-code.md)
 - Deployment concepts: [deployment-hierarchy.md](../05-kubernetes-deep-dives/deployment-hierarchy.md)

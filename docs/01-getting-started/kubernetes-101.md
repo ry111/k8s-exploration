@@ -1320,7 +1320,7 @@ Our Day cluster demonstrates all these concepts:
 
 ### Infrastructure Stack (Pulumi)
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 
 # 1. VPC (infrastructure layer)
 vpc = aws.ec2.Vpc("day-vpc", cidr_block="10.1.0.0/16")

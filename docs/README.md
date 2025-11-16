@@ -265,14 +265,15 @@ Documentation explains the code. Here's where to find it:
 k8s-exploration/
 ├── docs/                            # 👈 You are here
 ├── foundation/
-│   ├── infrastructure/pulumi/       # Infrastructure as Code (EKS, VPC, nodes)
+│   ├── provisioning/pulumi/         # Infrastructure as Code (EKS, VPC, nodes)
 │   ├── gitops/day/                  # Day service application deployment (Pulumi)
 │   ├── services/                    # Source code (dawn, day, dusk Flask apps)
 │   ├── k8s/                         # Kubernetes YAML manifests
-│   └── scripts/                     # Deployment automation
-│       ├── explore/                 # 👈 Interactive learning scripts
-│       ├── create-dawn-cluster.sh
-│       └── deploy-dawn.sh
+│   └── scripts/                     # Interactive learning scripts
+│       └── explore/                 # 👈 Exploration scripts
+│           ├── explore-deployment-hierarchy.sh
+│           ├── explore-configmap-relationships.sh
+│           └── explore-rolling-updates.sh
 └── .github/workflows/               # CI/CD pipelines
 ```
 

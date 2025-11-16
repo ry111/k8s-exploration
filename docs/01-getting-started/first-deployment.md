@@ -46,7 +46,7 @@ aws sts get-caller-identity
 ### Step 1: Create Your EKS Cluster (~15-20 minutes)
 
 ```bash
-cd foundation/scripts
+cd foundation/provisioning/manual
 
 ./create-dawn-cluster.sh us-east-1
 ```
@@ -232,7 +232,7 @@ curl http://$ALB_URL/info
 For reference, here's the complete deployment sequence:
 
 ```bash
-cd foundation/scripts
+cd foundation/provisioning/manual
 
 # 1. Create cluster (~20 min)
 ./create-dawn-cluster.sh us-east-1
@@ -442,7 +442,7 @@ When you're done experimenting, clean up all resources:
 **⚠️ WARNING: This deletes everything!**
 
 ```bash
-cd foundation/scripts
+cd foundation/provisioning/manual
 ./cleanup-dawn.sh us-east-1
 ```
 

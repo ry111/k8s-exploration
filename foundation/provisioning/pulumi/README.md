@@ -22,7 +22,7 @@ Instead of running bash scripts manually, Pulumi declaratively manages:
 ## File Structure
 
 ```
-foundation/infrastructure/pulumi/
+foundation/provisioning/pulumi/
 ├── __main__.py           # Main Pulumi program (generic for all services)
 ├── Pulumi.yaml           # Project metadata
 ├── Pulumi.day.yaml       # Day cluster config (VPC: 10.1.0.0/16)
@@ -54,7 +54,7 @@ See **[pulumi-setup.md](../../../docs/pulumi-setup.md)** for detailed setup inst
 See **[deploy-day-cluster.md](../../../docs/deploy-day-cluster.md)** for detailed Day cluster deployment guide.
 
 ```bash
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -65,7 +65,7 @@ pulumi up
 
 ### Deploy Dusk Cluster
 ```bash
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 pulumi stack select dusk  # or: pulumi stack init dusk
 pulumi up
 ```
@@ -89,10 +89,10 @@ pulumi stack ls
 ### Manual Deployment (Current)
 ```bash
 # Step 1: Create cluster
-./foundation/scripts/create-dawn-cluster.sh
+./foundation/provisioning/manual/create-dawn-cluster.sh
 
 # Step 2: Install ALB controller
-./foundation/scripts/install-alb-controller-dawn.sh
+./foundation/provisioning/manual/install-alb-controller-dawn.sh
 
 # Step 3: Deploy app
 ./foundation/scripts/deploy-dawn.sh
@@ -113,7 +113,7 @@ pulumi stack ls
 ### Pulumi Deployment (New)
 ```bash
 # All-in-one deployment
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 pulumi up
 ```
 
@@ -160,9 +160,9 @@ Once set up, infrastructure changes follow GitOps:
 # Delete cluster
 eksctl delete cluster --name dawn-cluster
 # Recreate cluster
-./foundation/scripts/create-dawn-cluster.sh
+./foundation/provisioning/manual/create-dawn-cluster.sh
 # Reinstall everything
-./foundation/scripts/install-alb-controller-dawn.sh
+./foundation/provisioning/manual/install-alb-controller-dawn.sh
 ./foundation/scripts/deploy-dawn.sh
 ```
 
@@ -203,7 +203,7 @@ Outputs:
 ## Dawn vs Day/Dusk: Management Comparison
 
 **Dawn cluster (Manual - Already Running):**
-- Created with `./foundation/scripts/create-dawn-cluster.sh`
+- Created with `./foundation/provisioning/manual/create-dawn-cluster.sh`
 - Managed with eksctl and kubectl commands
 - No Pulumi state tracking
 - Updates require manual script execution

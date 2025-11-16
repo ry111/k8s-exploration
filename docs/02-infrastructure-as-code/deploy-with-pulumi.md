@@ -13,7 +13,7 @@ This guide walks you through deploying the **Day cluster** using Pulumi Infrastr
 ### 1. Navigate to Pulumi directory
 
 ```bash
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 ```
 
 ### 2. Set up Python environment
@@ -266,5 +266,5 @@ kubectl get svc
 ## Support
 
 - Main setup guide: [pulumi-setup.md](pulumi-setup.md)
-- Infrastructure Pulumi README: [foundation/infrastructure/pulumi/README.md](../../foundation/infrastructure/pulumi/README.md)
+- Infrastructure Pulumi README: [foundation/provisioning/pulumi/README.md](../../foundation/provisioning/pulumi/README.md)
 - Pulumi docs: https://www.pulumi.com/docs/
