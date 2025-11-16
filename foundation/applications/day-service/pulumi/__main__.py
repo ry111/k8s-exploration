@@ -20,10 +20,43 @@ import pulumi
 import pulumi_kubernetes as k8s
 
 # ============================================================================
-# Configuration
+# Kubernetes Provider Setup - Get kubeconfig from infrastructure stack
 # ============================================================================
 
 config = pulumi.Config()
+
+# Option 1: Use stack reference to get kubeconfig from infrastructure stack
+# This is the recommended approach for production/CI-CD
+use_stack_reference = config.get_bool("use_stack_reference")
+if use_stack_reference is None:
+    use_stack_reference = True  # Default to using stack reference
+
+if use_stack_reference:
+    # Get the infrastructure stack name from config
+    infra_stack_name = config.get("infra_stack_name") or "ry111/service-infrastructure/day"
+
+    # Create stack reference to infrastructure stack
+    infra_stack = pulumi.StackReference(infra_stack_name)
+
+    # Get kubeconfig output from infrastructure stack
+    kubeconfig = infra_stack.require_output("kubeconfig")
+
+    # Create explicit Kubernetes provider using the kubeconfig from infra stack
+    k8s_provider = k8s.Provider(
+        "k8s-provider",
+        kubeconfig=kubeconfig,
+    )
+
+    # Use this provider for all resources
+    provider_opts = pulumi.ResourceOptions(provider=k8s_provider)
+else:
+    # Option 2: Use default kubeconfig (local development)
+    # Will use ~/.kube/config or KUBECONFIG environment variable
+    provider_opts = None
+
+# ============================================================================
+# Configuration
+# ============================================================================
 
 # Application settings
 app_name = "day-service"
@@ -58,260 +91,240 @@ feature_new_ui = config.get_bool("feature_new_ui") or True
 
 labels = {
     "app": app_name,
-    "team": "day-team",
     "managed-by": "pulumi",
-    "version": image_tag,
+    "environment": namespace,
 }
 
 # ============================================================================
-# ConfigMap - Application Configuration
+# Namespace
+# ============================================================================
+# Create the namespace if it doesn't exist
+# This allows the application stack to be self-contained
+
+ns = k8s.core.v1.Namespace(
+    f"{namespace}-namespace",
+    metadata={
+        "name": namespace,
+        "labels": {
+            "name": namespace,
+            "managed-by": "pulumi",
+            "app": app_name,
+        },
+    },
+    opts=provider_opts,
+)
+
+# ============================================================================
+# ConfigMap
 # ============================================================================
 
 config_map = k8s.core.v1.ConfigMap(
     f"{app_name}-config",
-    metadata=k8s.meta.v1.ObjectMetaArgs(
-        name=f"{app_name}-config",
-        namespace=namespace,
-        labels=labels,
-    ),
+    metadata={
+        "name": f"{app_name}-config",
+        "namespace": namespace,
+        "labels": labels,
+    },
     data={
         "LOG_LEVEL": log_level,
         "DATABASE_HOST": database_host,
         "CACHE_TTL": cache_ttl,
-        "FEATURE_FLAG_NEW_UI": str(feature_new_ui).lower(),
-        "SERVICE_NAME": app_name,
-        "NAMESPACE": namespace,
+        "FEATURE_NEW_UI": str(feature_new_ui).lower(),
     },
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
+    ),
 )
 
 # ============================================================================
-# Deployment - Application Pods
+# Deployment
 # ============================================================================
 
 deployment = k8s.apps.v1.Deployment(
-    app_name,
-    metadata=k8s.meta.v1.ObjectMetaArgs(
-        name=app_name,
-        namespace=namespace,
-        labels=labels,
-    ),
-    spec=k8s.apps.v1.DeploymentSpecArgs(
-        replicas=replicas,
-        selector=k8s.meta.v1.LabelSelectorArgs(
-            match_labels={"app": app_name},
-        ),
-        template=k8s.core.v1.PodTemplateSpecArgs(
-            metadata=k8s.meta.v1.ObjectMetaArgs(
-                labels=labels,
-            ),
-            spec=k8s.core.v1.PodSpecArgs(
-                containers=[
-                    k8s.core.v1.ContainerArgs(
-                        name=app_name,
-                        image=f"{image_registry}/{app_name}:{image_tag}",
-                        ports=[
-                            k8s.core.v1.ContainerPortArgs(
-                                name="http",
-                                container_port=8080,
-                                protocol="TCP",
-                            )
-                        ],
-                        # Inject ConfigMap as environment variables
-                        env_from=[
-                            k8s.core.v1.EnvFromSourceArgs(
-                                config_map_ref=k8s.core.v1.ConfigMapEnvSourceArgs(
-                                    name=config_map.metadata["name"],
-                                )
-                            )
-                        ],
-                        # Resource requests and limits
-                        resources=k8s.core.v1.ResourceRequirementsArgs(
-                            requests={
-                                "cpu": cpu_request,
-                                "memory": memory_request,
-                            },
-                            limits={
-                                "cpu": cpu_limit,
-                                "memory": memory_limit,
-                            },
-                        ),
-                        # Liveness probe (is the container running?)
-                        liveness_probe=k8s.core.v1.ProbeArgs(
-                            http_get=k8s.core.v1.HTTPGetActionArgs(
-                                path="/health",
-                                port=8080,
-                                scheme="HTTP",
-                            ),
-                            initial_delay_seconds=30,
-                            period_seconds=10,
-                            timeout_seconds=5,
-                            failure_threshold=3,
-                        ),
-                        # Readiness probe (is the container ready to serve traffic?)
-                        readiness_probe=k8s.core.v1.ProbeArgs(
-                            http_get=k8s.core.v1.HTTPGetActionArgs(
-                                path="/ready",
-                                port=8080,
-                                scheme="HTTP",
-                            ),
-                            initial_delay_seconds=5,
-                            period_seconds=5,
-                            timeout_seconds=3,
-                            failure_threshold=3,
-                        ),
-                    )
-                ],
-                # Graceful shutdown
-                termination_grace_period_seconds=30,
-            ),
-        ),
-        # Rolling update strategy
-        strategy=k8s.apps.v1.DeploymentStrategyArgs(
-            type="RollingUpdate",
-            rolling_update=k8s.apps.v1.RollingUpdateDeploymentArgs(
-                max_unavailable=1,
-                max_surge=1,
-            ),
-        ),
+    f"{app_name}-deployment",
+    metadata={
+        "name": app_name,
+        "namespace": namespace,
+        "labels": labels,
+    },
+    spec={
+        "replicas": replicas,
+        "selector": {
+            "match_labels": labels,
+        },
+        "template": {
+            "metadata": {
+                "labels": labels,
+            },
+            "spec": {
+                "containers": [{
+                    "name": app_name,
+                    "image": f"{image_registry}/{app_name}:{image_tag}",
+                    "ports": [{
+                        "container_port": 8080,
+                        "name": "http",
+                    }],
+                    "env_from": [{
+                        "config_map_ref": {
+                            "name": config_map.metadata["name"],
+                        },
+                    }],
+                    "resources": {
+                        "requests": {
+                            "cpu": cpu_request,
+                            "memory": memory_request,
+                        },
+                        "limits": {
+                            "cpu": cpu_limit,
+                            "memory": memory_limit,
+                        },
+                    },
+                    "liveness_probe": {
+                        "http_get": {
+                            "path": "/health",
+                            "port": 8080,
+                        },
+                        "initial_delay_seconds": 30,
+                        "period_seconds": 10,
+                    },
+                    "readiness_probe": {
+                        "http_get": {
+                            "path": "/ready",
+                            "port": 8080,
+                        },
+                        "initial_delay_seconds": 5,
+                        "period_seconds": 5,
+                    },
+                }],
+            },
+        },
+    },
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
     ),
 )
 
 # ============================================================================
-# Service - Internal Load Balancing
+# Service
 # ============================================================================
 
 service = k8s.core.v1.Service(
-    app_name,
-    metadata=k8s.meta.v1.ObjectMetaArgs(
-        name=app_name,
-        namespace=namespace,
-        labels=labels,
-    ),
-    spec=k8s.core.v1.ServiceSpecArgs(
-        type="ClusterIP",  # Internal service
-        selector={"app": app_name},  # Route to pods with this label
-        ports=[
-            k8s.core.v1.ServicePortArgs(
-                name="http",
-                port=80,  # Service port
-                target_port=8080,  # Container port
-                protocol="TCP",
-            )
-        ],
-        session_affinity="None",
+    f"{app_name}-service",
+    metadata={
+        "name": app_name,
+        "namespace": namespace,
+        "labels": labels,
+    },
+    spec={
+        "type": "ClusterIP",
+        "selector": labels,
+        "ports": [{
+            "port": 80,
+            "target_port": 8080,
+            "protocol": "TCP",
+            "name": "http",
+        }],
+    },
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
     ),
 )
 
 # ============================================================================
-# HorizontalPodAutoscaler - Automatic Scaling
+# HorizontalPodAutoscaler
 # ============================================================================
 
 hpa = k8s.autoscaling.v2.HorizontalPodAutoscaler(
     f"{app_name}-hpa",
-    metadata=k8s.meta.v1.ObjectMetaArgs(
-        name=f"{app_name}-hpa",
-        namespace=namespace,
-        labels=labels,
-    ),
-    spec=k8s.autoscaling.v2.HorizontalPodAutoscalerSpecArgs(
-        scale_target_ref=k8s.autoscaling.v2.CrossVersionObjectReferenceArgs(
-            api_version="apps/v1",
-            kind="Deployment",
-            name=app_name,
-        ),
-        min_replicas=min_replicas,
-        max_replicas=max_replicas,
-        metrics=[
-            # Scale based on CPU usage
-            k8s.autoscaling.v2.MetricSpecArgs(
-                type="Resource",
-                resource=k8s.autoscaling.v2.ResourceMetricSourceArgs(
-                    name="cpu",
-                    target=k8s.autoscaling.v2.MetricTargetArgs(
-                        type="Utilization",
-                        average_utilization=cpu_target,
-                    ),
-                ),
-            ),
-            # Scale based on memory usage
-            k8s.autoscaling.v2.MetricSpecArgs(
-                type="Resource",
-                resource=k8s.autoscaling.v2.ResourceMetricSourceArgs(
-                    name="memory",
-                    target=k8s.autoscaling.v2.MetricTargetArgs(
-                        type="Utilization",
-                        average_utilization=memory_target,
-                    ),
-                ),
-            ),
+    metadata={
+        "name": f"{app_name}-hpa",
+        "namespace": namespace,
+        "labels": labels,
+    },
+    spec={
+        "scale_target_ref": {
+            "api_version": "apps/v1",
+            "kind": "Deployment",
+            "name": app_name,
+        },
+        "min_replicas": min_replicas,
+        "max_replicas": max_replicas,
+        "metrics": [
+            {
+                "type": "Resource",
+                "resource": {
+                    "name": "cpu",
+                    "target": {
+                        "type": "Utilization",
+                        "average_utilization": cpu_target,
+                    },
+                },
+            },
+            {
+                "type": "Resource",
+                "resource": {
+                    "name": "memory",
+                    "target": {
+                        "type": "Utilization",
+                        "average_utilization": memory_target,
+                    },
+                },
+            },
         ],
-        # Scaling behavior (optional - prevent thrashing)
-        behavior=k8s.autoscaling.v2.HorizontalPodAutoscalerBehaviorArgs(
-            scale_down=k8s.autoscaling.v2.HPAScalingRulesArgs(
-                stabilization_window_seconds=300,  # Wait 5 min before scaling down
-                policies=[
-                    k8s.autoscaling.v2.HPAScalingPolicyArgs(
-                        type="Percent",
-                        value=50,  # Scale down max 50% of pods
-                        period_seconds=60,
-                    ),
-                ],
-            ),
-        ),
+    },
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
     ),
 )
 
 # ============================================================================
-# Ingress - External Access via ALB
+# Ingress
 # ============================================================================
 
 ingress = k8s.networking.v1.Ingress(
-    app_name,
-    metadata=k8s.meta.v1.ObjectMetaArgs(
-        name=app_name,
-        namespace=namespace,
-        labels=labels,
-        annotations={
-            # AWS ALB Controller annotations
+    f"{app_name}-ingress",
+    metadata={
+        "name": app_name,
+        "namespace": namespace,
+        "labels": labels,
+        "annotations": {
+            # AWS Load Balancer Controller annotations
+            "kubernetes.io/ingress.class": "alb",
             "alb.ingress.kubernetes.io/scheme": "internet-facing",
             "alb.ingress.kubernetes.io/target-type": "ip",
             "alb.ingress.kubernetes.io/healthcheck-path": "/health",
-            "alb.ingress.kubernetes.io/healthcheck-interval-seconds": "15",
-            "alb.ingress.kubernetes.io/healthcheck-timeout-seconds": "5",
-            "alb.ingress.kubernetes.io/healthy-threshold-count": "2",
-            "alb.ingress.kubernetes.io/unhealthy-threshold-count": "2",
-            # Optional: SSL/TLS
-            # "alb.ingress.kubernetes.io/certificate-arn": "arn:aws:acm:...",
-            # "alb.ingress.kubernetes.io/listen-ports": '[{"HTTP": 80}, {"HTTPS": 443}]',
         },
-    ),
-    spec=k8s.networking.v1.IngressSpecArgs(
-        ingress_class_name="alb",  # Use AWS ALB
-        rules=[
-            k8s.networking.v1.IngressRuleArgs(
-                http=k8s.networking.v1.HTTPIngressRuleValueArgs(
-                    paths=[
-                        k8s.networking.v1.HTTPIngressPathArgs(
-                            path="/",
-                            path_type="Prefix",
-                            backend=k8s.networking.v1.IngressBackendArgs(
-                                service=k8s.networking.v1.IngressServiceBackendArgs(
-                                    name=app_name,
-                                    port=k8s.networking.v1.ServiceBackendPortArgs(
-                                        number=80,
-                                    ),
-                                ),
-                            ),
-                        )
-                    ],
-                ),
-            )
-        ],
+    },
+    spec={
+        "rules": [{
+            "http": {
+                "paths": [{
+                    "path": "/",
+                    "path_type": "Prefix",
+                    "backend": {
+                        "service": {
+                            "name": app_name,
+                            "port": {
+                                "number": 80,
+                            },
+                        },
+                    },
+                }],
+            },
+        }],
+    },
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
     ),
 )
 
 # ============================================================================
-# Exports - Useful outputs for reference
+# Outputs
 # ============================================================================
 
 pulumi.export("deployment_name", deployment.metadata["name"])
@@ -322,9 +335,14 @@ pulumi.export("namespace", namespace)
 pulumi.export("replicas", replicas)
 pulumi.export("image", f"{image_registry}/{app_name}:{image_tag}")
 
-# Get the ALB hostname once the Ingress is created
+# Export ALB hostname once ingress is created
 pulumi.export("alb_hostname", ingress.status.apply(
     lambda status: status.load_balancer.ingress[0].hostname
     if status and status.load_balancer and status.load_balancer.ingress
-    else "pending..."
+    else "pending"
 ))
+
+# Export which provider mode is being used
+pulumi.export("using_stack_reference", use_stack_reference)
+if use_stack_reference:
+    pulumi.export("infra_stack_referenced", infra_stack_name)
