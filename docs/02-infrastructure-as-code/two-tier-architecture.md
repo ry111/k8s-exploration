@@ -42,8 +42,8 @@ This project demonstrates **both approaches working successfully**:
 │ ✅ IAM Roles, OIDC Provider                         │
 │ ✅ ALB Controller (Helm)                            │
 │                                                     │
-│ Dusk: Pulumi (foundation/provisioning/pulumi/)   │
-│ Dawn: eksctl (foundation/provisioning/manual/create-dawn-...)  │
+│ Terminus: Pulumi (foundation/provisioning/pulumi/)   │
+│ Trantor: eksctl (foundation/provisioning/manual/...)  │
 └─────────────────────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────┐
@@ -234,8 +234,8 @@ This is what we use for Dawn and Dusk services - traditional Kubernetes YAML wit
 
 **Infrastructure:**
 ```
-Dusk: foundation/provisioning/pulumi/ (Pulumi managed)
-Dawn: foundation/provisioning/manual/create-trantor.sh (eksctl manual script)
+Terminus: foundation/provisioning/pulumi/ (Pulumi managed)
+Trantor: foundation/provisioning/manual/create-trantor.sh (eksctl manual script)
 
 Both create:
   - AWS EKS Cluster
@@ -624,8 +624,8 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 ## What We Actually Built
 
 ### Infrastructure (Multiple Approaches)
-✅ `foundation/provisioning/pulumi/` - EKS clusters for Day and Dusk (Pulumi)
-✅ `foundation/provisioning/manual/create-trantor.sh` - Dawn cluster (eksctl manual script)
+✅ `foundation/provisioning/pulumi/` - Terminus cluster (Pulumi)
+✅ `foundation/provisioning/manual/create-trantor.sh` - Trantor cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
 ✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`)

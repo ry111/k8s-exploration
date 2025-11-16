@@ -10,7 +10,7 @@ Welcome to the k8s-exploration documentation! This project is a comprehensive ha
 
 1. **[Project Overview](01-getting-started/overview.md)** - Understand what you'll build
 2. **[Kubernetes 101](01-getting-started/kubernetes-101.md)** - Learn K8s fundamentals
-3. **[Your First Deployment](01-getting-started/first-deployment.md)** - Deploy Dawn service to Trantor cluster (40 min)
+3. **[Your First Deployment](01-getting-started/first-deployment.md)** - Deploy your first service to EKS (40 min)
 
 **Total time to first deployment:** ~1 hour
 
@@ -269,8 +269,8 @@ k8s-exploration/
 │   │   ├── pulumi/                  # Infrastructure as Code (EKS, VPC, nodes)
 │   │   └── manual/                  # Manual cluster provisioning (Trantor)
 │   ├── gitops/
-│   │   ├── manual_deploy/           # Manual deployments to Trantor (Dawn, Day)
-│   │   └── pulumi_deploy/           # Pulumi deployments to Terminus (future)
+│   │   ├── manual_deploy/           # Manual deployments (services)
+│   │   └── pulumi_deploy/           # Pulumi deployments (services)
 │   ├── services/                    # Source code (dawn, day, dusk Flask apps)
 │   ├── k8s/                         # Kubernetes YAML manifests
 │   └── scripts/                     # Interactive learning scripts
@@ -300,7 +300,7 @@ This project uses **simplified patterns for learning**. Key examples:
 
 | Learning (This Project) | Production | Why Different |
 |------------------------|------------|---------------|
-| Decoupled clusters (Trantor hosts Dawn & Day) | Namespaces in shared cluster | Demonstrates isolation patterns |
+| Multiple services per cluster | Production: single large cluster | Demonstrates isolation via namespaces |
 | `:latest` image tags | Immutable SHA/semver tags | Reproducibility, rollback |
 | "RC" terminology | Staging/canary | Industry standards |
 

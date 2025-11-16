@@ -1,8 +1,8 @@
 # Pulumi Setup Guide
 
-This guide walks you through setting up Pulumi to manage your **Day** and **Dusk** EKS cluster infrastructure as code.
+This guide walks you through setting up Pulumi to manage your **Terminus** EKS cluster infrastructure as code.
 
-**Note**: The Dawn cluster was created manually using eksctl and is NOT managed by Pulumi.
+**Note**: The Trantor cluster is created manually using eksctl and is NOT managed by Pulumi.
 
 ## Overview
 
@@ -179,14 +179,13 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 3. Check PR comments for Pulumi preview
 4. Merge PR → infrastructure updates automatically
 
-## Dawn Cluster Note
+## Trantor Cluster Note
 
-The existing Dawn cluster was created manually and remains managed via eksctl scripts:
+The Trantor cluster is created manually and remains managed via eksctl scripts:
 - `./foundation/provisioning/manual/create-trantor-cluster.sh`
-- `./foundation/gitops/manual_deploy/deploy-dawn.sh`
-- `./foundation/gitops/manual_deploy/health-check-dawn.sh`
+- `./foundation/provisioning/manual/install-alb-controller-trantor.sh`
 
-**No migration needed** - Dawn continues to run as-is. Pulumi only manages Day and Dusk.
+**No migration needed** - Trantor is manually provisioned. Pulumi only manages Terminus.
 
 ## Common Operations
 
@@ -297,13 +296,13 @@ aws configure
 
 ## Next Steps
 
-After deploying Day cluster with Pulumi:
+After deploying Terminus cluster with Pulumi:
 
-1. **Deploy Day application** - Apply K8s manifests to the Day cluster
-2. **Deploy Dusk cluster** - Run `pulumi up` with dusk stack (optional)
-3. **Add ArgoCD** - Set up GitOps continuous deployment
-4. **Monitoring** - Add CloudWatch dashboards via Pulumi
-5. **Alerts** - Define SNS topics and alarms in Pulumi code
+1. **Deploy applications** - Deploy services to Terminus cluster (see gitops/)
+2. **Add ArgoCD** - Set up GitOps continuous deployment
+3. **Monitoring** - Add CloudWatch dashboards via Pulumi
+4. **Alerts** - Define SNS topics and alarms in Pulumi code
+5. **Scale infrastructure** - Adjust node counts and instance types as needed
 
 ## Resources
 
