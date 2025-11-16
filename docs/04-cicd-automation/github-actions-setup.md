@@ -211,11 +211,11 @@ Now that GitHub Actions is building your images automatically, let's deploy them
 ```bash
 cd foundation/provisioning/manual
 
-./create-dawn-cluster.sh us-east-1
+./create-trantor.sh us-east-1
 ```
 
 This creates:
-- `dawn-cluster` with 2 spot nodes
+- `trantor` with 2 spot nodes
 - VPC, subnets, security groups
 - IAM roles
 
@@ -307,7 +307,7 @@ curl http://$ALB_URL/info
 cd foundation/provisioning/manual
 
 # Create cluster
-./create-dawn-cluster.sh us-east-1
+./create-trantor.sh us-east-1
 
 # Install ALB controller
 ./install-alb-controller-dawn.sh us-east-1

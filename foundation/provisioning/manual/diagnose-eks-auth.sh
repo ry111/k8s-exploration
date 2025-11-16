@@ -10,7 +10,7 @@
 
 set -e
 
-CLUSTER_NAME=${1:-day-cluster-eksCluster-f3c27b8}
+CLUSTER_NAME=${1:-trantor}
 IAM_ARN=${2}
 REGION=${AWS_REGION:-us-east-1}
 

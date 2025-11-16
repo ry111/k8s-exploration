@@ -130,7 +130,7 @@ References:
 **Infrastructure Stack:**
 ```python
 # foundation/provisioning/pulumi/__main__.py
-cluster = eks.Cluster("day-cluster", ...)
+cluster = eks.Cluster("terminus", ...)
 node_group = aws.eks.NodeGroup(...)
 alb_controller = k8s.helm.v3.Release(...)
 
@@ -235,7 +235,7 @@ This is what we use for Dawn and Dusk services - traditional Kubernetes YAML wit
 **Infrastructure:**
 ```
 Dusk: foundation/provisioning/pulumi/ (Pulumi managed)
-Dawn: foundation/provisioning/manual/create-dawn-cluster.sh (eksctl manual script)
+Dawn: foundation/provisioning/manual/create-trantor.sh (eksctl manual script)
 
 Both create:
   - AWS EKS Cluster
@@ -307,7 +307,7 @@ We demonstrate **both approaches** to show they're equally valid:
 
 ### Dawn Service: eksctl (Manual) + kubectl Applications
 ```
-Infrastructure: foundation/provisioning/manual/create-dawn-cluster.sh (eksctl manual script)
+Infrastructure: foundation/provisioning/manual/create-trantor.sh (eksctl manual script)
 Applications:   foundation/k8s/dawn/*.yaml (kubectl)
 ```
 
@@ -625,7 +625,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 ### Infrastructure (Multiple Approaches)
 ✅ `foundation/provisioning/pulumi/` - EKS clusters for Day and Dusk (Pulumi)
-✅ `foundation/provisioning/manual/create-dawn-cluster.sh` - Dawn cluster (eksctl manual script)
+✅ `foundation/provisioning/manual/create-trantor.sh` - Dawn cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
 ✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`)

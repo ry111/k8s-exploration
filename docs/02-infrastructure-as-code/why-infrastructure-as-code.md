@@ -33,7 +33,7 @@ In this project, you started with manual deployment using shell scripts:
 
 ```bash
 cd foundation/provisioning/manual
-./create-dawn-cluster.sh us-east-1      # Creates cluster manually
+./create-trantor-cluster.sh us-east-1      # Creates cluster manually
 ./build-and-push-dawn.sh us-east-1      # Builds and pushes image
 ./deploy-dawn.sh us-east-1               # Deploys application
 ```
@@ -128,7 +128,7 @@ Previewing update (dev):
  +   pulumi:pulumi:Stack  infrastructure-dev  create
  +   ├─ aws:ec2:Vpc       day-vpc             create
  +   ├─ aws:ec2:Subnet    day-subnet-1        create
- +   └─ eks:Cluster       day-cluster         create
+ +   └─ eks:Cluster       terminus         create
 
 Resources:
     + 4 to create
@@ -247,7 +247,7 @@ pulumi login s3://my-pulumi-state-bucket
 
 ```bash
 # You manually run scripts to:
-./foundation/provisioning/manual/create-dawn-cluster.sh us-east-1      # Create EKS cluster
+./foundation/provisioning/manual/create-trantor-cluster.sh us-east-1      # Create EKS cluster
 ./foundation/provisioning/manual/install-alb-controller-dawn.sh         # Install ALB controller
 ./foundation/gitops/manual_deploy/build-and-push-dawn.sh                 # Build and push image
 ./foundation/gitops/manual_deploy/deploy-dawn.sh                         # Deploy application
@@ -269,7 +269,7 @@ pulumi login s3://my-pulumi-state-bucket
 
 ```python
 # Single file describes entire infrastructure:
-cluster = eks.Cluster("day-cluster", ...)
+cluster = eks.Cluster("terminus", ...)
 vpc = aws.ec2.Vpc("day-vpc", ...)
 alb_controller = k8s.helm.v3.Release("alb-controller", ...)
 ```

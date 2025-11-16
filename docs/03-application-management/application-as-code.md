@@ -56,18 +56,18 @@ foundation/
    ```bash
    cd foundation/provisioning/pulumi
    pulumi stack select day
-   pulumi stack output cluster_name  # Should show: day-cluster
+   pulumi stack output cluster_name  # Should show: terminus
    ```
 
 2. **Kubernetes access configured**
    ```bash
    # Option 1: Using AWS CLI
-   aws eks update-kubeconfig --name day-cluster --region us-east-1
+   aws eks update-kubeconfig --name terminus --region us-east-1
 
    # Option 2: Export from infrastructure stack
    cd foundation/provisioning/pulumi
-   pulumi stack output kubeconfig --show-secrets > ~/.kube/day-cluster-config
-   export KUBECONFIG=~/.kube/day-cluster-config
+   pulumi stack output kubeconfig --show-secrets > ~/.kube/terminus-config
+   export KUBECONFIG=~/.kube/terminus-config
 
    # Verify
    kubectl get nodes
@@ -535,7 +535,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --name day-cluster --region us-east-1
+          aws eks update-kubeconfig --name terminus --region us-east-1
 
       - name: Install dependencies
         run: |
@@ -572,7 +572,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --name day-cluster --region us-east-1
+          aws eks update-kubeconfig --name terminus --region us-east-1
 
       - name: Install dependencies
         run: |
@@ -598,7 +598,7 @@ jobs:
 aws sts get-caller-identity
 
 # Update kubeconfig
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name terminus --region us-east-1
 
 # Verify connection
 kubectl get nodes
