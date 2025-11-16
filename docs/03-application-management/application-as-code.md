@@ -15,13 +15,12 @@ foundation/
 │       ├── Pulumi.day.yaml
 │       └── Pulumi.dusk.yaml
 │
-└── applications/
-    └── day-service/
-        └── pulumi/                  # Application Pulumi Program (SEPARATE)
-            ├── __main__.py          # Manages: Deployment, Service, ConfigMap, HPA, Ingress
-            ├── Pulumi.yaml
-            ├── Pulumi.dev.yaml
-            └── Pulumi.production.yaml
+└── gitops/
+    └── day/                         # Application Pulumi Program (SEPARATE)
+        ├── __main__.py              # Manages: Deployment, Service, ConfigMap, HPA, Ingress
+        ├── Pulumi.yaml
+        ├── Pulumi.dev.yaml
+        └── Pulumi.production.yaml
 ```
 
 ### Why Separate Programs?
