@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Test to see what the kubernetes:kubeconfig config actually resolves to.
-Run from: foundation/applications/day-service/pulumi/
+Run from: foundation/gitops/day/
 """
 
 import pulumi
