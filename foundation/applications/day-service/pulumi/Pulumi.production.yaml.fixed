@@ -1,14 +1,7 @@
 config:
-  # Kubernetes connection
-  kubernetes:kubeconfig:
-    # Option 1: Reference infrastructure stack output (ENABLED for CI/CD)
-    fn::stackReference:
-      name: ry111/service-infrastructure/day
-      output: kubeconfig
-
-    # Option 2: Use AWS EKS (via AWS credentials)
-    # To use AWS credentials instead, comment out fn::stackReference above
-    # The kubeconfig will be automatically fetched using aws eks get-token
+  # Kubernetes provider configuration
+  day-service-app:use_stack_reference: true  # Set to false to use local kubeconfig
+  day-service-app:infra_stack_name: ry111/service-infrastructure/day
 
   # Application settings
   day-service-app:namespace: production
