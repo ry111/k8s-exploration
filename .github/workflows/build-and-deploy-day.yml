@@ -91,6 +91,7 @@ jobs:
           command: up
           config-map: |
             {
+              "use_stack_reference": { "value": "false" },
               "image_registry": { "value": "${{ needs.build-and-push.outputs.ecr_registry }}" },
               "image_name": { "value": "day" },
               "image_tag": { "value": "${{ needs.build-and-push.outputs.image_tag }}" }
@@ -136,6 +137,7 @@ jobs:
           command: up
           config-map: |
             {
+              "use_stack_reference": { "value": "false" },
               "image_registry": { "value": "${{ needs.build-and-push.outputs.ecr_registry }}" },
               "image_name": { "value": "day" },
               "image_tag": { "value": "${{ needs.build-and-push.outputs.image_tag }}" }
