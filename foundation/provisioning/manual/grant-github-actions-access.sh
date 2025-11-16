@@ -2,14 +2,14 @@
 #
 # Grant GitHub Actions IAM Principal Access to EKS Cluster
 #
-# This script adds the IAM user or role used by GitHub Actions to the
-# EKS cluster's aws-auth ConfigMap, granting it system:masters access.
+# This script uses the EKS Access Entry API (recommended for EKS 1.23+).
+# This is the modern approach that replaces the legacy aws-auth ConfigMap method.
 #
 # Usage:
 #   ./grant-github-actions-access.sh <IAM_ARN> <CLUSTER_NAME>
 #
 # Example:
-#   ./grant-github-actions-access.sh arn:aws:iam::123456789012:user/github-actions trantor
+#   ./grant-github-actions-access.sh arn:aws:iam::612974049499:user/github-actions trantor
 #
 
 set -e
@@ -18,7 +18,7 @@ if [ $# -ne 2 ]; then
     echo "Usage: $0 <IAM_ARN> <CLUSTER_NAME>"
     echo ""
     echo "Example:"
-    echo "  $0 arn:aws:iam::123456789012:user/github-actions trantor"
+    echo "  $0 arn:aws:iam::612974049499:user/github-actions trantor"
     echo ""
     echo "To get the IAM ARN used by GitHub Actions, check the workflow output"
     echo "from the 'Testing AWS credentials' step which runs 'aws sts get-caller-identity'"
@@ -27,84 +27,69 @@ fi
 
 IAM_ARN=$1
 CLUSTER_NAME=$2
+REGION=${AWS_REGION:-us-east-1}
 
-echo "Adding IAM principal to EKS cluster aws-auth ConfigMap..."
+echo "==========================================================="
+echo "Grant GitHub Actions Access to EKS Cluster"
+echo "==========================================================="
+echo ""
 echo "IAM ARN: $IAM_ARN"
 echo "Cluster: $CLUSTER_NAME"
+echo "Region: $REGION"
+echo "Method: EKS Access Entry API (modern approach)"
 echo ""
 
-# Update kubeconfig
-echo "Updating kubeconfig..."
-aws eks update-kubeconfig --name "$CLUSTER_NAME" --region us-east-1
-
-# Determine if it's a role or user
-if [[ "$IAM_ARN" == *":role/"* ]]; then
-    MAPPING_TYPE="role"
-    echo "Detected IAM Role"
-elif [[ "$IAM_ARN" == *":user/"* ]]; then
-    MAPPING_TYPE="user"
-    echo "Detected IAM User"
-else
-    echo "Error: IAM ARN must be a role or user ARN"
-    exit 1
+# Check if access entry already exists
+echo "Checking if access entry already exists..."
+if aws eks describe-access-entry \
+    --cluster-name "$CLUSTER_NAME" \
+    --principal-arn "$IAM_ARN" \
+    --region "$REGION" &>/dev/null; then
+    echo ""
+    echo "⚠️  Access entry already exists for this IAM principal"
+    echo ""
+    read -p "Do you want to delete and recreate it? (y/N) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "Deleting existing access entry..."
+        aws eks delete-access-entry \
+            --cluster-name "$CLUSTER_NAME" \
+            --principal-arn "$IAM_ARN" \
+            --region "$REGION"
+        echo "Waiting for deletion to complete..."
+        sleep 5
+    else
+        echo "Aborting."
+        exit 0
+    fi
 fi
 
-# Get current aws-auth ConfigMap
-echo "Fetching current aws-auth ConfigMap..."
-kubectl get configmap aws-auth -n kube-system -o yaml > /tmp/aws-auth-backup.yaml
-echo "Backup saved to /tmp/aws-auth-backup.yaml"
+# Create access entry
+echo "Creating access entry..."
+aws eks create-access-entry \
+    --cluster-name "$CLUSTER_NAME" \
+    --principal-arn "$IAM_ARN" \
+    --type STANDARD \
+    --region "$REGION"
 
-# Check if eksctl is available (easier method)
-if command -v eksctl &> /dev/null; then
-    echo "Using eksctl to create IAM identity mapping..."
+echo ""
+echo "Access entry created successfully!"
+echo ""
 
-    if [ "$MAPPING_TYPE" = "role" ]; then
-        eksctl create iamidentitymapping \
-            --cluster "$CLUSTER_NAME" \
-            --region us-east-1 \
-            --arn "$IAM_ARN" \
-            --username github-actions \
-            --group system:masters
-    else
-        eksctl create iamidentitymapping \
-            --cluster "$CLUSTER_NAME" \
-            --region us-east-1 \
-            --arn "$IAM_ARN" \
-            --username github-actions \
-            --group system:masters \
-            --no-duplicate-arns
-    fi
+# Associate access policy
+echo "Associating cluster admin policy..."
+aws eks associate-access-policy \
+    --cluster-name "$CLUSTER_NAME" \
+    --principal-arn "$IAM_ARN" \
+    --policy-arn arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy \
+    --access-scope type=cluster \
+    --region "$REGION"
 
-    echo ""
-    echo "✅ Successfully added IAM principal to cluster!"
-    echo ""
-    echo "The GitHub Actions workflow should now be able to authenticate to the cluster."
-else
-    echo ""
-    echo "eksctl not found. You can:"
-    echo "1. Install eksctl: https://eksctl.io/installation/"
-    echo "2. Manually edit the aws-auth ConfigMap:"
-    echo ""
-    echo "   kubectl edit configmap aws-auth -n kube-system"
-    echo ""
-    echo "   Add this entry to the appropriate section (mapRoles or mapUsers):"
-    echo ""
-    if [ "$MAPPING_TYPE" = "role" ]; then
-        cat << EOF
-   mapRoles: |
-     - rolearn: $IAM_ARN
-       username: github-actions
-       groups:
-         - system:masters
-EOF
-    else
-        cat << EOF
-   mapUsers: |
-     - userarn: $IAM_ARN
-       username: github-actions
-       groups:
-         - system:masters
-EOF
-    fi
-    echo ""
-fi
+echo ""
+echo "✅ Successfully granted cluster admin access to IAM principal!"
+echo ""
+echo "The GitHub Actions workflow should now be able to authenticate to the cluster."
+echo ""
+echo "To verify, you can run:"
+echo "  aws eks list-access-entries --cluster-name $CLUSTER_NAME --region $REGION"
+echo ""
