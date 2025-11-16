@@ -1,0 +1,64 @@
+name: Build Day Service (GitOps)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'foundation/services/day/**'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: day
+
+jobs:
+  build-and-update-config:
+    name: Build and Update Config
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          cd foundation/services/day
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "✅ Pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Update Pulumi config
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          # Update dev config
+          cd foundation/applications/day-service/pulumi
+
+          # Update image_tag in Pulumi.dev.yaml
+          sed -i "s|day-service-app:image_tag:.*|day-service-app:image_tag: $IMAGE_TAG|g" Pulumi.dev.yaml
+          sed -i "s|day-service-app:image_registry:.*|day-service-app:image_registry: $ECR_REGISTRY|g" Pulumi.dev.yaml
+
+      - name: Commit updated config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add foundation/applications/day-service/pulumi/Pulumi.dev.yaml
+          git commit -m "chore: update day-service image to ${{ github.sha }}" || echo "No changes"
+          git push
+
+# Separate workflow (deploy-day.yml) watches for changes to Pulumi.dev.yaml
+# and runs `pulumi up` when it detects changes
