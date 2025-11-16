@@ -76,11 +76,23 @@ jobs:
 
       - name: Update kubeconfig
         run: |
+          # Verify AWS credentials are working
+          echo "Testing AWS credentials..."
+          aws sts get-caller-identity
+
+          # Update kubeconfig
           aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 
-          # Verify kubeconfig was created and test connection
+          # Verify kubeconfig was created
           echo "Kubeconfig location: $HOME/.kube/config"
           ls -la $HOME/.kube/config
+
+          # Test eks get-token command directly
+          echo "Testing eks get-token..."
+          aws eks get-token --cluster-name day-cluster-eksCluster-f3c27b8 --region us-east-1
+
+          # Test kubectl connection
+          echo "Testing kubectl connection..."
           kubectl cluster-info
 
       - name: Install dependencies
@@ -131,11 +143,23 @@ jobs:
 
       - name: Update kubeconfig
         run: |
+          # Verify AWS credentials are working
+          echo "Testing AWS credentials..."
+          aws sts get-caller-identity
+
+          # Update kubeconfig
           aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 
-          # Verify kubeconfig was created and test connection
+          # Verify kubeconfig was created
           echo "Kubeconfig location: $HOME/.kube/config"
           ls -la $HOME/.kube/config
+
+          # Test eks get-token command directly
+          echo "Testing eks get-token..."
+          aws eks get-token --cluster-name day-cluster-eksCluster-f3c27b8 --region us-east-1
+
+          # Test kubectl connection
+          echo "Testing kubectl connection..."
           kubectl cluster-info
 
       - name: Install dependencies
