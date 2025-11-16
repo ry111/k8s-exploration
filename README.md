@@ -11,6 +11,29 @@ A comprehensive hands-on learning project for Kubernetes (EKS) and Infrastructur
 
 ---
 
+## 🏗️ What We're Building
+
+This project demonstrates a **decoupled multi-cluster architecture** with different provisioning and deployment strategies.
+
+### Clusters (Infrastructure Layer)
+
+| Cluster | Provisioning | VPC CIDR | Purpose |
+|---------|--------------|----------|---------|
+| **Trantor** | Manual (eksctl) | 10.0.0.0/16 | Learn manual cluster creation |
+| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | Learn declarative infrastructure |
+
+### Services (Application Layer)
+
+| Service | Cluster | CI/CD | Deployment Strategy |
+|---------|---------|-------|---------------------|
+| **Dawn** | Trantor | GitHub Actions | Manual deployment (kubectl + YAML) |
+| **Day** | Trantor | GitHub Actions | Pulumi deployment (IaC) |
+| **Dusk** | Terminus | GitHub Actions | ArgoCD (GitOps) |
+
+**Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different deployment strategies.
+
+---
+
 ## 📚 Documentation
 
 All documentation has been moved to the **[docs/](docs/)** directory for better organization.
@@ -40,36 +63,57 @@ k8s-exploration/
 │
 ├── foundation/                     # Main experiment directory
 │   ├── provisioning/
-│   │   ├── pulumi/                 # Infrastructure as Code (EKS, VPC, nodes)
-│   │   └── manual/                 # Manual cluster provisioning scripts (Trantor)
+│   │   ├── pulumi/                 # IaC provisioning (Terminus cluster)
+│   │   └── manual/                 # Manual provisioning (Trantor cluster)
 │   ├── gitops/
-│   │   ├── manual_deploy/          # Manual deployments to Trantor (Dawn, Day)
-│   │   └── pulumi_deploy/          # Pulumi-managed deployments to Terminus (future)
+│   │   ├── manual_deploy/          # Manual kubectl deployments (Dawn)
+│   │   └── pulumi_deploy/          # Pulumi IaC deployments (Day)
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
-│   ├── k8s/                        # Kubernetes manifests
-│   └── scripts/                    # Application deployment scripts
-│       ├── explore/                # Interactive learning scripts
-│       └── ...                     # Deployment scripts (deploy, cleanup, etc.)
+│   ├── k8s/                        # Kubernetes YAML manifests
+│   └── scripts/
+│       └── explore/                # Interactive learning scripts
 │
 └── .github/workflows/              # CI/CD pipelines
 ```
 
 ## 🚀 Quick Start
 
-### Option 1: Single Cluster (Recommended for Learning)
+### Option 1: Manual Provisioning (Recommended for Learning)
+
+**Learn by doing each step manually**
+
 ```bash
 # See docs/01-getting-started/first-deployment.md for full guide
-cd foundation
-./provisioning/manual/create-trantor-cluster.sh
-./gitops/manual_deploy/deploy-to-trantor.sh
+
+# 1. Create Trantor cluster (manual)
+cd foundation/provisioning/manual
+./create-trantor-cluster.sh us-east-1
+
+# 2. Install ALB controller
+./install-alb-controller-trantor.sh us-east-1
+
+# 3. Deploy Dawn service (manual deployment)
+cd ../../gitops/manual_deploy
+./deploy-dawn.sh us-east-1
 ```
 
-### Option 2: Infrastructure as Code with Pulumi
+**Time:** ~40 minutes | **Best for:** Understanding each component
+
+### Option 2: Infrastructure as Code (IaC with Pulumi)
+
+**Declare infrastructure, let Pulumi handle it**
+
 ```bash
 # See docs/02-infrastructure-as-code/pulumi-setup.md for full guide
+
+# Create Terminus cluster with IaC
 cd foundation/provisioning/pulumi
+pulumi login
+pulumi stack select terminus
 pulumi up
 ```
+
+**Time:** ~30 minutes | **Best for:** Learning automation and repeatability
 
 ## 🎯 What You'll Learn
 
@@ -101,18 +145,12 @@ foundation/scripts/explore/explore-rolling-updates.sh           # Watch rolling 
 
 ## 📦 What's Included
 
-### Decoupled Architecture (2 Clusters, Multiple Services)
+### Architecture Highlights
 
-**Clusters:**
-- **Trantor** - Hosts Dawn and Day services (manual provisioning with eksctl)
-- **Terminus** - Reserved for future services (Pulumi-managed infrastructure)
-
-**Services:**
-- **Dawn** - Deployed to Trantor cluster
-- **Day** - Deployed to Trantor cluster (will migrate to Terminus later)
-- **Dusk** - Planned for future implementation
-
-This architecture demonstrates **decoupling**: clusters are infrastructure, services are applications. Multiple services can share a cluster, showcasing real-world Kubernetes patterns.
+- **2 EKS Clusters** - Compare manual vs IaC provisioning
+- **3 Services** - Demonstrate different deployment strategies
+- **Decoupled Design** - Services independent of cluster provisioning
+- **Multiple Deployment Patterns** - Manual kubectl, Pulumi IaC, ArgoCD GitOps
 
 ### Infrastructure
 - VPC with public/private subnets
