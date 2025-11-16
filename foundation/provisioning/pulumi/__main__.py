@@ -8,7 +8,7 @@ This creates:
 - ALB controller using Helm
 
 Supports Terminus cluster via stack configuration.
-Note: Trantor cluster (hosting Dawn and Day services) is managed manually via eksctl scripts.
+Note: Trantor cluster is managed manually via eksctl scripts.
 """
 
 import pulumi
