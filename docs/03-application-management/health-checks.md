@@ -8,7 +8,7 @@ Quick reference for monitoring and troubleshooting Dawn cluster.
 
 **Usage:**
 ```bash
-./health-check-dawn.sh [region]
+./foundation/scripts/health-check-dawn.sh [region]
 ```
 
 **What it checks:**
@@ -30,7 +30,7 @@ Quick reference for monitoring and troubleshooting Dawn cluster.
 
 **Example:**
 ```bash
-./health-check-dawn.sh us-east-1
+./foundation/scripts/health-check-dawn.sh us-east-1
 
 # Sample output:
 # ✓ Cluster dawn-cluster exists
@@ -45,7 +45,7 @@ Quick reference for monitoring and troubleshooting Dawn cluster.
 
 **Usage:**
 ```bash
-./quick-status-dawn.sh [region]
+./foundation/scripts/quick-status-dawn.sh [region]
 ```
 
 **What it shows:**
@@ -73,7 +73,7 @@ curl -H "Host: dawn.example.com" http://k8s-dawncluster-abc123.us-east-1.elb.ama
 
 **Usage:**
 ```bash
-./watch-dawn.sh [region]
+./foundation/scripts/watch-dawn.sh [region]
 ```
 
 **What it does:**
@@ -92,7 +92,7 @@ curl -H "Host: dawn.example.com" http://k8s-dawncluster-abc123.us-east-1.elb.ama
 
 **Usage:**
 ```bash
-./test-dawn-app.sh [region]
+./foundation/scripts/test-dawn-app.sh [region]
 ```
 
 **What it tests:**
@@ -128,7 +128,7 @@ Average response time: 45ms
 
 **Usage:**
 ```bash
-./troubleshoot-dawn.sh [region]
+./foundation/scripts/troubleshoot-dawn.sh [region]
 ```
 
 **What it checks:**
