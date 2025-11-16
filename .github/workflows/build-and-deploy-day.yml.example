@@ -1,0 +1,141 @@
+name: Build and Deploy Day Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'foundation/services/day/**'
+      - 'foundation/applications/day-service/pulumi/**'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: day
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+      ecr_registry: ${{ steps.login-ecr.outputs.registry }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image tag
+        id: meta
+        run: |
+          # Use git SHA as version tag
+          echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.meta.outputs.image_tag }}
+        run: |
+          cd foundation/services/day
+
+          # Build and push with SHA tag
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+          echo "✅ Pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  deploy-dev:
+    name: Deploy to Dev
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name day-cluster --region us-east-1
+
+      - name: Install dependencies
+        run: |
+          cd foundation/applications/day-service/pulumi
+          pip install -r requirements.txt
+
+      - name: Deploy to Dev
+        uses: pulumi/actions@v4
+        with:
+          work-dir: foundation/applications/day-service/pulumi
+          stack-name: dev
+          command: up
+          config-map: |
+            {
+              "image_registry": { "value": "${{ needs.build-and-push.outputs.ecr_registry }}" },
+              "image_tag": { "value": "${{ needs.build-and-push.outputs.image_tag }}" }
+            }
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+
+  deploy-production:
+    name: Deploy to Production
+    needs: [build-and-push, deploy-dev]
+    runs-on: ubuntu-latest
+    environment: production  # Requires manual approval
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name day-cluster --region us-east-1
+
+      - name: Install dependencies
+        run: |
+          cd foundation/applications/day-service/pulumi
+          pip install -r requirements.txt
+
+      - name: Deploy to Production
+        uses: pulumi/actions@v4
+        with:
+          work-dir: foundation/applications/day-service/pulumi
+          stack-name: production
+          command: up
+          config-map: |
+            {
+              "image_registry": { "value": "${{ needs.build-and-push.outputs.ecr_registry }}" },
+              "image_tag": { "value": "${{ needs.build-and-push.outputs.image_tag }}" }
+            }
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
