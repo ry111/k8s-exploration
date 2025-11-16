@@ -6,6 +6,7 @@ on:
     paths:
       - 'foundation/services/day/**'
       - 'foundation/applications/day-service/pulumi/**'
+      - '.github/workflows/build-and-deploy-day.yml'
 
 env:
   AWS_REGION: us-east-1
