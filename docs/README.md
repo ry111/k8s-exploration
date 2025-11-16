@@ -10,7 +10,7 @@ Welcome to the k8s-exploration documentation! This project is a comprehensive ha
 
 1. **[Project Overview](01-getting-started/overview.md)** - Understand what you'll build
 2. **[Kubernetes 101](01-getting-started/kubernetes-101.md)** - Learn K8s fundamentals
-3. **[Your First Deployment](01-getting-started/first-deployment.md)** - Deploy Dawn service (40 min)
+3. **[Your First Deployment](01-getting-started/first-deployment.md)** - Deploy Dawn service to Trantor cluster (40 min)
 
 **Total time to first deployment:** ~1 hour
 
@@ -40,7 +40,7 @@ This documentation is organized into **7 progressive sections** that build on ea
 |----------|-------------|------|
 | **[overview.md](01-getting-started/overview.md)** | Project structure and deployment options | 10 min |
 | **[kubernetes-101.md](01-getting-started/kubernetes-101.md)** | Kubernetes architecture and core concepts | 30 min |
-| **[first-deployment.md](01-getting-started/first-deployment.md)** | Deploy your first app to EKS (Dawn cluster) | 40 min |
+| **[first-deployment.md](01-getting-started/first-deployment.md)** | Deploy your first app to EKS (Trantor cluster) | 40 min |
 
 **Learning Objectives:**
 - ✅ Understand Kubernetes core resources (Pods, Deployments, Services)
@@ -59,7 +59,7 @@ This documentation is organized into **7 progressive sections** that build on ea
 |----------|-------------|------|
 | **[why-infrastructure-as-code.md](02-infrastructure-as-code/why-infrastructure-as-code.md)** | Benefits of IaC and why this project uses Pulumi | 15 min |
 | **[pulumi-setup.md](02-infrastructure-as-code/pulumi-setup.md)** | Install and configure Pulumi | 20 min |
-| **[deploy-with-pulumi.md](02-infrastructure-as-code/deploy-with-pulumi.md)** | Deploy Day cluster with Pulumi | 30 min |
+| **[deploy-with-pulumi.md](02-infrastructure-as-code/deploy-with-pulumi.md)** | Deploy Terminus cluster with Pulumi | 30 min |
 | **[two-tier-architecture.md](02-infrastructure-as-code/two-tier-architecture.md)** | Infrastructure vs application code separation | 20 min |
 
 **Learning Objectives:**
@@ -265,8 +265,12 @@ Documentation explains the code. Here's where to find it:
 k8s-exploration/
 ├── docs/                            # 👈 You are here
 ├── foundation/
-│   ├── provisioning/pulumi/         # Infrastructure as Code (EKS, VPC, nodes)
-│   ├── gitops/day/                  # Day service application deployment (Pulumi)
+│   ├── provisioning/
+│   │   ├── pulumi/                  # Infrastructure as Code (EKS, VPC, nodes)
+│   │   └── manual/                  # Manual cluster provisioning (Trantor)
+│   ├── gitops/
+│   │   ├── manual_deploy/           # Manual deployments to Trantor (Dawn, Day)
+│   │   └── pulumi_deploy/           # Pulumi deployments to Terminus (future)
 │   ├── services/                    # Source code (dawn, day, dusk Flask apps)
 │   ├── k8s/                         # Kubernetes YAML manifests
 │   └── scripts/                     # Interactive learning scripts
@@ -296,7 +300,7 @@ This project uses **simplified patterns for learning**. Key examples:
 
 | Learning (This Project) | Production | Why Different |
 |------------------------|------------|---------------|
-| One cluster per service | Namespaces in shared cluster | Cost, resource efficiency |
+| Decoupled clusters (Trantor hosts Dawn & Day) | Namespaces in shared cluster | Demonstrates isolation patterns |
 | `:latest` image tags | Immutable SHA/semver tags | Reproducibility, rollback |
 | "RC" terminology | Staging/canary | Industry standards |
 

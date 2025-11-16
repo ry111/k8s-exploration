@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script to install AWS Load Balancer Controller on Dawn cluster
-# Usage: ./install-alb-controller-dawn.sh [region] [aws-account-id]
+# Script to install AWS Load Balancer Controller on Trantor cluster
+# Usage: ./install-alb-controller-trantor.sh [region] [aws-account-id]
 
 set -e
 
@@ -13,14 +13,14 @@ if [ -z "$AWS_ACCOUNT_ID" ]; then
   AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 fi
 
-echo "Installing AWS Load Balancer Controller on dawn-cluster"
+echo "Installing AWS Load Balancer Controller on trantor cluster"
 echo "Region: $REGION"
 echo "AWS Account ID: $AWS_ACCOUNT_ID"
 echo ""
 
 # Set kubectl context
 echo "Setting kubectl context..."
-aws eks update-kubeconfig --name dawn-cluster --region $REGION
+aws eks update-kubeconfig --name trantor --region $REGION
 
 # Download IAM policy
 echo "Downloading IAM policy..."
@@ -36,7 +36,7 @@ aws iam create-policy \
 # Create IAM service account
 echo "Creating IAM service account..."
 eksctl create iamserviceaccount \
-  --cluster=dawn-cluster \
+  --cluster=trantor \
   --region=$REGION \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
@@ -50,14 +50,14 @@ helm repo add eks https://aws.github.io/eks-charts 2>/dev/null || true
 helm repo update
 
 # Get VPC ID
-VPC_ID=$(aws eks describe-cluster --name dawn-cluster --region $REGION --query 'cluster.resourcesVpcConfig.vpcId' --output text)
+VPC_ID=$(aws eks describe-cluster --name trantor --region $REGION --query 'cluster.resourcesVpcConfig.vpcId' --output text)
 echo "VPC ID: $VPC_ID"
 
 # Install AWS Load Balancer Controller
 echo "Installing AWS Load Balancer Controller via Helm..."
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
-  --set clusterName=dawn-cluster \
+  --set clusterName=trantor \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller \
   --set region=$REGION \
@@ -78,5 +78,8 @@ echo ""
 echo "Verify installation:"
 echo "  kubectl get deployment -n kube-system aws-load-balancer-controller"
 echo ""
-echo "Next step:"
+echo "Next steps:"
+echo "  cd ../../gitops/manual_deploy"
 echo "  ./build-and-push-dawn.sh $REGION"
+echo "  ./build-and-push-day.sh $REGION"
+echo "  ./deploy-to-trantor.sh $REGION"

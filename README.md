@@ -41,9 +41,10 @@ k8s-exploration/
 ├── foundation/                     # Main experiment directory
 │   ├── provisioning/
 │   │   ├── pulumi/                 # Infrastructure as Code (EKS, VPC, nodes)
-│   │   └── manual/                 # Manual cluster provisioning scripts
+│   │   └── manual/                 # Manual cluster provisioning scripts (Trantor)
 │   ├── gitops/
-│   │   └── day/                    # Day service application deployment (Pulumi)
+│   │   ├── manual_deploy/          # Manual deployments to Trantor (Dawn, Day)
+│   │   └── pulumi_deploy/          # Pulumi-managed deployments to Terminus (future)
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
 │   ├── k8s/                        # Kubernetes manifests
 │   └── scripts/                    # Application deployment scripts
@@ -59,8 +60,8 @@ k8s-exploration/
 ```bash
 # See docs/01-getting-started/first-deployment.md for full guide
 cd foundation
-./provisioning/manual/create-dawn-cluster.sh
-./gitops/manual_deploy/deploy-dawn.sh
+./provisioning/manual/create-trantor-cluster.sh
+./gitops/manual_deploy/deploy-to-trantor.sh
 ```
 
 ### Option 2: Infrastructure as Code with Pulumi
@@ -100,10 +101,18 @@ foundation/scripts/explore/explore-rolling-updates.sh           # Watch rolling 
 
 ## 📦 What's Included
 
-### Three Example Services
-- **Dawn** - Manual deployment (eksctl)
-- **Day** - Pulumi-managed infrastructure and application
-- **Dusk** - Pulumi-managed infrastructure
+### Decoupled Architecture (2 Clusters, Multiple Services)
+
+**Clusters:**
+- **Trantor** - Hosts Dawn and Day services (manual provisioning with eksctl)
+- **Terminus** - Reserved for future services (Pulumi-managed infrastructure)
+
+**Services:**
+- **Dawn** - Deployed to Trantor cluster
+- **Day** - Deployed to Trantor cluster (will migrate to Terminus later)
+- **Dusk** - Planned for future implementation
+
+This architecture demonstrates **decoupling**: clusters are infrastructure, services are applications. Multiple services can share a cluster, showcasing real-world Kubernetes patterns.
 
 ### Infrastructure
 - VPC with public/private subnets

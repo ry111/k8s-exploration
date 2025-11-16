@@ -48,13 +48,13 @@ aws sts get-caller-identity
 ```bash
 cd foundation/provisioning/manual
 
-./create-dawn-cluster.sh us-east-1
+./create-trantor-cluster.sh us-east-1
 ```
 
 This script creates:
-- EKS cluster named `dawn-cluster`
+- EKS cluster named `trantor`
 - 2× t3.small spot instances (can scale 1-3)
-- VPC with public/private subnets
+- VPC with public/private subnets (10.0.0.0/16)
 - All necessary IAM roles
 
 **What's happening:**
@@ -85,7 +85,7 @@ kubectl get nodes
 ### Step 2: Install AWS Load Balancer Controller (~5 minutes)
 
 ```bash
-./install-alb-controller-dawn.sh us-east-1
+./install-alb-controller-trantor.sh us-east-1
 ```
 
 The AWS Load Balancer Controller automatically creates AWS Application Load Balancers (ALBs) when you create Kubernetes Ingress resources.
@@ -144,15 +144,19 @@ Step 2/8 : WORKDIR /app
 
 ---
 
-### Step 4: Deploy the Dawn Service (~5 minutes)
+### Step 4: Deploy Services to Trantor (~5 minutes)
 
 ```bash
-./deploy-dawn.sh us-east-1
+./deploy-to-trantor.sh us-east-1
 ```
 
-This deploys two tiers of the Dawn service:
-- **Production tier** (dawn-ns namespace) - 2 pods with HPA
-- **RC tier** (dawn-rc-ns namespace) - 1 pod with HPA
+This deploys services to the Trantor cluster:
+- **Dawn service** (dawn-ns and dawn-rc-ns namespaces)
+  - Production tier: 2 pods with HPA
+  - RC tier: 1 pod with HPA
+- **Day service** (day-ns and day-rc-ns namespaces)
+  - Production tier: 2 pods with HPA
+  - RC tier: 1 pod with HPA
 - Services (ClusterIP) for internal routing
 - Ingress resources for external access
 
@@ -235,16 +239,18 @@ For reference, here's the complete deployment sequence:
 cd foundation/provisioning/manual
 
 # 1. Create cluster (~20 min)
-./create-dawn-cluster.sh us-east-1
+./create-trantor-cluster.sh us-east-1
 
 # 2. Install ALB controller (~5 min)
-./install-alb-controller-dawn.sh us-east-1
+./install-alb-controller-trantor.sh us-east-1
 
 # 3. Build and push images (~5 min)
+cd ../../gitops/manual_deploy
 ./build-and-push-dawn.sh us-east-1
+./build-and-push-day.sh us-east-1
 
 # 4. Deploy services (~5 min)
-./deploy-dawn.sh us-east-1
+./deploy-to-trantor.sh us-east-1
 
 # 5. Wait for ALB to be ready (~2-3 min)
 watch kubectl get ingress -n dawn-ns
@@ -266,7 +272,7 @@ Now that your application is running, let's explore the Kubernetes objects that 
 After deployment, here's what's running:
 
 ```
-dawn-cluster (EKS)
+trantor (EKS Cluster)
 ├── Control Plane (Managed by AWS)
 │   ├── API Server
 │   ├── etcd (cluster state)
@@ -442,12 +448,12 @@ When you're done experimenting, clean up all resources:
 **⚠️ WARNING: This deletes everything!**
 
 ```bash
-cd foundation/provisioning/manual
-./cleanup-dawn.sh us-east-1
+cd foundation/gitops/manual_deploy
+./cleanup-trantor.sh us-east-1
 ```
 
 This will:
-- Delete the EKS cluster and all workloads
+- Delete the Trantor EKS cluster and all workloads
 - Delete worker nodes
 - Delete ECR repository and images
 - Delete ALBs

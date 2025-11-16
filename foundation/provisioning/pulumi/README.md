@@ -1,12 +1,18 @@
-# Multi-Service Infrastructure with Pulumi
+# Infrastructure as Code with Pulumi
 
-This directory contains Infrastructure as Code (IaC) for managing EKS clusters for **Day** and **Dusk** services using Pulumi.
+This directory contains Pulumi programs for provisioning the **Terminus** EKS cluster using Infrastructure as Code (IaC).
 
-**Note**: The **Dawn** cluster was created manually using eksctl scripts and is NOT managed by Pulumi.
+## Architecture Overview
+
+**New Decoupled Design:**
+- **Trantor cluster** (manual provisioning) → Hosts Dawn + Day services
+- **Terminus cluster** (Pulumi provisioning) → Ready for future services
+
+This architecture decouples services from clusters, allowing multiple services to share infrastructure.
 
 ## What's Managed by Pulumi
 
-Instead of running bash scripts manually, Pulumi declaratively manages:
+Pulumi declaratively manages all infrastructure components:
 
 | Component | Manual Approach | Pulumi Approach |
 |-----------|----------------|-----------------|
@@ -23,35 +29,26 @@ Instead of running bash scripts manually, Pulumi declaratively manages:
 
 ```
 foundation/provisioning/pulumi/
-├── __main__.py           # Main Pulumi program (generic for all services)
-├── Pulumi.yaml           # Project metadata
-├── Pulumi.day.yaml       # Day cluster config (VPC: 10.1.0.0/16)
-├── Pulumi.dusk.yaml      # Dusk cluster config (VPC: 10.2.0.0/16)
-├── requirements.txt      # Python dependencies
-├── .gitignore           # Git ignore rules
-└── README.md            # This file
+├── __main__.py            # Main Pulumi program (EKS infrastructure)
+├── Pulumi.yaml            # Project metadata
+├── Pulumi.terminus.yaml   # Terminus cluster config (VPC: 10.2.0.0/16)
+├── requirements.txt       # Python dependencies
+├── .gitignore            # Git ignore rules
+└── README.md             # This file
 ```
 
-## Multi-Service Support
+## Cluster Architecture
 
-The same Pulumi code manages Day and Dusk clusters. Each service gets:
-- **Separate VPC** (non-overlapping CIDR blocks)
-- **Dedicated EKS cluster**
-- **Independent ALB and node groups**
-- **Separate Pulumi stack** for state management
-
-| Service | Stack Name | VPC CIDR | Cluster Name | Management |
-|---------|------------|----------|--------------|------------|
-| **Dawn** | N/A | 10.0.0.0/16 | dawn-cluster | Manual (eksctl) |
-| **Day** | day | 10.1.0.0/16 | day-cluster | Pulumi |
-| **Dusk** | dusk | 10.2.0.0/16 | dusk-cluster | Pulumi |
+| Cluster | Stack Name | VPC CIDR | Services | Management |
+|---------|------------|----------|----------|------------|
+| **Trantor** | N/A | 10.0.0.0/16 | Dawn + Day | Manual (eksctl) |
+| **Terminus** | terminus | 10.2.0.0/16 | Future services | Pulumi (IaC) |
 
 ## Quick Start
 
-See **[pulumi-setup.md](../../../docs/pulumi-setup.md)** for detailed setup instructions.
+See **[pulumi-setup.md](../../../docs/02-infrastructure-as-code/pulumi-setup.md)** for detailed setup instructions.
 
-### Deploy Day Cluster
-See **[deploy-day-cluster.md](../../../docs/deploy-day-cluster.md)** for detailed Day cluster deployment guide.
+### Deploy Terminus Cluster
 
 ```bash
 cd foundation/provisioning/pulumi
@@ -59,26 +56,21 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 pulumi login
-pulumi stack select day  # or: pulumi stack init day
+pulumi stack select terminus  # or: pulumi stack init terminus
 pulumi up
 ```
 
-### Deploy Dusk Cluster
-```bash
-cd foundation/provisioning/pulumi
-pulumi stack select dusk  # or: pulumi stack init dusk
-pulumi up
-```
+### View Stack State
 
-### Switch Between Services
 ```bash
-# Work on Day infrastructure
-pulumi stack select day
+# Preview changes
 pulumi preview
 
-# Work on Dusk infrastructure
-pulumi stack select dusk
-pulumi preview
+# View current configuration
+pulumi config
+
+# View outputs
+pulumi stack output
 
 # View all stacks
 pulumi stack ls
@@ -86,16 +78,20 @@ pulumi stack ls
 
 ## Comparison: Manual vs Pulumi
 
-### Manual Deployment (Current)
+### Manual Deployment (Trantor)
+
 ```bash
 # Step 1: Create cluster
-./foundation/provisioning/manual/create-dawn-cluster.sh
+./foundation/provisioning/manual/create-trantor-cluster.sh us-east-1
 
 # Step 2: Install ALB controller
-./foundation/provisioning/manual/install-alb-controller-dawn.sh
+./foundation/provisioning/manual/install-alb-controller-trantor.sh us-east-1
 
-# Step 3: Deploy app
-./foundation/gitops/manual_deploy/deploy-dawn.sh
+# Step 3: Deploy services
+cd ../../gitops/manual_deploy
+./build-and-push-dawn.sh us-east-1
+./build-and-push-day.sh us-east-1
+./deploy-to-trantor.sh us-east-1
 ```
 
 **Pros:**
@@ -110,7 +106,8 @@ pulumi stack ls
 - Difficult to replicate across environments
 - Manual coordination required
 
-### Pulumi Deployment (New)
+### Pulumi Deployment (Terminus)
+
 ```bash
 # All-in-one deployment
 cd foundation/provisioning/pulumi
@@ -121,7 +118,7 @@ pulumi up
 - Preview changes before applying
 - State tracking (know what exists)
 - Easy updates (change code, run `pulumi up`)
-- Repeatable across environments (dev/staging/prod stacks)
+- Repeatable across environments
 - CI/CD integration (automatic deployment)
 - Drift detection (`pulumi refresh`)
 - Team collaboration (shared state)
@@ -136,7 +133,7 @@ pulumi up
 Once set up, infrastructure changes follow GitOps:
 
 ```
-1. Edit __main__.py (change node count, instance type, etc.)
+1. Edit __main__.py or Pulumi.terminus.yaml
    ↓
 2. Create PR
    ↓
@@ -153,26 +150,28 @@ Once set up, infrastructure changes follow GitOps:
 
 ## Example: Scaling Node Group
 
-**Manual approach (Dawn cluster):**
+**Manual approach (Trantor cluster):**
 ```bash
-# Edit create-dawn-cluster.sh
-# Change --nodes-max 3 to --nodes-max 5
+# Edit create-trantor-cluster.sh
+# Change --nodes-max 4 to --nodes-max 6
 # Delete cluster
-eksctl delete cluster --name dawn-cluster
+eksctl delete cluster --name trantor
 # Recreate cluster
-./foundation/provisioning/manual/create-dawn-cluster.sh
+./foundation/provisioning/manual/create-trantor-cluster.sh
 # Reinstall everything
-./foundation/provisioning/manual/install-alb-controller-dawn.sh
-./foundation/gitops/manual_deploy/deploy-dawn.sh
+./foundation/provisioning/manual/install-alb-controller-trantor.sh
+# Redeploy all services
+cd ../../gitops/manual_deploy
+./deploy-to-trantor.sh
 ```
 
-**Pulumi approach (Day/Dusk clusters):**
+**Pulumi approach (Terminus cluster):**
 ```yaml
-# Edit Pulumi.day.yaml
-service-infrastructure:max_nodes: "5"  # Changed from "3"
+# Edit Pulumi.terminus.yaml
+service-infrastructure:max_nodes: "6"  # Changed from "4"
 ```
 ```bash
-pulumi stack select day
+pulumi stack select terminus
 pulumi preview  # See what will change
 pulumi up       # Apply change (takes ~2 minutes)
 ```
@@ -200,44 +199,46 @@ Outputs:
 - `oidc_provider_arn` - For additional IRSA roles
 - `alb_controller_role_arn` - ALB controller IAM role
 
-## Dawn vs Day/Dusk: Management Comparison
+## Cluster Comparison
 
-**Dawn cluster (Manual - Already Running):**
-- Created with `./foundation/provisioning/manual/create-dawn-cluster.sh`
+**Trantor cluster (Manual - Hosts Dawn + Day):**
+- Created with `./foundation/provisioning/manual/create-trantor-cluster.sh`
 - Managed with eksctl and kubectl commands
 - No Pulumi state tracking
 - Updates require manual script execution
+- Hosts multiple services (decoupled architecture)
 
-**Day/Dusk clusters (Pulumi - New):**
+**Terminus cluster (Pulumi - Future services):**
 - Created with `pulumi up`
 - Managed declaratively via Infrastructure as Code
 - State tracked in Pulumi backend
 - Updates via `pulumi up` after config changes
+- Ready for additional services
 
 ## Application Deployment
 
-After creating Day cluster with Pulumi, deploy the Day application:
+After creating Terminus cluster with Pulumi, deploy applications:
 
 ```bash
 # Get kubeconfig
-pulumi stack output kubeconfig --show-secrets > day-kubeconfig.yaml
-export KUBECONFIG=$(pwd)/day-kubeconfig.yaml
+pulumi stack output kubeconfig --show-secrets > terminus-kubeconfig.yaml
+export KUBECONFIG=$(pwd)/terminus-kubeconfig.yaml
 
-# Deploy Day service
-kubectl apply -f foundation/gitops/pulumi_deploy/
+# Deploy applications using Pulumi
+cd ../../gitops/pulumi_deploy
+pulumi up
 ```
 
 ## Next Steps
 
-1. ✅ **Set up Pulumi** - Follow [pulumi-setup.md](../../../docs/pulumi-setup.md)
-2. ⏭️ **Deploy Day cluster** - Run `pulumi up` with day stack
-3. ⏭️ **Deploy Day application** - Apply K8s manifests
-4. ⏭️ **Deploy Dusk cluster** - Run `pulumi up` with dusk stack (optional)
-5. ⏭️ **Set up ArgoCD** - Automate application deployment (Phase 5)
+1. ✅ **Set up Pulumi** - Follow [pulumi-setup.md](../../../docs/02-infrastructure-as-code/pulumi-setup.md)
+2. ⏭️ **Deploy Terminus cluster** - Run `pulumi up` with terminus stack
+3. ⏭️ **Deploy applications** - Use gitops/pulumi_deploy for declarative app deployment
+4. ⏭️ **Set up CI/CD** - Automate infrastructure and app deployments
 
 ## Support
 
-- Main docs: [pulumi-setup.md](../../../docs/pulumi-setup.md)
+- Main docs: [pulumi-setup.md](../../../docs/02-infrastructure-as-code/pulumi-setup.md)
 - Pulumi docs: https://www.pulumi.com/docs/
 - AWS EKS guide: https://www.pulumi.com/registry/packages/eks/
 - Questions: Create an issue

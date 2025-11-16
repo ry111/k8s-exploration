@@ -93,18 +93,13 @@ Pulumi needs to store state. Choose one:
    pulumi login s3://your-pulumi-state-bucket  # For S3
    ```
 
-4. **Initialize the Day stack:**
+4. **Initialize the Terminus stack:**
    ```bash
-   pulumi stack init day
+   pulumi stack init terminus
    ```
 
-   Or for Dusk:
-   ```bash
-   pulumi stack init dusk
-   ```
-
-5. **Configuration is pre-set in stack files** (Pulumi.day.yaml, Pulumi.dusk.yaml)
-   - No additional config needed - VPC CIDR, service name, etc. already set
+5. **Configuration is pre-set in stack files** (Pulumi.terminus.yaml)
+   - No additional config needed - VPC CIDR (10.2.0.0/16), service name, etc. already set
 
 ## Deploy Infrastructure
 
@@ -227,28 +222,19 @@ This compares Pulumi state with actual AWS resources and updates state.
 
 ## Stack Management
 
-The project includes pre-configured stacks for Day and Dusk services:
+The project includes a pre-configured stack for the Terminus cluster:
 
 ```bash
-# Deploy Day cluster
-pulumi stack select day
+# Select and deploy Terminus cluster
+pulumi stack select terminus
 pulumi up
-
-# Deploy Dusk cluster
-pulumi stack select dusk
-pulumi up
-
-# Switch between stacks
-pulumi stack select day
-pulumi stack select dusk
 
 # View all stacks
 pulumi stack ls
 ```
 
 Each stack maintains separate state and resources. Configuration is pre-defined in:
-- `Pulumi.day.yaml` - Day cluster (VPC: 10.1.0.0/16)
-- `Pulumi.dusk.yaml` - Dusk cluster (VPC: 10.2.0.0/16)
+- `Pulumi.terminus.yaml` - Terminus cluster (VPC: 10.2.0.0/16)
 
 ## Cost Estimate
 

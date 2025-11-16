@@ -156,7 +156,7 @@ Pod: 10.0.1.45      Pod: 10.0.1.67
 **Virtual clusters** within a physical cluster.
 
 ```
-Cluster: day-cluster
+Cluster: trantor
 ├── Namespace: production
 │   ├── Deployment: day-service
 │   ├── Service: day-service
@@ -1048,7 +1048,7 @@ s3.list_buckets()        # Works if IAM role has s3:ListBuckets
 **Authentication:**
 ```bash
 # Update kubeconfig with EKS cluster info
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name trantor --region us-east-1
 
 # This creates ~/.kube/config entry:
 # - Cluster API endpoint
@@ -1059,7 +1059,7 @@ aws eks update-kubeconfig --name day-cluster --region us-east-1
 kubectl get pods
     ↓
 1. kubectl reads ~/.kube/config
-2. Runs: aws eks get-token --cluster-name day-cluster
+2. Runs: aws eks get-token --cluster-name trantor
 3. AWS returns temporary token (via STS)
 4. kubectl sends token to EKS API Server
 5. EKS validates token with AWS IAM
@@ -1323,11 +1323,11 @@ Our Day cluster demonstrates all these concepts:
 # foundation/provisioning/pulumi/__main__.py
 
 # 1. VPC (infrastructure layer)
-vpc = aws.ec2.Vpc("day-vpc", cidr_block="10.1.0.0/16")
+vpc = aws.ec2.Vpc("terminus-vpc", cidr_block="10.2.0.0/16")
 
 # 2. EKS Cluster (cluster layer)
 cluster = eks.Cluster(
-    "day-cluster",
+    "terminus",
     vpc_id=vpc.id,
     subnet_ids=[subnet.id for subnet in subnets],
 )
