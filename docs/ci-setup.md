@@ -178,16 +178,6 @@ This allows:
 - **RC** uses `:rc` (test before prod)
 - **Rollback** uses specific SHA (pin to known good version)
 
-## Cost
-
-GitHub Actions free tier:
-- **2,000 minutes/month** for private repos
-- **Unlimited** for public repos
-
-Each build takes ~2-3 minutes:
-- 3 services × 2 minutes = **6 minutes per push**
-- You can do **~330 pushes/month** for free
-
 ## Troubleshooting
 
 ### Workflow fails with "could not find any file"

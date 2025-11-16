@@ -1,20 +1,6 @@
 # Quick Start: Deploy Dawn Service to EKS with Spot Instances
 
-This guide walks you through deploying just the Dawn service to a single EKS cluster using **spot instances** for maximum cost savings (~70% cheaper than on-demand).
-
-## Cost Breakdown (Single Dawn Cluster with Spot)
-
-| Item | Monthly Cost |
-|------|--------------|
-| EKS Control Plane | $73.00 |
-| 2× t3.small spot nodes | $9.08 (~$0.0062/hr each) |
-| Application Load Balancer | $21-26 |
-| EBS Volumes (2× 20GB) | $3.20 |
-| Data Transfer | $5-10 |
-| ECR Storage | $0.06 |
-| **TOTAL** | **~$111-121/month** |
-
-**Savings vs on-demand:** ~$27/month (spot instances save ~$21/month)
+This guide walks you through deploying just the Dawn service to a single EKS cluster using **spot instances**.
 
 **Note:** Spot instances can be interrupted with 2-minute warning. For learning/dev environments, this is acceptable.
 
@@ -42,7 +28,7 @@ aws sts get-caller-identity
 ```bash
 cd foundation/scripts
 
-./create-dawn-cluster.sh us-west-2
+./create-dawn-cluster.sh us-east-1
 ```
 
 This creates:
@@ -70,7 +56,7 @@ kubectl get nodes
 ### 2. Install AWS Load Balancer Controller (~5 minutes)
 
 ```bash
-./install-alb-controller-dawn.sh us-west-2
+./install-alb-controller-dawn.sh us-east-1
 ```
 
 This installs the controller that creates AWS ALBs from Ingress resources.
@@ -87,7 +73,7 @@ kubectl get deployment -n kube-system aws-load-balancer-controller
 ### 3. Build and Push Docker Images (~5 minutes)
 
 ```bash
-./build-and-push-dawn.sh us-west-2
+./build-and-push-dawn.sh us-east-1
 ```
 
 This:
@@ -107,7 +93,7 @@ Step 2/8 : WORKDIR /app
 ### 4. Deploy Dawn Services (~5 minutes)
 
 ```bash
-./deploy-dawn.sh us-west-2
+./deploy-dawn.sh us-east-1
 ```
 
 This deploys:
@@ -145,7 +131,7 @@ ADDRESS
 Wait a bit, then check again. You'll see:
 ```
 ADDRESS
-k8s-dawnclus-dawningr-abc123-123456789.us-west-2.elb.amazonaws.com
+k8s-dawnclus-dawningr-abc123-123456789.us-east-1.elb.amazonaws.com
 ```
 
 ### 6. Test Your Services
@@ -173,16 +159,16 @@ curl http://$ALB_URL/info
 cd foundation/scripts
 
 # 1. Create cluster (~20 min)
-./create-dawn-cluster.sh us-west-2
+./create-dawn-cluster.sh us-east-1
 
 # 2. Install ALB controller (~5 min)
-./install-alb-controller-dawn.sh us-west-2
+./install-alb-controller-dawn.sh us-east-1
 
 # 3. Build and push images (~5 min)
-./build-and-push-dawn.sh us-west-2
+./build-and-push-dawn.sh us-east-1
 
 # 4. Deploy services (~5 min)
-./deploy-dawn.sh us-west-2
+./deploy-dawn.sh us-east-1
 
 # 5. Wait for ALB to be ready (~2-3 min)
 watch kubectl get ingress -n dawn-ns
@@ -296,7 +282,7 @@ kubectl get events --all-namespaces | grep -i spot
 **⚠️ WARNING: This deletes everything!**
 
 ```bash
-./cleanup-dawn.sh us-west-2
+./cleanup-dawn.sh us-east-1
 ```
 
 This will:
@@ -307,31 +293,6 @@ This will:
 - Remove IAM roles
 
 You'll need to type `DELETE` to confirm.
-
-## Cost Optimization Tips
-
-### 1. Stop cluster when not using (saves ~$108/month)
-```bash
-# Scale nodes to 0
-eksctl scale nodegroup --cluster=dawn-cluster --nodes=0 --name=dawn-spot-nodes --region us-west-2
-
-# Scale back up
-eksctl scale nodegroup --cluster=dawn-cluster --nodes=2 --name=dawn-spot-nodes --region us-west-2
-```
-
-**Note:** Control plane still costs $73/month even with 0 nodes.
-
-### 2. Delete cluster completely when not using
-```bash
-./cleanup-dawn.sh us-west-2
-```
-
-Recreate later in ~20 minutes with `./create-dawn-cluster.sh`
-
-### 3. Use even smaller instances
-Edit `create-dawn-cluster.sh` and change `--node-type t3.small` to `--node-type t3.micro`:
-- **Savings:** ~$5/month
-- **Trade-off:** Less capacity (1 vCPU, 1GB RAM per node)
 
 ## Next Steps
 
