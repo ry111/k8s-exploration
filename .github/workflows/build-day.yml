@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/**
     paths:
       - 'foundation/services/day/**'
       - '.github/workflows/build-day.yml'

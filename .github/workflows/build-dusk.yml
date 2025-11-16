@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/**
     paths:
       - 'foundation/services/dusk/**'
       - '.github/workflows/build-dusk.yml'
