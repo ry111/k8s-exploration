@@ -182,7 +182,7 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 ## Dawn Cluster Note
 
 The existing Dawn cluster was created manually and remains managed via eksctl scripts:
-- `./foundation/provisioning/manual/create-dawn-cluster.sh`
+- `./foundation/provisioning/manual/create-trantor-cluster.sh`
 - `./foundation/gitops/manual_deploy/deploy-dawn.sh`
 - `./foundation/gitops/manual_deploy/health-check-dawn.sh`
 

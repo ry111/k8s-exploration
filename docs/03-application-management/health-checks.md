@@ -33,7 +33,7 @@ Quick reference for monitoring and troubleshooting Dawn cluster.
 ./foundation/gitops/manual_deploy/health-check-dawn.sh us-east-1
 
 # Sample output:
-# ✓ Cluster dawn-cluster exists
+# ✓ Cluster trantor exists
 # ✓ 2/2 nodes ready
 # ✓ ALB Controller running (2/2)
 # ✓ 2/2 pods running
@@ -235,7 +235,7 @@ chmod +x foundation/gitops/manual_deploy/*.sh
 aws eks list-clusters --region us-east-1
 
 # Update kubeconfig manually
-aws eks update-kubeconfig --name dawn-cluster --region us-east-1
+aws eks update-kubeconfig --name trantor --region us-east-1
 ```
 
 ### "Permission denied"

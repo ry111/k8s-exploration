@@ -190,7 +190,7 @@ pulumi config set infra_stack_name ry111/service-infrastructure/day
 # Use local kubeconfig (development)
 pulumi config set use_stack_reference false
 # Make sure you have valid kubeconfig:
-aws eks update-kubeconfig --name day-cluster
+aws eks update-kubeconfig --name terminus
 ```
 
 ---

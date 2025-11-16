@@ -35,7 +35,7 @@ pulumi stack select day
 The stack configuration is already defined in `Pulumi.day.yaml`:
 - **Service**: day
 - **VPC CIDR**: 10.1.0.0/16 (different from Dawn's 10.0.0.0/16)
-- **Cluster name**: day-cluster
+- **Cluster name**: terminus
 - **Nodes**: 2 desired, 1-3 range
 - **Instance type**: t3.small spot instances
 
@@ -49,7 +49,7 @@ This shows what will be created:
 - ✅ VPC with 10.1.0.0/16 CIDR
 - ✅ 2 public subnets (10.1.1.0/24, 10.1.2.0/24)
 - ✅ Internet Gateway and route table
-- ✅ EKS cluster named "day-cluster"
+- ✅ EKS cluster named "terminus"
 - ✅ Managed node group with spot instances
 - ✅ IAM roles for ALB controller
 - ✅ ALB controller installed via Helm
@@ -87,7 +87,7 @@ kubectl get pods -A
 |----------|------|---------|
 | **VPC** | day-vpc | 10.1.0.0/16 CIDR |
 | **Subnets** | day-public-subnet-1/2 | us-east-1a, us-east-1b |
-| **EKS Cluster** | day-cluster | v1.28+ |
+| **EKS Cluster** | terminus | v1.28+ |
 | **Node Group** | Managed spot instances | 2x t3.small (1-3 range) |
 | **IAM Role** | day-alb-controller-role | For ALB controller IRSA |
 | **ALB Controller** | Helm release | In kube-system namespace |
@@ -100,7 +100,7 @@ After the cluster is created, deploy the Day service:
 
 ```bash
 # Update kubeconfig
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name terminus --region us-east-1
 
 # Apply manifests
 kubectl apply -f foundation/k8s/day/namespace.yaml
@@ -117,7 +117,7 @@ Similar to `deploy-dawn.sh`, but for Day cluster:
 
 ```bash
 #!/bin/bash
-CLUSTER_NAME="day-cluster"
+CLUSTER_NAME="terminus"
 REGION="us-east-1"
 ECR_REGISTRY="612974049499.dkr.ecr.us-east-1.amazonaws.com"
 
@@ -158,19 +158,19 @@ You can switch between clusters:
 ```bash
 # Work with Dawn cluster
 pulumi stack select dev
-aws eks update-kubeconfig --name dawn-cluster --region us-east-1
+aws eks update-kubeconfig --name trantor --region us-east-1
 kubectl get pods -A
 
 # Work with Day cluster
 pulumi stack select day
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name terminus --region us-east-1
 kubectl get pods -A
 ```
 
 Or use kubeconfig context switching:
 ```bash
 kubectl config get-contexts
-kubectl config use-context arn:aws:eks:us-east-1:612974049499:cluster/day-cluster
+kubectl config use-context arn:aws:eks:us-east-1:612974049499:cluster/terminus
 ```
 
 ## Update Infrastructure
@@ -257,7 +257,7 @@ aws configure
 ### Can't connect to cluster
 ```bash
 # Update kubeconfig
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name terminus --region us-east-1
 
 # Verify
 kubectl get svc

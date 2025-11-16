@@ -9,7 +9,7 @@
 #   ./grant-github-actions-access-v2.sh <IAM_ARN> <CLUSTER_NAME>
 #
 # Example:
-#   ./grant-github-actions-access-v2.sh arn:aws:iam::612974049499:user/github-actions day-cluster-eksCluster-f3c27b8
+#   ./grant-github-actions-access-v2.sh arn:aws:iam::612974049499:user/github-actions trantor
 #
 
 set -e
@@ -18,7 +18,7 @@ if [ $# -ne 2 ]; then
     echo "Usage: $0 <IAM_ARN> <CLUSTER_NAME>"
     echo ""
     echo "Example:"
-    echo "  $0 arn:aws:iam::612974049499:user/github-actions day-cluster-eksCluster-f3c27b8"
+    echo "  $0 arn:aws:iam::612974049499:user/github-actions trantor"
     echo ""
     echo "To get the IAM ARN used by GitHub Actions, check the workflow output"
     echo "from the 'Testing AWS credentials' step which runs 'aws sts get-caller-identity'"

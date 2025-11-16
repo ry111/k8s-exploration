@@ -7,8 +7,8 @@ This creates:
 - Managed node group using spot instances (t3.small)
 - ALB controller using Helm
 
-Supports Day and Dusk services via stack configuration.
-Note: Dawn cluster is managed manually via eksctl scripts.
+Supports Terminus cluster via stack configuration.
+Note: Trantor cluster (hosting Dawn and Day services) is managed manually via eksctl scripts.
 """
 
 import pulumi
@@ -22,8 +22,8 @@ aws_config = pulumi.Config("aws")
 region = aws_config.get("region") or "us-east-1"
 
 # Service-specific configuration
-service_name = config.require("service_name")  # e.g., "dawn", "day", "dusk"
-cluster_name = config.get("cluster_name") or f"{service_name}-cluster"
+cluster_name = config.get("cluster_name") or "terminus-cluster"
+service_name = config.get("service_name") or cluster_name.split("-")[0]  # Optional, derive from cluster_name if not provided
 vpc_cidr = config.get("vpc_cidr") or "10.0.0.0/16"  # Different for each service
 min_nodes = config.get_int("min_nodes") or 1
 max_nodes = config.get_int("max_nodes") or 3
