@@ -44,7 +44,7 @@ kubernetes:kubeconfig:
 
 ```bash
 # Get kubeconfig from your EKS cluster
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 
 # Or from infrastructure Pulumi stack
 cd ../../../pulumi
@@ -276,7 +276,7 @@ pulumi preview
 kubectl get nodes
 
 # Or update kubeconfig
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 ```
 
 ### Deployment stuck in pending
