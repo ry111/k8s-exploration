@@ -76,7 +76,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --name day-cluster --region us-east-1
+          aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 
       - name: Install dependencies
         run: |
@@ -121,7 +121,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --name day-cluster --region us-east-1
+          aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
 
       - name: Install dependencies
         run: |
