@@ -7,3 +7,6 @@ __pycache__/
 # Pulumi
 .pulumi/
 *.log
+
+# Backup files
+*.backup
