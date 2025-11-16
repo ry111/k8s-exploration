@@ -1,14 +1,14 @@
 config:
   # Kubernetes connection
   kubernetes:kubeconfig:
-    # Option 1: Reference infrastructure stack output
-    # Uncomment and update with your infrastructure stack name:
-    # fn::stackReference:
-    #   name: organization/infrastructure/production
-    #   output: kubeconfig
+    # Option 1: Reference infrastructure stack output (ENABLED)
+    fn::stackReference:
+      name: ry111/service-infrastructure/day
+      output: kubeconfig
 
     # Option 2: Use local kubeconfig (for development)
-    # Leave empty to use default ~/.kube/config or KUBECONFIG env var
+    # To use local kubeconfig instead, comment out fn::stackReference above
+    # and leave this section empty to use ~/.kube/config or KUBECONFIG env var
 
   # Application settings
   day-service-app:namespace: dev
