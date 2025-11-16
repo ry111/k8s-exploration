@@ -1,29 +1,25 @@
 config:
   # Kubernetes provider configuration
-  day-service-app:use_stack_reference: true  # Set to false to use local kubeconfig
+  day-service-app:use_stack_reference: "true" # Set to false to use local kubeconfig
   day-service-app:infra_stack_name: ry111-org/service-infrastructure/day
-
   # Application settings
   day-service-app:namespace: production
-  day-service-app:image_registry: your-registry  # Set to: {account-id}.dkr.ecr.us-east-1.amazonaws.com
-  day-service-app:image_name: day  # ECR repository name (matches build workflow)
+  day-service-app:image_registry: 612974049499.dkr.ecr.us-east-1.amazonaws.com # Set to: {account-id}.dkr.ecr.us-east-1.amazonaws.com
+  day-service-app:image_name: day # ECR repository name (matches build workflow)
   day-service-app:image_tag: v1.2.3
-  day-service-app:replicas: 5
-
+  day-service-app:replicas: "5"
   # Autoscaling (aggressive for production)
-  day-service-app:min_replicas: 3
-  day-service-app:max_replicas: 20
-  day-service-app:cpu_target: 70
-  day-service-app:memory_target: 80
-
+  day-service-app:min_replicas: "3"
+  day-service-app:max_replicas: "20"
+  day-service-app:cpu_target: "70"
+  day-service-app:memory_target: "80"
   # Resources (larger for production)
   day-service-app:cpu_request: 200m
   day-service-app:memory_request: 256Mi
   day-service-app:cpu_limit: 1000m
   day-service-app:memory_limit: 1Gi
-
   # Application config
   day-service-app:log_level: INFO
   day-service-app:database_host: postgres.production.svc.cluster.local
   day-service-app:cache_ttl: "300"
-  day-service-app:feature_new_ui: true
+  day-service-app:feature_new_ui: "true"
