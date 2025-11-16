@@ -28,6 +28,9 @@ Welcome to the k8s-exploration documentation. This directory contains all guides
 
 ## 📖 Kubernetes Deep Dives
 
+### Fundamentals
+- **[kubernetes-fundamentals.md](kubernetes-fundamentals.md)** - Complete guide to Kubernetes architecture, concepts, and cloud integration
+
 ### Core Concepts
 - **[deployment-hierarchy.md](deployment-hierarchy.md)** - How Deployments → ReplicaSets → Pods work
 - **[configmap-relationships.md](configmap-relationships.md)** - ConfigMap relationships with Deployments and Pods
@@ -62,6 +65,7 @@ docs/
 │   └── health-checks.md            # Health check best practices
 │
 ├── Kubernetes Deep Dives
+│   ├── kubernetes-fundamentals.md  # K8s architecture overview
 │   ├── deployment-hierarchy.md     # Deployment → RS → Pod
 │   ├── configmap-relationships.md  # ConfigMap usage
 │   └── rolling-update-mechanism.md # Rolling update details
@@ -88,11 +92,12 @@ For code and implementation details, see:
 ## 🚀 Recommended Learning Path
 
 **For Complete Beginners:**
-1. **[foundation-overview.md](foundation-overview.md)** - Understand the project structure
-2. **[quickstart-dawn.md](quickstart-dawn.md)** - Deploy your first cluster (takes ~40 min)
-3. **[deployment-hierarchy.md](deployment-hierarchy.md)** - Learn how Kubernetes creates Pods
-4. Run exploration scripts in `foundation/scripts/explore/` - Hands-on learning
-5. **[rolling-update-mechanism.md](rolling-update-mechanism.md)** - Zero-downtime deployments
+1. **[kubernetes-fundamentals.md](kubernetes-fundamentals.md)** - Learn Kubernetes architecture and core concepts
+2. **[foundation-overview.md](foundation-overview.md)** - Understand the project structure
+3. **[quickstart-dawn.md](quickstart-dawn.md)** - Deploy your first cluster (takes ~40 min)
+4. **[deployment-hierarchy.md](deployment-hierarchy.md)** - Learn how Kubernetes creates Pods
+5. Run exploration scripts in `foundation/scripts/explore/` - Hands-on learning
+6. **[rolling-update-mechanism.md](rolling-update-mechanism.md)** - Zero-downtime deployments
 
 **For Infrastructure as Code:**
 1. **[pulumi-setup.md](pulumi-setup.md)** - Install and configure Pulumi
@@ -110,12 +115,14 @@ For code and implementation details, see:
 ## 🎯 Quick Reference by Task
 
 **I want to...**
+- **Learn Kubernetes from scratch** → [kubernetes-fundamentals.md](kubernetes-fundamentals.md)
 - **Deploy my first cluster** → [quickstart-dawn.md](quickstart-dawn.md)
 - **Use Infrastructure as Code** → [pulumi-setup.md](pulumi-setup.md)
 - **Set up CI/CD** → [ci-setup.md](ci-setup.md)
-- **Understand Kubernetes** → [deployment-hierarchy.md](deployment-hierarchy.md)
+- **Understand how Deployments work** → [deployment-hierarchy.md](deployment-hierarchy.md)
 - **Manage configurations** → [configmap-relationships.md](configmap-relationships.md)
 - **Do zero-downtime updates** → [rolling-update-mechanism.md](rolling-update-mechanism.md)
+- **Understand EKS and cloud integration** → [kubernetes-fundamentals.md](kubernetes-fundamentals.md#eks-managed-kubernetes-on-aws)
 - **Fix EKS auth issues** → [eks-github-actions-auth-fix.md](eks-github-actions-auth-fix.md)
 - **Choose Pulumi vs GitOps** → [pulumi-resource-strategy.md](pulumi-resource-strategy.md)
 
@@ -128,8 +135,8 @@ For code and implementation details, see:
 
 ## 📊 Documentation Statistics
 
-- **21 markdown files** across the repository
-- **~800 lines** of comprehensive guides
+- **22 markdown files** across the repository (including new Kubernetes fundamentals guide)
+- **~1,200 lines** of comprehensive guides
 - **3 interactive exploration scripts** for hands-on learning
 - **Multiple deployment paths** (manual, Pulumi, CI/CD)
 
