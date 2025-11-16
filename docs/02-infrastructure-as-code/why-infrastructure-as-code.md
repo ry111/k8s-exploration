@@ -249,8 +249,8 @@ pulumi login s3://my-pulumi-state-bucket
 # You manually run scripts to:
 ./foundation/provisioning/manual/create-dawn-cluster.sh us-east-1      # Create EKS cluster
 ./foundation/provisioning/manual/install-alb-controller-dawn.sh         # Install ALB controller
-./foundation/provisioning/manual/build-and-push-dawn.sh                 # Build and push image
-./foundation/provisioning/manual/deploy-dawn.sh                         # Deploy application
+./foundation/gitops/manual_deploy/build-and-push-dawn.sh                 # Build and push image
+./foundation/gitops/manual_deploy/deploy-dawn.sh                         # Deploy application
 ```
 
 **Best for:**

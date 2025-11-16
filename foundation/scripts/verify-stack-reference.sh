@@ -56,7 +56,7 @@ echo "   Stack reference format: ${STACK_REF}"
 
 # Step 4: Test stack reference from application directory
 echo "🎯 Step 4: Testing stack reference from application stack..."
-cd ../../gitops/day
+cd ../../gitops/pulumi_deploy
 
 if ! pulumi stack ls | grep -q "${APP_STACK}"; then
     echo "❌ Application stack '${APP_STACK}' not found!"

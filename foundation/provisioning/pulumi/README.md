@@ -95,7 +95,7 @@ pulumi stack ls
 ./foundation/provisioning/manual/install-alb-controller-dawn.sh
 
 # Step 3: Deploy app
-./foundation/scripts/deploy-dawn.sh
+./foundation/gitops/manual_deploy/deploy-dawn.sh
 ```
 
 **Pros:**
@@ -163,7 +163,7 @@ eksctl delete cluster --name dawn-cluster
 ./foundation/provisioning/manual/create-dawn-cluster.sh
 # Reinstall everything
 ./foundation/provisioning/manual/install-alb-controller-dawn.sh
-./foundation/scripts/deploy-dawn.sh
+./foundation/gitops/manual_deploy/deploy-dawn.sh
 ```
 
 **Pulumi approach (Day/Dusk clusters):**
@@ -224,7 +224,7 @@ pulumi stack output kubeconfig --show-secrets > day-kubeconfig.yaml
 export KUBECONFIG=$(pwd)/day-kubeconfig.yaml
 
 # Deploy Day service
-kubectl apply -f foundation/k8s/day/
+kubectl apply -f foundation/gitops/pulumi_deploy/
 ```
 
 ## Next Steps

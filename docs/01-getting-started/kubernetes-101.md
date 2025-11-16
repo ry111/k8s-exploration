@@ -1355,7 +1355,7 @@ alb_controller = k8s.helm.v3.Release(
 
 ### Application Stack (Pulumi or YAML)
 ```python
-# foundation/gitops/day/__main__.py
+# foundation/gitops/pulumi_deploy/__main__.py
 
 # Reference infrastructure stack
 infra = pulumi.StackReference("organization/infrastructure/day")
@@ -1457,7 +1457,7 @@ Developer → kubectl → API Server → etcd
 **Try it yourself:**
 - [first-deployment.md](first-deployment.md) - Deploy your first cluster
 - [deploy-with-pulumi.md](../02-infrastructure-as-code/deploy-with-pulumi.md) - Pulumi-managed cluster
-- Exploration scripts: `foundation/scripts/explore/`
+- Exploration scripts: `foundation/gitops/manual_deploy/explore/`
 
 **Official documentation:**
 - [Kubernetes Documentation](https://kubernetes.io/docs/)

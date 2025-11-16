@@ -188,8 +188,8 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 
 The existing Dawn cluster was created manually and remains managed via eksctl scripts:
 - `./foundation/provisioning/manual/create-dawn-cluster.sh`
-- `./foundation/provisioning/manual/deploy-dawn.sh`
-- `./foundation/provisioning/manual/health-check-dawn.sh`
+- `./foundation/gitops/manual_deploy/deploy-dawn.sh`
+- `./foundation/gitops/manual_deploy/health-check-dawn.sh`
 
 **No migration needed** - Dawn continues to run as-is. Pulumi only manages Day and Dusk.
 

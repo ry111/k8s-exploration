@@ -170,7 +170,7 @@ Choose your path based on your goals:
 1. [kubernetes-101.md](01-getting-started/kubernetes-101.md) - 30 min
 2. [overview.md](01-getting-started/overview.md) - 10 min
 3. [first-deployment.md](01-getting-started/first-deployment.md) - 40 min
-4. **Explore:** Run scripts in `foundation/scripts/explore/`
+4. **Explore:** Run scripts in `foundation/gitops/manual_deploy/explore/`
 5. [deployment-hierarchy.md](05-kubernetes-deep-dives/deployment-hierarchy.md) - 30 min
 6. [configmap-relationships.md](05-kubernetes-deep-dives/configmap-relationships.md) - 30 min
 7. [rolling-updates.md](05-kubernetes-deep-dives/rolling-updates.md) - 30 min
@@ -279,7 +279,7 @@ k8s-exploration/
 
 **Exploration Scripts** (hands-on learning):
 ```bash
-cd foundation/scripts/explore
+cd foundation/gitops/manual_deploy/explore
 
 ./explore-deployment-hierarchy.sh       # See Deployment → ReplicaSet → Pod
 ./explore-configmap-relationships.sh    # Understand ConfigMap usage

@@ -60,7 +60,7 @@ k8s-exploration/
 # See docs/01-getting-started/first-deployment.md for full guide
 cd foundation
 ./provisioning/manual/create-dawn-cluster.sh
-./scripts/deploy-dawn.sh
+./gitops/manual_deploy/deploy-dawn.sh
 ```
 
 ### Option 2: Infrastructure as Code with Pulumi

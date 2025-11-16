@@ -32,7 +32,7 @@
 
 ## Implementation
 
-In `foundation/gitops/day/pulumi/__main__.py.fixed`:
+In `foundation/gitops/pulumi_deploy/pulumi/__main__.py.fixed`:
 
 ```python
 # Create namespace as first resource
@@ -65,7 +65,7 @@ deployment = k8s.apps.v1.Deployment(
 ### ✅ **Self-Contained Stack**
 ```bash
 # Deploy complete application (namespace + resources) in one command
-cd foundation/gitops/day/pulumi
+cd foundation/gitops/pulumi_deploy/pulumi
 pulumi up
 
 # Everything is created:
@@ -293,7 +293,7 @@ namespace = infra_stack.require_output("app_namespace")
 **For your EKS + Pulumi setup:**
 
 ✅ **Recommended:** Application stack creates namespace
-- Location: `foundation/gitops/day/pulumi/__main__.py`
+- Location: `foundation/gitops/pulumi_deploy/pulumi/__main__.py`
 - Creates: Namespace + all application resources
 - Benefits: Self-contained, independent, flexible
 
