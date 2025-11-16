@@ -1342,7 +1342,7 @@ node_group = aws.eks.NodeGroup(
         "min_size": 1,
         "max_size": 3,
     },
-    capacity_type="SPOT",  # Cost optimization
+    capacity_type="SPOT",  # Using spot instances
 )
 
 # 4. ALB Controller (platform layer)

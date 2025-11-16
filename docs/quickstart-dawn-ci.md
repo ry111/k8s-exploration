@@ -11,7 +11,6 @@ This guide uses **GitHub Actions** to build images automatically - no Docker ins
 4. ✅ Deploy services (using CI-built images)
 
 **Time:** ~1 hour total
-**Cost:** ~$111-121/month (while cluster running)
 
 ## Prerequisites
 
@@ -88,7 +87,7 @@ Wait ~2-3 minutes for build to complete.
 
 ```bash
 # Check images were pushed
-aws ecr list-images --repository-name dawn --region us-west-2
+aws ecr list-images --repository-name dawn --region us-east-1
 ```
 
 You should see tags: `latest`, `rc`, and a git SHA.
@@ -100,7 +99,7 @@ You should see tags: `latest`, `rc`, and a git SHA.
 ```bash
 cd foundation/scripts
 
-./create-dawn-cluster.sh us-west-2
+./create-dawn-cluster.sh us-east-1
 ```
 
 This creates:
@@ -117,7 +116,7 @@ kubectl get nodes
 ## Step 3: Install AWS Load Balancer Controller (~5 minutes)
 
 ```bash
-./install-alb-controller-dawn.sh us-west-2
+./install-alb-controller-dawn.sh us-east-1
 ```
 
 **Verify:**
@@ -129,7 +128,7 @@ kubectl get deployment -n kube-system aws-load-balancer-controller
 ## Step 4: Deploy Dawn Services (~5 minutes)
 
 ```bash
-./deploy-dawn.sh us-west-2
+./deploy-dawn.sh us-east-1
 ```
 
 This deploys both production and RC tiers using the images from ECR that GitHub Actions built.
@@ -153,7 +152,7 @@ kubectl get ingress -n dawn-rc-ns
 kubectl get ingress dawn-ingress -n dawn-ns
 
 # Once you see a hostname:
-# k8s-dawnclus-abc123.us-west-2.elb.amazonaws.com
+# k8s-dawnclus-abc123.us-east-1.elb.amazonaws.com
 ```
 
 ### Test endpoints
@@ -184,9 +183,9 @@ curl http://$ALB_URL/info
 
 # Deploy cluster (30 minutes)
 cd foundation/scripts
-./create-dawn-cluster.sh us-west-2
-./install-alb-controller-dawn.sh us-west-2
-./deploy-dawn.sh us-west-2
+./create-dawn-cluster.sh us-east-1
+./install-alb-controller-dawn.sh us-east-1
+./deploy-dawn.sh us-east-1
 
 # Test
 curl http://$(kubectl get ingress dawn-ingress -n dawn-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/health
@@ -256,23 +255,11 @@ kubectl rollout restart
     Pods restart with new code
 ```
 
-## Cost Breakdown
-
-| Item | Monthly Cost |
-|------|--------------|
-| EKS Control Plane | $73.00 |
-| 2× t3.small spot | $9.08 |
-| ALB | $21-26 |
-| EBS | $3.20 |
-| ECR | $0.06 |
-| GitHub Actions | $0 (free tier) |
-| **TOTAL** | **~$106-111/month** |
-
 ## Cleanup
 
 ```bash
 # Delete everything
-./cleanup-dawn.sh us-west-2
+./cleanup-dawn.sh us-east-1
 
 # Type: DELETE
 

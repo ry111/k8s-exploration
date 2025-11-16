@@ -204,7 +204,6 @@ Add to your deployment pipeline:
 - ❌ Make changes to your cluster
 - ❌ Fix issues automatically
 - ❌ Deploy or update resources
-- ❌ Cost money (just read operations)
 
 **They only:**
 - ✅ Read cluster state
@@ -217,7 +216,7 @@ Add to your deployment pipeline:
 All scripts accept region as parameter:
 
 ```bash
-./health-check-dawn.sh us-west-2   # Different region
+./health-check-dawn.sh us-east-1   # Default region
 ./quick-status-dawn.sh eu-west-1   # Europe
 ```
 

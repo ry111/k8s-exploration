@@ -5,12 +5,10 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 ## Quick Start Options
 
 ### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED FOR LEARNING**
-- **Cost:** ~$111-121/month
 - **Time:** ~40 minutes
 - **Guide:** [quickstart-dawn.md](quickstart-dawn.md)
 
 ### Option 2: All Three Clusters with On-Demand Instances
-- **Cost:** ~$388-418/month
 - **Time:** ~90 minutes
 - **Guide:** See "Deployment Steps" below
 
@@ -77,7 +75,7 @@ cd foundation/scripts
 chmod +x *.sh
 
 # Create all 3 clusters
-./1-create-clusters.sh us-west-2
+./1-create-clusters.sh us-east-1
 ```
 
 This creates:
@@ -85,12 +83,10 @@ This creates:
 - `day-cluster` with 2 t3.small nodes
 - `dusk-cluster` with 2 t3.small nodes
 
-**Cost:** ~$163/month (~$54 per cluster: $22/month for nodes + $73/month for control plane / 3)
-
 ### 2. Install AWS Load Balancer Controller (~15 minutes)
 
 ```bash
-./2-install-alb-controller.sh us-west-2
+./2-install-alb-controller.sh us-east-1
 ```
 
 This installs the ALB Ingress Controller on all clusters to enable Ingress resources.
@@ -98,7 +94,7 @@ This installs the ALB Ingress Controller on all clusters to enable Ingress resou
 ### 3. Build and Push Docker Images (~10 minutes)
 
 ```bash
-./3-build-and-push-images.sh us-west-2
+./3-build-and-push-images.sh us-east-1
 ```
 
 This:
@@ -109,7 +105,7 @@ This:
 ### 4. Update Deployment Manifests
 
 ```bash
-./4-update-deployment-images.sh us-west-2
+./4-update-deployment-images.sh us-east-1
 ```
 
 This updates K8s deployment files to use ECR image URLs instead of local images.
@@ -117,7 +113,7 @@ This updates K8s deployment files to use ECR image URLs instead of local images.
 ### 5. Deploy Services (~10 minutes)
 
 ```bash
-./5-deploy-to-clusters.sh us-west-2
+./5-deploy-to-clusters.sh us-east-1
 ```
 
 This deploys both production and RC tiers to each cluster.
@@ -128,7 +124,7 @@ This deploys both production and RC tiers to each cluster.
 
 ```bash
 # List all clusters
-eksctl get cluster --region us-west-2
+eksctl get cluster --region us-east-1
 
 # Get nodes for each cluster
 kubectl get nodes --context dawn-cluster
@@ -140,7 +136,7 @@ kubectl get nodes --context dusk-cluster
 
 ```bash
 # Set context to a cluster
-aws eks update-kubeconfig --name dawn-cluster --region us-west-2
+aws eks update-kubeconfig --name dawn-cluster --region us-east-1
 
 # View all resources in production namespace
 kubectl get all -n dawn-ns
@@ -237,28 +233,12 @@ foundation/
 - **Environment:** rc
 - **Log Level:** debug
 
-## Cost Breakdown
-
-### Per Cluster
-- **EKS Control Plane:** ~$73/month
-- **2× t3.small nodes:** ~$30/month ($15 each)
-- **ALB:** ~$16/month
-- **Total per cluster:** ~$119/month
-
-### All 3 Clusters
-- **Total:** ~$357/month
-
-**Cost Optimization:**
-- Using t3.small instances (smallest practical for workloads)
-- Shared ALB per cluster (IngressGroup annotation)
-- Minimal replicas with HPA for burst capacity
-
 ## Cleanup
 
 **⚠️ WARNING: This deletes everything!**
 
 ```bash
-./cleanup.sh us-west-2
+./cleanup.sh us-east-1
 ```
 
 This will:
@@ -296,7 +276,7 @@ kubectl describe ingress dawn-ingress -n dawn-ns
 
 ```bash
 # Verify ECR repository exists
-aws ecr describe-repositories --region us-west-2
+aws ecr describe-repositories --region us-east-1
 
 # Check if nodes have ECR access (should be automatic with eksctl)
 kubectl describe node | grep -A 5 "iam.amazonaws.com"

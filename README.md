@@ -66,7 +66,6 @@ pulumi up
 - ✅ **Infrastructure as Code** - Pulumi for declarative infrastructure
 - ✅ **Application Management** - Managing K8s apps with code (not YAML)
 - ✅ **CI/CD** - GitHub Actions for automated deployments
-- ✅ **Cost Optimization** - Using spot instances effectively
 
 ## 📖 Key Concepts Explored
 
@@ -87,15 +86,6 @@ foundation/scripts/explore/explore-deployment-hierarchy.sh      # Visualize Depl
 foundation/scripts/explore/explore-configmap-relationships.sh   # See ConfigMap to Pod connections
 foundation/scripts/explore/explore-rolling-updates.sh           # Watch rolling updates in action
 ```
-
-## 💰 Cost Estimate
-
-**Single Cluster (Spot Instances):** ~$111-121/month
-- EKS Control Plane: ~$73/month
-- 2× t3.small spot nodes: ~$18/month
-- ALB: ~$21-26/month
-
-See [docs/foundation-overview.md](docs/foundation-overview.md) for detailed breakdown.
 
 ## 📦 What's Included
 

@@ -151,16 +151,6 @@ Expected response:
 }
 ```
 
-## Cost Estimate
-
-Same as Dawn cluster:
-- **EKS control plane**: ~$73/month
-- **2x t3.small spot nodes**: ~$9/month each (~$18 total)
-- **ALB**: ~$21-26/month
-- **Data transfer**: ~$1-3/month
-
-**Total: ~$113-123/month**
-
 ## Multi-Cluster Management
 
 You can switch between clusters:

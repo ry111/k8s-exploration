@@ -235,13 +235,6 @@ kubectl apply -f foundation/k8s/day/
 4. ⏭️ **Deploy Dusk cluster** - Run `pulumi up` with dusk stack (optional)
 5. ⏭️ **Set up ArgoCD** - Automate application deployment (Phase 5)
 
-## Cost
-
-Same cost as manual deployment:
-- **~$111-121/month** per cluster with spot instances
-
-Pulumi itself is free (using Pulumi Cloud free tier or S3 backend).
-
 ## Support
 
 - Main docs: [pulumi-setup.md](../../../docs/pulumi-setup.md)
