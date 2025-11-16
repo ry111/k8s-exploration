@@ -5,7 +5,8 @@ config:
 
   # Application settings
   day-service-app:namespace: dev
-  day-service-app:image_registry: your-registry
+  day-service-app:image_registry: your-registry  # Set to: {account-id}.dkr.ecr.us-east-1.amazonaws.com
+  day-service-app:image_name: day  # ECR repository name (matches build workflow)
   day-service-app:image_tag: latest
   day-service-app:replicas: 1
 

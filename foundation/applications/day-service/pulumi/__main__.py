@@ -64,6 +64,9 @@ namespace = config.get("namespace") or "production"
 image_registry = config.get("image_registry") or "your-registry"
 image_tag = config.get("image_tag") or "latest"
 
+# Image configuration (ECR repository name may differ from app_name)
+image_name = config.get("image_name") or "day"  # ECR repository name
+
 # Deployment settings
 replicas = config.get_int("replicas") or 3
 
@@ -160,7 +163,7 @@ deployment = k8s.apps.v1.Deployment(
             "spec": {
                 "containers": [{
                     "name": app_name,
-                    "image": f"{image_registry}/{app_name}:{image_tag}",
+                    "image": f"{image_registry}/{image_name}:{image_tag}",
                     "ports": [{
                         "container_port": 8080,
                         "name": "http",
@@ -333,7 +336,7 @@ pulumi.export("hpa_name", hpa.metadata["name"])
 pulumi.export("ingress_name", ingress.metadata["name"])
 pulumi.export("namespace", namespace)
 pulumi.export("replicas", replicas)
-pulumi.export("image", f"{image_registry}/{app_name}:{image_tag}")
+pulumi.export("image", f"{image_registry}/{image_name}:{image_tag}")
 
 # Export ALB hostname once ingress is created
 pulumi.export("alb_hostname", ingress.status.apply(
