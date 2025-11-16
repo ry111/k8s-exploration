@@ -12,7 +12,32 @@ error: configured Kubernetes cluster is unreachable: unable to load schema infor
 
 The IAM user or role used by GitHub Actions (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` secrets) is not authorized to access the EKS cluster.
 
-EKS uses AWS IAM for authentication. When the cluster was created by Pulumi, only the cluster creator's IAM principal was automatically granted access. The GitHub Actions IAM principal needs to be explicitly added to the cluster's `aws-auth` ConfigMap.
+EKS uses AWS IAM for authentication. When the cluster was created by Pulumi, only the cluster creator's IAM principal was automatically granted access. The GitHub Actions IAM principal needs to be explicitly granted cluster access.
+
+## Prerequisites
+
+The IAM user/role must have these AWS permissions:
+- `eks:DescribeCluster`
+- `eks:ListClusters`
+- `sts:GetCallerIdentity` (usually included by default)
+
+If the IAM principal doesn't have these permissions, add this IAM policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "eks:DescribeCluster",
+        "eks:ListClusters"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
 
 ## Solution
 
@@ -32,13 +57,27 @@ Copy the `Arn` value - this is the IAM principal that needs cluster access.
 
 ### Step 2: Grant Access to the Cluster
 
-#### Option A: Using the Helper Script (Recommended)
+**RECOMMENDED:** Use the Access Entries method (Option A). It's cleaner and doesn't require modifying ConfigMaps.
 
-From your local machine (with kubectl access to the cluster):
+#### Option A: Using Access Entries (Recommended - EKS 1.23+)
+
+From your local machine:
+
+```bash
+./scripts/grant-github-actions-access-v2.sh \
+  arn:aws:iam::612974049499:user/github-actions-user \
+  day-cluster-eksCluster-f3c27b8
+```
+
+This uses the modern EKS Access Entry API which is cleaner than aws-auth ConfigMap.
+
+#### Option B: Using aws-auth ConfigMap (Legacy)
+
+From your local machine:
 
 ```bash
 ./scripts/grant-github-actions-access.sh \
-  arn:aws:iam::123456789012:user/github-actions-user \
+  arn:aws:iam::612974049499:user/github-actions-user \
   day-cluster-eksCluster-f3c27b8
 ```
 
@@ -97,6 +136,48 @@ mapRoles: |
 ### Step 3: Verify
 
 Re-run the GitHub Actions workflow. The deployment should now succeed.
+
+## Troubleshooting
+
+### Still Getting Authentication Errors?
+
+Run the diagnostic script from your local machine:
+
+```bash
+./scripts/diagnose-eks-auth.sh day-cluster-eksCluster-f3c27b8 arn:aws:iam::612974049499:user/your-iam-user
+```
+
+This will check:
+- Your current IAM identity
+- Cluster status and accessibility
+- aws-auth ConfigMap contents
+- EKS access entries
+- kubectl connectivity
+- IAM permissions
+
+### Common Issues
+
+**1. Wrong IAM ARN**
+- Make sure you're using the exact ARN from the GitHub Actions output
+- Check if it's a user (`arn:aws:iam::ACCOUNT:user/NAME`) vs role (`arn:aws:iam::ACCOUNT:role/NAME`)
+
+**2. IAM Principal Lacks EKS Permissions**
+- The IAM user/role needs `eks:DescribeCluster` permission
+- Add the IAM policy shown in the Prerequisites section
+
+**3. aws-auth ConfigMap Not Updated Properly**
+- Verify with: `kubectl get configmap aws-auth -n kube-system -o yaml`
+- Look for your IAM ARN in either `mapRoles` or `mapUsers`
+- Make sure indentation is correct (YAML is sensitive to whitespace)
+
+**4. Using Access Entries but Cluster Doesn't Support Them**
+- Access Entries require EKS 1.23+
+- Check cluster version: `aws eks describe-cluster --name CLUSTER_NAME --query 'cluster.version'`
+- If < 1.23, use the aws-auth ConfigMap method instead
+
+**5. Changes Haven't Propagated**
+- Wait 30-60 seconds after updating aws-auth ConfigMap
+- For access entries, changes should be immediate
 
 ## Alternative Solution: Update Infrastructure Code
 
