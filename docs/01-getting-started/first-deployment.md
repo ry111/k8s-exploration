@@ -1,0 +1,523 @@
+# Your First Kubernetes Deployment on EKS
+
+This hands-on guide walks you through deploying your first application to Amazon EKS (Elastic Kubernetes Service). By the end, you'll have a running microservice accessible via the internet, and you'll understand each component involved.
+
+## 🎯 Learning Objectives
+
+By completing this guide, you will:
+- ✅ Create an EKS cluster with spot instances
+- ✅ Deploy a containerized application to Kubernetes
+- ✅ Expose your application via AWS Application Load Balancer
+- ✅ Understand Deployments, Services, and Ingress resources
+- ✅ Monitor and troubleshoot your deployment
+- ✅ Explore Kubernetes objects interactively
+
+**Estimated time:** 35-40 minutes
+
+---
+
+## Prerequisites
+
+Before starting, ensure you have these tools installed:
+
+```bash
+# Verify tools are installed
+aws --version      # AWS CLI
+eksctl version     # eksctl (EKS cluster management tool)
+kubectl version    # kubectl (Kubernetes CLI)
+helm version       # Helm (Kubernetes package manager)
+docker --version   # Docker
+
+# Configure AWS credentials
+aws configure
+
+# Verify AWS access
+aws sts get-caller-identity
+```
+
+> 📚 **Need help installing these tools?**
+>
+> See our prerequisites guide for installation instructions (coming soon).
+
+---
+
+## Deployment Steps
+
+### Step 1: Create Your EKS Cluster (~15-20 minutes)
+
+```bash
+cd foundation/scripts
+
+./create-dawn-cluster.sh us-east-1
+```
+
+This script creates:
+- EKS cluster named `dawn-cluster`
+- 2× t3.small spot instances (can scale 1-3)
+- VPC with public/private subnets
+- All necessary IAM roles
+
+**What's happening:**
+- eksctl provisions the EKS control plane (managed by AWS)
+- Kubernetes API server, scheduler, and controller manager start
+- Spot nodes join the cluster
+- You'll see real-time progress in your terminal
+
+> 💡 **Learning Pattern: Spot Instances**
+>
+> We're using **spot instances** (up to 90% cheaper than on-demand) for this learning project.
+> Spot instances can be interrupted with a 2-minute warning, which is acceptable for dev/learning.
+>
+> **For production:** Use a mix of on-demand and spot instances for better reliability.
+
+**Verify your cluster is ready:**
+```bash
+kubectl get nodes
+
+# Should show 2 nodes:
+# NAME                           STATUS   ROLES    AGE
+# ip-192-168-x-x.ec2.internal   Ready    <none>   2m
+# ip-192-168-y-y.ec2.internal   Ready    <none>   2m
+```
+
+---
+
+### Step 2: Install AWS Load Balancer Controller (~5 minutes)
+
+```bash
+./install-alb-controller-dawn.sh us-east-1
+```
+
+The AWS Load Balancer Controller automatically creates AWS Application Load Balancers (ALBs) when you create Kubernetes Ingress resources.
+
+**What it does:**
+- Watches for Ingress resources in your cluster
+- Provisions AWS ALBs automatically
+- Configures routing rules
+- Manages target groups pointing to your pods
+
+**Verify the controller is running:**
+```bash
+kubectl get deployment -n kube-system aws-load-balancer-controller
+
+# Should show:
+# NAME                           READY   UP-TO-DATE   AVAILABLE
+# aws-load-balancer-controller   2/2     2            2
+```
+
+---
+
+### Step 3: Build and Push Docker Images (~5 minutes)
+
+```bash
+./build-and-push-dawn.sh us-east-1
+```
+
+This script:
+- Creates an ECR (Elastic Container Registry) repository
+- Builds the Dawn service Docker image
+- Pushes the image with `:latest` and `:rc` tags to ECR
+
+**What you'll see:**
+```
+Step 1/8 : FROM python:3.11-slim
+Step 2/8 : WORKDIR /app
+...
+✓ Pushed dawn:latest
+✓ Pushed dawn:rc
+```
+
+> 💡 **Learning Pattern: Image Tags**
+>
+> This project uses **`:latest` and `:rc` tags** to make deployment simple and easy to understand.
+>
+> **For production:** Use immutable tags like `sha-a1b2c3d` or `v1.2.3` so you can:
+> - Know exactly which code version is deployed
+> - Roll back to specific versions reliably
+> - Track deployment history clearly
+>
+> The infrastructure already supports this! To use SHA-based tags:
+> ```bash
+> # In CI/CD or scripts, tag with git commit SHA:
+> docker tag dawn:latest $ECR_REGISTRY/dawn:$(git rev-parse --short HEAD)
+> ```
+
+---
+
+### Step 4: Deploy the Dawn Service (~5 minutes)
+
+```bash
+./deploy-dawn.sh us-east-1
+```
+
+This deploys two tiers of the Dawn service:
+- **Production tier** (dawn-ns namespace) - 2 pods with HPA
+- **RC tier** (dawn-rc-ns namespace) - 1 pod with HPA
+- Services (ClusterIP) for internal routing
+- Ingress resources for external access
+
+> 💡 **Learning Pattern: "RC" Terminology**
+>
+> We use **"RC"** (Release Candidate) to represent a pre-production environment.
+>
+> **Industry standard terms:**
+> - Staging
+> - Pre-production
+> - Canary
+>
+> The concept is the same: test changes before promoting to production.
+
+**Verify your pods are running:**
+```bash
+kubectl get pods -n dawn-ns
+kubectl get pods -n dawn-rc-ns
+
+# Should show running pods:
+# NAME                    READY   STATUS    RESTARTS   AGE
+# dawn-xxxxxxxxxx-xxxxx   1/1     Running   0          2m
+# dawn-xxxxxxxxxx-xxxxx   1/1     Running   0          2m
+```
+
+---
+
+### Step 5: Get Your Load Balancer URL (~2-3 minutes for ALB provisioning)
+
+```bash
+# Check production Ingress
+kubectl get ingress dawn-ingress -n dawn-ns
+
+# Check RC Ingress
+kubectl get ingress dawn-rc-ingress -n dawn-rc-ns
+```
+
+**Note:** AWS takes 2-3 minutes to provision the ALB. Initially you'll see:
+```
+ADDRESS
+<pending>
+```
+
+Wait a bit and check again. You'll see:
+```
+ADDRESS
+k8s-dawnclus-dawningr-abc123-123456789.us-east-1.elb.amazonaws.com
+```
+
+---
+
+### Step 6: Test Your Service
+
+```bash
+# Get the ALB URL
+ALB_URL=$(kubectl get ingress dawn-ingress -n dawn-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+# Test the endpoints
+curl http://$ALB_URL/
+curl http://$ALB_URL/health
+curl http://$ALB_URL/info
+
+# Example response:
+# {
+#   "service": "Dawn",
+#   "message": "Welcome to the Dawn service",
+#   "version": "1.0.0"
+# }
+```
+
+🎉 **Congratulations!** You've deployed your first application to Kubernetes!
+
+---
+
+## Complete Workflow (Copy-Paste)
+
+For reference, here's the complete deployment sequence:
+
+```bash
+cd foundation/scripts
+
+# 1. Create cluster (~20 min)
+./create-dawn-cluster.sh us-east-1
+
+# 2. Install ALB controller (~5 min)
+./install-alb-controller-dawn.sh us-east-1
+
+# 3. Build and push images (~5 min)
+./build-and-push-dawn.sh us-east-1
+
+# 4. Deploy services (~5 min)
+./deploy-dawn.sh us-east-1
+
+# 5. Wait for ALB to be ready (~2-3 min)
+watch kubectl get ingress -n dawn-ns
+
+# 6. Test (once ADDRESS is populated)
+curl http://$(kubectl get ingress dawn-ingress -n dawn-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/health
+```
+
+**Total time:** ~35-40 minutes
+
+---
+
+## 🔍 Explore What You Built
+
+Now that your application is running, let's explore the Kubernetes objects that make it work!
+
+### Cluster Architecture
+
+After deployment, here's what's running:
+
+```
+dawn-cluster (EKS)
+├── Control Plane (Managed by AWS)
+│   ├── API Server
+│   ├── etcd (cluster state)
+│   ├── Scheduler
+│   └── Controller Manager
+│
+├── Worker Nodes
+│   ├── Node 1: ip-192-168-x-x.ec2.internal (t3.small spot)
+│   └── Node 2: ip-192-168-y-y.ec2.internal (t3.small spot)
+│
+├── dawn-ns namespace (Production)
+│   ├── Deployment: dawn (manages ReplicaSet)
+│   │   └── ReplicaSet: dawn-xxxxxxxxx (manages Pods)
+│   │       ├── Pod: dawn-xxxxxxxxxx-xxxxx
+│   │       └── Pod: dawn-xxxxxxxxxx-xxxxx
+│   ├── Service: dawn-service (ClusterIP - internal routing)
+│   ├── Ingress: dawn-ingress (creates ALB for external access)
+│   ├── ConfigMap: dawn-config (environment variables)
+│   └── HPA: dawn-hpa (auto-scaling 2-5 pods)
+│
+└── dawn-rc-ns namespace (RC)
+    ├── Deployment: dawn-rc
+    │   └── ReplicaSet: dawn-rc-xxxxxxxxx
+    │       └── Pod: dawn-rc-xxxxxxxxxx-xxxxx
+    ├── Service: dawn-rc-service
+    ├── Ingress: dawn-rc-ingress (shares same ALB)
+    ├── ConfigMap: dawn-rc-config
+    └── HPA: dawn-rc-hpa (auto-scaling 1-3 pods)
+```
+
+> 💡 **Learning Pattern: One Cluster Per Service**
+>
+> This project creates **separate clusters** for each service (dawn, day, dusk).
+>
+> **Why we do this for learning:**
+> - Clear isolation helps understand cluster boundaries
+> - Easier to experiment and clean up
+> - See the full cluster creation process
+>
+> **Production pattern:** Run multiple services in one cluster using **namespaces**:
+> ```
+> shared-prod-cluster
+> ├── dawn-ns (namespace)
+> ├── day-ns (namespace)
+> └── dusk-ns (namespace)
+> ```
+> This is more cost-effective (fewer control planes) and better resource utilization.
+>
+> See `07-next-steps/learning-vs-production.md` for migration guidance.
+
+### Interactive Exploration Scripts
+
+This project includes scripts to help you visualize and understand Kubernetes internals:
+
+```bash
+cd foundation/scripts/explore
+
+# See how Deployments → ReplicaSets → Pods work
+./explore-deployment-hierarchy.sh
+
+# Understand ConfigMap to Pod relationships
+./explore-configmap-relationships.sh
+
+# Watch rolling updates in action
+./explore-rolling-updates.sh
+```
+
+These scripts show you exactly how Kubernetes manages your application!
+
+---
+
+## Monitoring Your Deployment
+
+### Check Cluster Resources
+
+```bash
+# Get all pods across all namespaces
+kubectl get pods --all-namespaces
+
+# Check node resource usage (requires metrics-server)
+kubectl top nodes
+
+# Check pod resource usage
+kubectl top pods -n dawn-ns
+```
+
+### View Logs
+
+```bash
+# Production logs
+kubectl logs -n dawn-ns deployment/dawn
+
+# RC logs
+kubectl logs -n dawn-rc-ns deployment/dawn-rc
+
+# Follow logs in real-time
+kubectl logs -n dawn-ns deployment/dawn -f
+
+# View logs from a specific pod
+kubectl logs -n dawn-ns <pod-name>
+```
+
+### Check Auto-Scaling
+
+```bash
+# View HPA status
+kubectl get hpa -n dawn-ns
+kubectl get hpa -n dawn-rc-ns
+
+# Example output:
+# NAME        REFERENCE         TARGETS   MINPODS   MAXPODS   REPLICAS
+# dawn-hpa    Deployment/dawn   15%/70%   2         5         2
+```
+
+The HPA (HorizontalPodAutoscaler) automatically scales pods based on CPU/memory usage.
+
+---
+
+## Troubleshooting
+
+### Pods Not Starting
+
+```bash
+# Describe the pod to see events
+kubectl describe pod -n dawn-ns <pod-name>
+
+# Check pod logs
+kubectl logs -n dawn-ns <pod-name>
+```
+
+**Common issues:**
+- **ImagePullBackOff:** Image not pushed to ECR or wrong URL
+- **CrashLoopBackOff:** Application error, check logs
+- **Pending:** Not enough resources on nodes
+
+### Ingress Not Creating ALB
+
+```bash
+# Check Ingress details
+kubectl describe ingress dawn-ingress -n dawn-ns
+
+# Check ALB controller logs
+kubectl logs -n kube-system deployment/aws-load-balancer-controller
+```
+
+**Common issues:**
+- ALB controller not running
+- Missing IAM permissions
+- Takes 2-3 minutes to provision (be patient!)
+
+### Spot Instance Interruptions
+
+Spot instances can be terminated with a 2-minute warning. When this happens:
+1. Kubernetes automatically reschedules pods to other nodes
+2. If you have multiple replicas, your service remains available
+3. New nodes may be provisioned if needed
+
+Check for spot interruptions:
+```bash
+kubectl get events --all-namespaces | grep -i spot
+```
+
+> 📚 **More help needed?**
+>
+> See `06-troubleshooting/common-issues.md` for detailed troubleshooting guides.
+
+---
+
+## Cleanup
+
+When you're done experimenting, clean up all resources:
+
+**⚠️ WARNING: This deletes everything!**
+
+```bash
+cd foundation/scripts
+./cleanup-dawn.sh us-east-1
+```
+
+This will:
+- Delete the EKS cluster and all workloads
+- Delete worker nodes
+- Delete ECR repository and images
+- Delete ALBs
+- Remove IAM roles
+
+You'll need to type `DELETE` to confirm.
+
+---
+
+## ✅ What You Learned
+
+Congratulations! You've successfully:
+
+- [x] Created an EKS cluster with eksctl
+- [x] Deployed a containerized application using kubectl
+- [x] Exposed your application via Ingress and ALB
+- [x] Understood Kubernetes core resources:
+  - **Deployments** - Declare desired state for your application
+  - **ReplicaSets** - Ensure the right number of pods are running
+  - **Pods** - The smallest deployable units (containers)
+  - **Services** - Internal networking and load balancing
+  - **Ingress** - External access via load balancers
+  - **ConfigMaps** - Configuration management
+  - **HPA** - Automatic scaling based on metrics
+- [x] Monitored your deployment with kubectl
+- [x] Explored Kubernetes architecture hands-on
+
+**Key concepts mastered:**
+- EKS managed Kubernetes control plane
+- Spot instances for cost savings
+- Container image management with ECR
+- Declarative infrastructure (YAML manifests)
+- Zero-downtime deployments with rolling updates
+- Health checks and auto-healing
+
+---
+
+## 🚀 Next Steps
+
+### Deepen Your Understanding
+
+1. **Learn Kubernetes Internals**
+   - [Deployment Hierarchy](../05-kubernetes-deep-dives/deployment-hierarchy.md) - How Deployments create Pods
+   - [ConfigMap Relationships](../05-kubernetes-deep-dives/configmap-relationships.md) - Configuration management patterns
+   - [Rolling Updates](../05-kubernetes-deep-dives/rolling-updates.md) - Zero-downtime deployment mechanics
+
+2. **Automate with Infrastructure as Code**
+   - [Why Infrastructure as Code?](../02-infrastructure-as-code/why-infrastructure-as-code.md)
+   - [Pulumi Setup](../02-infrastructure-as-code/pulumi-setup.md) - Manage infrastructure with Python
+   - [Deploy with Pulumi](../02-infrastructure-as-code/deploy-with-pulumi.md) - The Day cluster example
+
+3. **Add CI/CD**
+   - [GitHub Actions Setup](../04-cicd-automation/github-actions-setup.md) - Automate builds and deployments
+
+### Explore Further
+
+- **Kubernetes Fundamentals:** [kubernetes-101.md](./kubernetes-101.md) - Deep dive into K8s architecture
+- **Project Overview:** [overview.md](./overview.md) - Understand the full project structure
+- **Production Patterns:** [learning-vs-production.md](../07-next-steps/learning-vs-production.md) - What changes for production
+
+---
+
+## Resources
+
+- [eksctl Documentation](https://eksctl.io/) - EKS cluster management tool
+- [AWS EKS Best Practices](https://aws.github.io/aws-eks-best-practices/) - Production guidance
+- [Spot Instance Best Practices](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-best-practices.html)
+- [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/)
+- [Kubernetes Documentation](https://kubernetes.io/docs/) - Official K8s docs
+
+---
+
+**Questions or issues?** Check our [troubleshooting guide](../06-troubleshooting/common-issues.md) or explore the [deep dive docs](../05-kubernetes-deep-dives/).
