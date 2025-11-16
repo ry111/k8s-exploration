@@ -4,13 +4,15 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 
 ## Quick Start Options
 
-### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED FOR LEARNING**
+### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED**
 - **Time:** ~40 minutes
 - **Guide:** [first-deployment.md](first-deployment.md)
+- **Method:** Manual scripts in `foundation/provisioning/manual/`
 
-### Option 2: All Three Clusters with On-Demand Instances
-- **Time:** ~90 minutes
-- **Guide:** See "Deployment Steps" below
+### Option 2: Infrastructure as Code with Pulumi (Day/Dusk clusters)
+- **Time:** ~30 minutes
+- **Guide:** [../../02-infrastructure-as-code/pulumi-setup.md](../02-infrastructure-as-code/pulumi-setup.md)
+- **Method:** Declarative Pulumi programs in `foundation/provisioning/pulumi/`
 
 ## Architecture
 
@@ -64,9 +66,11 @@ aws configure
 aws sts get-caller-identity
 ```
 
-## Deployment Steps
+## Deployment Steps (Dawn Only - Manual)
 
-### 1. Create EKS Clusters (~45-60 minutes)
+For detailed step-by-step instructions, see [first-deployment.md](first-deployment.md).
+
+### 1. Create Dawn EKS Cluster (~15-20 minutes)
 
 ```bash
 cd foundation/provisioning/manual
@@ -74,49 +78,39 @@ cd foundation/provisioning/manual
 # Make scripts executable
 chmod +x *.sh
 
-# Create all 3 clusters
-./1-create-clusters.sh us-east-1
+# Create Dawn cluster
+./create-dawn-cluster.sh us-east-1
 ```
 
 This creates:
-- `dawn-cluster` with 2 t3.small nodes
-- `day-cluster` with 2 t3.small nodes
-- `dusk-cluster` with 2 t3.small nodes
+- `dawn-cluster` with 2 t3.small nodes (spot instances)
+- OIDC provider for IAM roles
+- Managed node group with autoscaling
 
-### 2. Install AWS Load Balancer Controller (~15 minutes)
+### 2. Install AWS Load Balancer Controller (~5 minutes)
 
 ```bash
-./2-install-alb-controller.sh us-east-1
+./install-alb-controller-dawn.sh us-east-1
 ```
 
-This installs the ALB Ingress Controller on all clusters to enable Ingress resources.
+This installs the ALB Ingress Controller on Dawn cluster to enable Ingress resources.
 
-### 3. Build and Push Docker Images (~10 minutes)
+### 3. Build and Deploy Dawn Service (~10 minutes)
 
 ```bash
-./3-build-and-push-images.sh us-east-1
+cd ../gitops/manual_deploy
+
+# Build and push Dawn image to ECR
+./build-and-push-dawn.sh us-east-1
+
+# Deploy Dawn service to cluster
+./deploy-dawn.sh us-east-1
 ```
 
 This:
-- Creates ECR repositories for dawn, day, dusk
-- Builds Docker images for each service
-- Pushes `:latest` and `:rc` tags to ECR
-
-### 4. Update Deployment Manifests
-
-```bash
-./4-update-deployment-images.sh us-east-1
-```
-
-This updates K8s deployment files to use ECR image URLs instead of local images.
-
-### 5. Deploy Services (~10 minutes)
-
-```bash
-./5-deploy-to-clusters.sh us-east-1
-```
-
-This deploys both production and RC tiers to each cluster.
+- Creates ECR repository for dawn
+- Builds Docker image
+- Deploys to dawn-cluster with production configuration
 
 ## Verification
 
@@ -178,14 +172,19 @@ curl http://$RC_ALB_URL/health
 ```
 foundation/
 ├── provisioning/
-│   ├── pulumi/       # Infrastructure as Code (Pulumi)
+│   ├── pulumi/              # Infrastructure as Code (Pulumi)
 │   │   ├── __main__.py      # EKS cluster, VPC, nodes
 │   │   ├── Pulumi.day.yaml  # Day cluster config
 │   │   └── Pulumi.dusk.yaml # Dusk cluster config
-│   └── manual/       # Manual deployment scripts
+│   └── manual/              # Manual cluster provisioning scripts
+│       ├── create-dawn-cluster.sh
+│       └── install-alb-controller-dawn.sh
 ├── gitops/
-│   └── day/          # Application resources (Pulumi)
-│       └── __main__.py  # Deployment, Service, HPA, etc.
+│   ├── pulumi_deploy/       # Application deployment (Pulumi)
+│   │   └── __main__.py      # Deployment, Service, HPA, etc.
+│   └── manual_deploy/       # Manual deployment scripts
+│       ├── build-and-push-dawn.sh
+│       └── deploy-dawn.sh
 ├── services/         # Python Flask applications
 │   ├── dawn/
 │   ├── day/
@@ -222,16 +221,17 @@ foundation/
 
 ## Cleanup
 
-**⚠️ WARNING: This deletes everything!**
+**⚠️ WARNING: This deletes the Dawn cluster and all resources!**
 
 ```bash
-./cleanup.sh us-east-1
+cd foundation/gitops/manual_deploy
+./cleanup-dawn.sh us-east-1
 ```
 
 This will:
-- Delete all 3 EKS clusters
-- Delete all node groups
-- Delete ECR repositories
+- Delete Dawn EKS cluster
+- Delete Dawn node group
+- Delete Dawn ECR repository
 - Clean up associated AWS resources
 
 ## Troubleshooting
