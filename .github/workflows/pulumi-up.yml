@@ -14,8 +14,6 @@ jobs:
   deploy:
     name: Deploy Infrastructure
     runs-on: ubuntu-latest
-    # Optionally require manual approval for production
-    # environment: production
 
     steps:
       - name: Checkout code
@@ -43,7 +41,7 @@ jobs:
         uses: pulumi/actions@v4
         with:
           command: up
-          stack-name: dev
+          stack-name: day
           work-dir: foundation/infrastructure/pulumi
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
@@ -51,7 +49,7 @@ jobs:
       - name: Export outputs
         working-directory: foundation/infrastructure/pulumi
         run: |
-          echo "### Pulumi Outputs" >> $GITHUB_STEP_SUMMARY
+          echo "### Infrastructure Outputs" >> $GITHUB_STEP_SUMMARY
           pulumi stack output --json | jq -r 'to_entries[] | "- **\(.key)**: \(.value)"' >> $GITHUB_STEP_SUMMARY
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
