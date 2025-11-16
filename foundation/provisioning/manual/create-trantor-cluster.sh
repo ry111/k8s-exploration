@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Script to create Trantor EKS cluster with SPOT instances
-# This cluster hosts multiple services: Dawn and Day
 # Usage: ./create-trantor-cluster.sh [region]
 
 set -e
@@ -13,7 +12,6 @@ echo "Region: $REGION"
 echo ""
 echo "Configuration:"
 echo "  - Cluster name: trantor"
-echo "  - Services: Dawn + Day (decoupled from cluster name)"
 echo "  - Node type: t3.small (spot instances)"
 echo "  - Nodes: 2 desired (1 min, 4 max)"
 echo "  - Cost savings: ~70% vs on-demand"
@@ -47,7 +45,7 @@ eksctl create cluster \
   --spot \
   --with-oidc \
   --ssh-access=false \
-  --tags "Environment=development,Cluster=trantor,Services=dawn-day,CostCenter=learning"
+  --tags "Environment=development,Cluster=trantor,CostCenter=learning"
 
 echo ""
 echo "========================================="
@@ -64,8 +62,4 @@ kubectl get nodes
 echo ""
 echo "Next steps:"
 echo "  1. Run: ./install-alb-controller-trantor.sh $REGION"
-echo "  2. Deploy services:"
-echo "     cd ../../gitops/manual_deploy"
-echo "     ./build-and-push-dawn.sh $REGION"
-echo "     ./build-and-push-day.sh $REGION"
-echo "     ./deploy-to-trantor.sh $REGION"
+echo "  2. Deploy your services (see gitops/manual_deploy for deployment scripts)"

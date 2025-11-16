@@ -4,9 +4,9 @@ This directory contains Pulumi programs for provisioning the **Terminus** EKS cl
 
 ## Architecture Overview
 
-**New Decoupled Design:**
-- **Trantor cluster** (manual provisioning) → Hosts Dawn + Day services
-- **Terminus cluster** (Pulumi provisioning) → Ready for future services
+**Decoupled Design:**
+- **Trantor cluster** (manual provisioning) → General-purpose cluster
+- **Terminus cluster** (Pulumi provisioning) → IaC-managed cluster
 
 This architecture decouples services from clusters, allowing multiple services to share infrastructure.
 
@@ -39,10 +39,10 @@ foundation/provisioning/pulumi/
 
 ## Cluster Architecture
 
-| Cluster | Stack Name | VPC CIDR | Services | Management |
-|---------|------------|----------|----------|------------|
-| **Trantor** | N/A | 10.0.0.0/16 | Dawn + Day | Manual (eksctl) |
-| **Terminus** | terminus | 10.2.0.0/16 | Future services | Pulumi (IaC) |
+| Cluster | Stack Name | VPC CIDR | Management |
+|---------|------------|----------|------------|
+| **Trantor** | N/A | 10.0.0.0/16 | Manual (eksctl) |
+| **Terminus** | terminus | 10.2.0.0/16 | Pulumi (IaC) |
 
 ## Quick Start
 
@@ -87,11 +87,7 @@ pulumi stack ls
 # Step 2: Install ALB controller
 ./foundation/provisioning/manual/install-alb-controller-trantor.sh us-east-1
 
-# Step 3: Deploy services
-cd ../../gitops/manual_deploy
-./build-and-push-dawn.sh us-east-1
-./build-and-push-day.sh us-east-1
-./deploy-to-trantor.sh us-east-1
+# Step 3: Deploy services (see gitops/manual_deploy for deployment scripts)
 ```
 
 **Pros:**
@@ -160,9 +156,7 @@ eksctl delete cluster --name trantor
 ./foundation/provisioning/manual/create-trantor-cluster.sh
 # Reinstall everything
 ./foundation/provisioning/manual/install-alb-controller-trantor.sh
-# Redeploy all services
-cd ../../gitops/manual_deploy
-./deploy-to-trantor.sh
+# Redeploy services (see gitops/manual_deploy)
 ```
 
 **Pulumi approach (Terminus cluster):**
@@ -201,19 +195,19 @@ Outputs:
 
 ## Cluster Comparison
 
-**Trantor cluster (Manual - Hosts Dawn + Day):**
+**Trantor cluster (Manual provisioning):**
 - Created with `./foundation/provisioning/manual/create-trantor-cluster.sh`
 - Managed with eksctl and kubectl commands
 - No Pulumi state tracking
 - Updates require manual script execution
-- Hosts multiple services (decoupled architecture)
+- General-purpose cluster for any services
 
-**Terminus cluster (Pulumi - Future services):**
+**Terminus cluster (Pulumi provisioning):**
 - Created with `pulumi up`
 - Managed declaratively via Infrastructure as Code
 - State tracked in Pulumi backend
 - Updates via `pulumi up` after config changes
-- Ready for additional services
+- IaC-managed cluster for any services
 
 ## Application Deployment
 
