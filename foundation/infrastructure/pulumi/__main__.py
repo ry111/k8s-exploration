@@ -186,26 +186,72 @@ alb_policy_doc = aws.iam.get_policy_document(
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "elasticloadbalancing:DescribeLoadBalancerAttributes",
                 "elasticloadbalancing:DescribeListeners",
+                "elasticloadbalancing:DescribeListenerAttributes",  # Missing!
                 "elasticloadbalancing:DescribeListenerCertificates",
                 "elasticloadbalancing:DescribeRules",
                 "elasticloadbalancing:DescribeTargetGroups",
                 "elasticloadbalancing:DescribeTargetGroupAttributes",
                 "elasticloadbalancing:DescribeTargetHealth",
                 "elasticloadbalancing:DescribeTags",
+                "elasticloadbalancing:DescribeSSLPolicies",  # Missing!
                 "elasticloadbalancing:CreateLoadBalancer",
                 "elasticloadbalancing:CreateListener",
                 "elasticloadbalancing:CreateRule",
                 "elasticloadbalancing:CreateTargetGroup",
                 "elasticloadbalancing:ModifyLoadBalancerAttributes",
+                "elasticloadbalancing:ModifyListener",  # Missing!
+                "elasticloadbalancing:ModifyRule",  # Missing!
                 "elasticloadbalancing:ModifyTargetGroupAttributes",
                 "elasticloadbalancing:RegisterTargets",
                 "elasticloadbalancing:DeregisterTargets",
+                "elasticloadbalancing:SetWebAcl",  # Missing!
+                "elasticloadbalancing:SetSecurityGroups",  # Missing!
+                "elasticloadbalancing:SetSubnets",  # Missing!
                 "elasticloadbalancing:DeleteLoadBalancer",
                 "elasticloadbalancing:DeleteListener",
                 "elasticloadbalancing:DeleteRule",
                 "elasticloadbalancing:DeleteTargetGroup",
                 "elasticloadbalancing:AddTags",
                 "elasticloadbalancing:RemoveTags",
+            ],
+            resources=["*"],
+        ),
+        # WAF permissions
+        aws.iam.GetPolicyDocumentStatementArgs(
+            effect="Allow",
+            actions=[
+                "wafv2:GetWebACL",
+                "wafv2:GetWebACLForResource",
+                "wafv2:AssociateWebACL",
+                "wafv2:DisassociateWebACL",
+            ],
+            resources=["*"],
+        ),
+        # Shield permissions
+        aws.iam.GetPolicyDocumentStatementArgs(
+            effect="Allow",
+            actions=[
+                "shield:GetSubscriptionState",
+                "shield:DescribeProtection",
+                "shield:CreateProtection",
+                "shield:DeleteProtection",
+            ],
+            resources=["*"],
+        ),
+        # Cognito permissions (for ALB authentication)
+        aws.iam.GetPolicyDocumentStatementArgs(
+            effect="Allow",
+            actions=[
+                "cognito-idp:DescribeUserPoolClient",
+            ],
+            resources=["*"],
+        ),
+        # ACM permissions (for SSL certificates)
+        aws.iam.GetPolicyDocumentStatementArgs(
+            effect="Allow",
+            actions=[
+                "acm:ListCertificates",
+                "acm:DescribeCertificate",
             ],
             resources=["*"],
         ),
