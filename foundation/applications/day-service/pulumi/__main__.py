@@ -96,6 +96,25 @@ labels = {
 }
 
 # ============================================================================
+# Namespace
+# ============================================================================
+# Create the namespace if it doesn't exist
+# This allows the application stack to be self-contained
+
+ns = k8s.core.v1.Namespace(
+    f"{namespace}-namespace",
+    metadata={
+        "name": namespace,
+        "labels": {
+            "name": namespace,
+            "managed-by": "pulumi",
+            "app": app_name,
+        },
+    },
+    opts=provider_opts,
+)
+
+# ============================================================================
 # ConfigMap
 # ============================================================================
 
@@ -112,7 +131,10 @@ config_map = k8s.core.v1.ConfigMap(
         "CACHE_TTL": cache_ttl,
         "FEATURE_NEW_UI": str(feature_new_ui).lower(),
     },
-    opts=provider_opts,  # Use the provider we configured
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
+    ),
 )
 
 # ============================================================================
@@ -178,7 +200,10 @@ deployment = k8s.apps.v1.Deployment(
             },
         },
     },
-    opts=provider_opts,  # Use the provider we configured
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
+    ),
 )
 
 # ============================================================================
@@ -202,7 +227,10 @@ service = k8s.core.v1.Service(
             "name": "http",
         }],
     },
-    opts=provider_opts,  # Use the provider we configured
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
+    ),
 )
 
 # ============================================================================
@@ -247,7 +275,10 @@ hpa = k8s.autoscaling.v2.HorizontalPodAutoscaler(
             },
         ],
     },
-    opts=provider_opts,  # Use the provider we configured
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
+    ),
 )
 
 # ============================================================================
@@ -286,7 +317,10 @@ ingress = k8s.networking.v1.Ingress(
             },
         }],
     },
-    opts=provider_opts,  # Use the provider we configured
+    opts=pulumi.ResourceOptions(
+        provider=provider_opts.provider if provider_opts else None,
+        depends_on=[ns],  # Wait for namespace to be created
+    ),
 )
 
 # ============================================================================
