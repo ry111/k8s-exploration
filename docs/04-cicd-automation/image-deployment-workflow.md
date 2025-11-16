@@ -410,6 +410,6 @@ config-map: |
 
 ## Related Documentation
 
-- [Application as Code Guide](application-as-code-guide.md) - Managing apps with Pulumi
-- [Pulumi Setup](pulumi-setup.md) - Infrastructure setup
-- [CI Setup](ci-setup.md) - General CI/CD configuration
+- [Application as Code Guide](../03-application-management/application-as-code.md) - Managing apps with Pulumi
+- [Pulumi Setup](../02-infrastructure-as-code/pulumi-setup.md) - Infrastructure setup
+- [GitHub Actions Setup](github-actions-setup.md) - General CI/CD configuration

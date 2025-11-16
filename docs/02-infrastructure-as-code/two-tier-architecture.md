@@ -232,7 +232,7 @@ This is what we use for Dawn and Dusk services - traditional Kubernetes YAML wit
 **Infrastructure (Pulumi):**
 ```
 Location: foundation/infrastructure/pulumi/
-         OR scripts/create-dawn-cluster.sh (manual)
+         OR foundation/scripts/create-dawn-cluster.sh (manual)
 Manages:
   - AWS EKS Cluster
   - VPC and Networking
@@ -301,7 +301,7 @@ We demonstrate **both approaches** to show they're equally valid:
 
 ### Dawn Service: Pulumi Infrastructure + kubectl Applications
 ```
-Infrastructure: scripts/create-dawn-cluster.sh (manual)
+Infrastructure: foundation/scripts/create-dawn-cluster.sh (manual)
 Applications:   foundation/k8s/dawn/*.yaml (kubectl)
 ```
 
@@ -618,7 +618,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 ### Infrastructure (Always Pulumi)
 ✅ `foundation/infrastructure/pulumi/` - EKS clusters for Day and Dusk
-✅ `scripts/create-dawn-cluster.sh` - Dawn cluster (manual, but could be Pulumi)
+✅ `foundation/scripts/create-dawn-cluster.sh` - Dawn cluster (manual, but could be Pulumi)
 
 ### Applications (Demonstrating Both Approaches)
 ✅ **Day Service** - Two-Tier Pulumi (`foundation/applications/day-service/pulumi/`)
@@ -634,7 +634,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 2. Configure stack references to infrastructure
 3. Parameterize with stack configs
 4. Set up CI/CD with Pulumi Actions
-5. Read: [application-as-code-guide.md](application-as-code-guide.md)
+5. Read: [application-as-code.md](../03-application-management/application-as-code.md)
 
 ### If Choosing GitOps:
 1. Keep infrastructure Pulumi as-is
@@ -648,7 +648,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 - Two-tier Pulumi example: `foundation/applications/day-service/pulumi/`
 - Infrastructure Pulumi: `foundation/infrastructure/pulumi/__main__.py`
 - GitOps examples: `foundation/k8s/dawn/`, `foundation/k8s/dusk/`
-- Application guide: [application-as-code-guide.md](application-as-code-guide.md)
-- Deployment concepts: [deployment-hierarchy.md](deployment-hierarchy.md)
+- Application guide: [application-as-code.md](../03-application-management/application-as-code.md)
+- Deployment concepts: [deployment-hierarchy.md](../05-kubernetes-deep-dives/deployment-hierarchy.md)
 - Pulumi Best Practices: https://www.pulumi.com/docs/using-pulumi/best-practices/
 - Stack References: https://www.pulumi.com/learn/building-with-pulumi/stack-references/

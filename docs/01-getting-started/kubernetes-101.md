@@ -1449,14 +1449,14 @@ Developer → kubectl → API Server → etcd
 ## Next Steps
 
 **Explore deeper:**
-- [deployment-hierarchy.md](deployment-hierarchy.md) - How Deployments work
-- [configmap-relationships.md](configmap-relationships.md) - Configuration management
-- [rolling-update-mechanism.md](rolling-update-mechanism.md) - Zero-downtime updates
-- [pulumi-resource-strategy.md](pulumi-resource-strategy.md) - Infrastructure as Code
+- [deployment-hierarchy.md](../05-kubernetes-deep-dives/deployment-hierarchy.md) - How Deployments work
+- [configmap-relationships.md](../05-kubernetes-deep-dives/configmap-relationships.md) - Configuration management
+- [rolling-updates.md](../05-kubernetes-deep-dives/rolling-updates.md) - Zero-downtime updates
+- [two-tier-architecture.md](../02-infrastructure-as-code/two-tier-architecture.md) - Infrastructure as Code
 
 **Try it yourself:**
-- [quickstart-dawn.md](quickstart-dawn.md) - Deploy your first cluster
-- [deploy-day-cluster.md](deploy-day-cluster.md) - Pulumi-managed cluster
+- [first-deployment.md](first-deployment.md) - Deploy your first cluster
+- [deploy-with-pulumi.md](../02-infrastructure-as-code/deploy-with-pulumi.md) - Pulumi-managed cluster
 - Exploration scripts: `foundation/scripts/explore/`
 
 **Official documentation:**

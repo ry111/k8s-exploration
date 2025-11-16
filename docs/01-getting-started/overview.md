@@ -6,7 +6,7 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 
 ### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED FOR LEARNING**
 - **Time:** ~40 minutes
-- **Guide:** [quickstart-dawn.md](quickstart-dawn.md)
+- **Guide:** [first-deployment.md](first-deployment.md)
 
 ### Option 2: All Three Clusters with On-Demand Instances
 - **Time:** ~90 minutes
