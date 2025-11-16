@@ -4,7 +4,7 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 
 ## Quick Start Options
 
-### Option 1: Single Cluster (Trantor - hosts Dawn and Day) with Spot Instances - **RECOMMENDED**
+### Option 1: Manual Cluster (Trantor) with Spot Instances - **RECOMMENDED**
 - **Time:** ~40 minutes
 - **Guide:** [first-deployment.md](first-deployment.md)
 - **Method:** Manual scripts in `foundation/provisioning/manual/`
@@ -19,17 +19,18 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 **Decoupled Design: Clusters ≠ Services**
 
 - **2 EKS Clusters:**
-  - **Trantor** - Hosts Dawn and Day services (manual provisioning)
-  - **Terminus** - Reserved for future services (Pulumi-managed)
+  - **Trantor** - General-purpose cluster (manual provisioning)
+  - **Terminus** - IaC-managed cluster (Pulumi-managed)
 
 - **Multiple Services per Cluster:**
-  - Trantor cluster runs both Dawn and Day services
+  - Clusters can host multiple services
   - Each service has its own namespaces (prod + RC)
+  - Service deployment is independent of cluster provisioning
 
-- **Namespaces:**
-  - dawn-ns, dawn-rc-ns (on Trantor)
-  - day-ns, day-rc-ns (on Trantor)
-  - Future: additional services on Terminus
+- **Namespace Isolation:**
+  - Services use dedicated namespaces (e.g., service-ns, service-rc-ns)
+  - Isolation via Kubernetes namespaces
+  - Multiple services can share cluster infrastructure
 
 Each service deployment includes:
 - Production deployment (2-5 replicas)

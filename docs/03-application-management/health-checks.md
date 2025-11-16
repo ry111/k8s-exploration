@@ -1,6 +1,6 @@
 # Health Check & Monitoring Scripts
 
-Quick reference for monitoring and troubleshooting Dawn cluster.
+Quick reference for monitoring and troubleshooting EKS services.
 
 ## Scripts Overview
 

@@ -241,16 +241,15 @@ pulumi login s3://my-pulumi-state-bucket
 
 ## Manual vs IaC in This Project
 
-### Dawn Cluster: Manual (Learning)
+### Trantor Cluster: Manual (Learning)
 
 **Purpose:** Understand each step explicitly
 
 ```bash
 # You manually run scripts to:
-./foundation/provisioning/manual/create-trantor-cluster.sh us-east-1      # Create EKS cluster
-./foundation/provisioning/manual/install-alb-controller-dawn.sh         # Install ALB controller
-./foundation/gitops/manual_deploy/build-and-push-dawn.sh                 # Build and push image
-./foundation/gitops/manual_deploy/deploy-dawn.sh                         # Deploy application
+./foundation/provisioning/manual/create-trantor-cluster.sh us-east-1         # Create EKS cluster
+./foundation/provisioning/manual/install-alb-controller-trantor.sh us-east-1 # Install ALB controller
+# Then deploy services (see gitops/manual_deploy for deployment scripts)
 ```
 
 **Best for:**
@@ -263,7 +262,7 @@ pulumi login s3://my-pulumi-state-bucket
 - Manual tracking of what exists
 - No preview of changes
 
-### Day Cluster: Pulumi IaC (Automation)
+### Terminus Cluster: Pulumi IaC (Automation)
 
 **Purpose:** Declare what you want, let Pulumi handle it
 
@@ -317,7 +316,7 @@ pulumi destroy
 Ready to try Infrastructure as Code?
 
 1. **[Pulumi Setup](./pulumi-setup.md)** - Install and configure Pulumi
-2. **[Deploy with Pulumi](./deploy-with-pulumi.md)** - Deploy the Day cluster
+2. **[Deploy with Pulumi](./deploy-with-pulumi.md)** - Deploy the Terminus cluster
 3. **[Two-Tier Architecture](./two-tier-architecture.md)** - Understand infrastructure vs application code
 
 **Further Reading:**

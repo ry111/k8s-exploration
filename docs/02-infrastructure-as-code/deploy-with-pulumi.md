@@ -1,6 +1,6 @@
-# Deploy Day Cluster with Pulumi
+# Deploy Terminus Cluster with Pulumi
 
-This guide walks you through deploying the **Day cluster** using Pulumi Infrastructure as Code.
+This guide walks you through deploying the **Terminus cluster** using Pulumi Infrastructure as Code.
 
 ## Prerequisites
 
@@ -24,19 +24,18 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Select the Day stack
+### 3. Select the Terminus stack
 
 ```bash
-pulumi stack select day
+pulumi stack select terminus
 # If stack doesn't exist yet:
-# pulumi stack init day
+# pulumi stack init terminus
 ```
 
-The stack configuration is already defined in `Pulumi.day.yaml`:
-- **Service**: day
-- **VPC CIDR**: 10.1.0.0/16 (different from Dawn's 10.0.0.0/16)
+The stack configuration is already defined in `Pulumi.terminus.yaml`:
 - **Cluster name**: terminus
-- **Nodes**: 2 desired, 1-3 range
+- **VPC CIDR**: 10.2.0.0/16 (different from Trantor's 10.0.0.0/16)
+- **Nodes**: 2 desired, 1-4 range
 - **Instance type**: t3.small spot instances
 
 ### 4. Preview infrastructure changes
@@ -46,8 +45,8 @@ pulumi preview
 ```
 
 This shows what will be created:
-- ✅ VPC with 10.1.0.0/16 CIDR
-- ✅ 2 public subnets (10.1.1.0/24, 10.1.2.0/24)
+- ✅ VPC with 10.2.0.0/16 CIDR
+- ✅ 2 public subnets (10.2.1.0/24, 10.2.2.0/24)
 - ✅ Internet Gateway and route table
 - ✅ EKS cluster named "terminus"
 - ✅ Managed node group with spot instances
@@ -113,17 +112,15 @@ kubectl apply -f foundation/k8s/day/ingress.yaml
 
 ### Option 2: Create Deployment Script
 
-Similar to `deploy-dawn.sh`, but for Day cluster:
+Example deployment script for Terminus cluster:
 
 ```bash
 #!/bin/bash
 CLUSTER_NAME="terminus"
 REGION="us-east-1"
-ECR_REGISTRY="612974049499.dkr.ecr.us-east-1.amazonaws.com"
 
 aws eks update-kubeconfig --name $CLUSTER_NAME --region $REGION
-kubectl apply -f foundation/k8s/day/
-# ... update image references to ECR
+# Deploy your services (see gitops/ folder for deployment scripts)
 ```
 
 ## Verify Deployment
@@ -156,13 +153,12 @@ Expected response:
 You can switch between clusters:
 
 ```bash
-# Work with Dawn cluster
-pulumi stack select dev
+# Work with Trantor cluster (manually provisioned)
 aws eks update-kubeconfig --name trantor --region us-east-1
 kubectl get pods -A
 
-# Work with Day cluster
-pulumi stack select day
+# Work with Terminus cluster (Pulumi-managed)
+pulumi stack select terminus
 aws eks update-kubeconfig --name terminus --region us-east-1
 kubectl get pods -A
 ```
@@ -203,23 +199,23 @@ pulumi destroy
 
 ⚠️ **WARNING**: This deletes all resources including the cluster!
 
-Type the stack name "day" to confirm.
+Type the stack name "terminus" to confirm.
 
 ## CI/CD Integration
 
-The same GitHub Actions workflows work for Day cluster:
+The same GitHub Actions workflows work for Terminus cluster:
 
 - **pulumi-preview.yml**: Runs on PRs to preview changes
 - **pulumi-up.yml**: Deploys on merge to main
 
 Simply change code and create PR - infrastructure updates automatically.
 
-## Comparison with Dawn Cluster
+## Comparison: Manual vs Pulumi Provisioning
 
-| Aspect | Dawn (Manual) | Day (Pulumi) |
-|--------|---------------|--------------|
+| Aspect | Trantor (Manual) | Terminus (Pulumi) |
+|--------|------------------|-------------------|
 | **Creation** | eksctl script | `pulumi up` |
-| **VPC** | Auto-created | Explicit (10.1.0.0/16) |
+| **VPC** | Auto-created (10.0.0.0/16) | Explicit (10.2.0.0/16) |
 | **Updates** | Delete/recreate | In-place updates |
 | **State** | None | Pulumi state |
 | **Preview** | ❌ | ✅ |
@@ -227,11 +223,11 @@ Simply change code and create PR - infrastructure updates automatically.
 
 ## Next Steps
 
-1. ✅ **Deploy Day cluster** - Run `pulumi up`
-2. ⏭️ **Deploy Day app** - Apply K8s manifests
-3. ⏭️ **Set up CI for Day** - Update GitHub Actions for Day service
+1. ✅ **Deploy Terminus cluster** - Run `pulumi up`
+2. ⏭️ **Deploy applications** - Deploy services to Terminus (see gitops/)
+3. ⏭️ **Set up CI/CD** - Update GitHub Actions for automated deployments
 4. ⏭️ **Add ArgoCD** - Automate application deployment
-5. ⏭️ **Deploy Dusk cluster** - Use Pulumi again
+5. ⏭️ **Scale infrastructure** - Adjust cluster sizing as needed
 
 ## Troubleshooting
 
@@ -239,7 +235,7 @@ Simply change code and create PR - infrastructure updates automatically.
 ```bash
 # Verify stack is selected
 pulumi stack ls
-pulumi stack select day
+pulumi stack select terminus
 ```
 
 ### AWS authentication errors
