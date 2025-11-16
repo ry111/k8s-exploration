@@ -182,10 +182,9 @@ foundation/
 │       ├── __main__.py      # EKS cluster, VPC, nodes
 │       ├── Pulumi.day.yaml  # Day cluster config
 │       └── Pulumi.dusk.yaml # Dusk cluster config
-├── applications/
-│   └── day-service/
-│       └── pulumi/   # Application resources (Pulumi)
-│           └── __main__.py  # Deployment, Service, HPA, etc.
+├── gitops/
+│   └── day/          # Application resources (Pulumi)
+│       └── __main__.py  # Deployment, Service, HPA, etc.
 ├── services/         # Python Flask applications
 │   ├── dawn/
 │   ├── day/

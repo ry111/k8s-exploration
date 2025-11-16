@@ -1355,7 +1355,7 @@ alb_controller = k8s.helm.v3.Release(
 
 ### Application Stack (Pulumi or YAML)
 ```python
-# foundation/applications/day-service/pulumi/__main__.py
+# foundation/gitops/day/__main__.py
 
 # Reference infrastructure stack
 infra = pulumi.StackReference("organization/infrastructure/day")

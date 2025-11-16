@@ -107,7 +107,7 @@ Your current workflow only covers steps 1-2:
 on:
   push:
     paths:
-      - 'foundation/applications/day-service/pulumi/Pulumi.*.yaml'
+      - 'foundation/gitops/day/pulumi/Pulumi.*.yaml'
 
 jobs:
   deploy:

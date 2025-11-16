@@ -13,7 +13,7 @@ Manages:
 
 Separation of Concerns:
 - Infrastructure team manages: foundation/infrastructure/pulumi/ (EKS, VPC, nodes)
-- Application team manages: foundation/applications/day-service/pulumi/ (this file)
+- Application team manages: foundation/gitops/day/ (this file)
 """
 
 import pulumi

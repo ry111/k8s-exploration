@@ -266,7 +266,7 @@ k8s-exploration/
 ├── docs/                            # 👈 You are here
 ├── foundation/
 │   ├── infrastructure/pulumi/       # Infrastructure as Code (EKS, VPC, nodes)
-│   ├── applications/day-service/pulumi/  # Application resources (Deployments, Services)
+│   ├── gitops/day/                  # Day service application deployment (Pulumi)
 │   ├── services/                    # Source code (dawn, day, dusk Flask apps)
 │   ├── k8s/                         # Kubernetes YAML manifests
 │   └── scripts/                     # Deployment automation

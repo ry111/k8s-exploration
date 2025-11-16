@@ -41,9 +41,8 @@ k8s-exploration/
 ├── foundation/                     # Main experiment directory
 │   ├── infrastructure/
 │   │   └── pulumi/                 # Infrastructure as Code (EKS, VPC, nodes)
-│   ├── applications/
-│   │   └── day-service/
-│   │       └── pulumi/             # Application resources (Deployments, Services)
+│   ├── gitops/
+│   │   └── day/                    # Day service application deployment (Pulumi)
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
 │   ├── k8s/                        # Kubernetes manifests
 │   └── scripts/                    # Deployment automation scripts

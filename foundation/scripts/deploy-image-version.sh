@@ -20,7 +20,7 @@ echo "   Stack: $STACK"
 echo "   Image Tag: $IMAGE_TAG"
 echo ""
 
-cd foundation/applications/day-service/pulumi
+cd foundation/gitops/day
 
 # Update the image tag
 pulumi stack select $STACK

@@ -23,7 +23,7 @@ This project demonstrates **both approaches working successfully**:
                      ↓ references via stack outputs
 ┌─────────────────────────────────────────────────────┐
 │ APPLICATION PULUMI STACK                            │
-│ foundation/applications/day-service/pulumi/         │
+│ foundation/gitops/day/         │
 ├─────────────────────────────────────────────────────┤
 │ ✅ Deployments, Services, Ingresses                 │
 │ ✅ ConfigMaps, Secrets                              │
@@ -113,7 +113,7 @@ Outputs:
 
 **Tier 2: Application Pulumi Stack**
 ```
-Location: foundation/applications/day-service/pulumi/
+Location: foundation/gitops/day/
 Stack: dev, production
 Manages:
   - Kubernetes Deployment
@@ -141,7 +141,7 @@ pulumi.export("cluster_name", cluster.eks_cluster.name)
 
 **Application Stack:**
 ```python
-# foundation/applications/day-service/pulumi/__main__.py
+# foundation/gitops/day/__main__.py
 config = pulumi.Config()
 
 # Get infrastructure reference
@@ -199,7 +199,7 @@ pulumi up       # Apply after team review
 
 **Application changes (frequent):**
 ```bash
-cd foundation/applications/day-service/pulumi
+cd foundation/gitops/day
 pulumi stack select production
 pulumi config set image_tag v1.2.3  # Update version
 pulumi preview  # See what will change
@@ -212,7 +212,7 @@ pulumi up       # Deploy (triggers rolling update)
 - name: Deploy Day Service
   uses: pulumi/actions@v4
   with:
-    work-dir: foundation/applications/day-service/pulumi
+    work-dir: foundation/gitops/day
     stack-name: production
     command: up
 ```
@@ -314,7 +314,7 @@ Applications:   foundation/k8s/dawn/*.yaml (kubectl)
 ### Day Service: Two-Tier Pulumi
 ```
 Infrastructure: foundation/infrastructure/pulumi/ (Pulumi stack: day)
-Applications:   foundation/applications/day-service/pulumi/ (Pulumi stacks: dev, production)
+Applications:   foundation/gitops/day/ (Pulumi stacks: dev, production)
 ```
 
 ### Dusk Service: Pulumi Infrastructure + kubectl Applications
@@ -399,7 +399,7 @@ Both approaches work! Choose based on team preferences and requirements.
 
 **Two-Tier Pulumi Version:**
 ```python
-# foundation/applications/day-service/pulumi/__main__.py
+# foundation/gitops/day/__main__.py
 deployment = k8s.apps.v1.Deployment(
     "day-service",
     spec={"replicas": config.get_int("replicas"), ...}
@@ -473,7 +473,7 @@ spec:
 │ Layer 3: Applications (CHOOSE ONE)                        │
 │                                                            │
 │ Option A: Two-Tier Pulumi (Day Service)                   │
-│ - Location: foundation/applications/day-service/pulumi/   │
+│ - Location: foundation/gitops/day/   │
 │ - Stacks: dev, production                                 │
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 │                                                            │
@@ -513,7 +513,7 @@ cluster = eks.Cluster(...)
 # Export for application stacks
 pulumi.export("kubeconfig", cluster.kubeconfig)
 
-# foundation/applications/day-service/pulumi/__main__.py
+# foundation/gitops/day/__main__.py
 # ✅ GOOD: Applications in separate stack
 deployment = k8s.apps.v1.Deployment(...)
 ```
@@ -544,8 +544,8 @@ foundation/infrastructure/pulumi/
 
 **Step 2: Create application Pulumi stack**
 ```bash
-mkdir -p foundation/applications/day-service/pulumi
-cd foundation/applications/day-service/pulumi
+mkdir -p foundation/gitops/day
+cd foundation/gitops/day
 pulumi new kubernetes-python
 ```
 
@@ -628,7 +628,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 ✅ `foundation/scripts/create-dawn-cluster.sh` - Dawn cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
-✅ **Day Service** - Two-Tier Pulumi (`foundation/applications/day-service/pulumi/`)
+✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/day/`)
 ✅ **Dawn Service** - kubectl/YAML (`foundation/k8s/dawn/`)
 ✅ **Dusk Service** - kubectl/YAML (`foundation/k8s/dusk/`)
 
@@ -652,7 +652,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 ## References
 
-- Two-tier Pulumi example: `foundation/applications/day-service/pulumi/`
+- Two-tier Pulumi example: `foundation/gitops/day/`
 - Infrastructure Pulumi: `foundation/infrastructure/pulumi/__main__.py`
 - GitOps examples: `foundation/k8s/dawn/`, `foundation/k8s/dusk/`
 - Application guide: [application-as-code.md](../03-application-management/application-as-code.md)
