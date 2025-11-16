@@ -47,7 +47,14 @@
         "ec2:DescribeAccountAttributes",
         "ec2:DescribeNetworkInterfaces",
         "ec2:DescribeInstances",
-        "ec2:DescribeImages"
+        "ec2:DescribeImages",
+        "ec2:CreateLaunchTemplate",
+        "ec2:DeleteLaunchTemplate",
+        "ec2:DescribeLaunchTemplates",
+        "ec2:DescribeLaunchTemplateVersions",
+        "ec2:CreateLaunchTemplateVersion",
+        "ec2:DeleteLaunchTemplateVersions",
+        "ec2:ModifyLaunchTemplate"
       ],
       "Resource": "*"
     },
@@ -74,10 +81,7 @@
         "eks:DeleteAddon",
         "eks:DescribeAddon",
         "eks:UpdateAddon",
-        "eks:ListAddons",
-        "eks:AssociateIdentityProviderConfig",
-        "eks:DisassociateIdentityProviderConfig",
-        "eks:DescribeIdentityProviderConfig"
+        "eks:ListAddons"
       ],
       "Resource": "*"
     },
@@ -115,8 +119,6 @@
         "iam:CreateOpenIDConnectProvider",
         "iam:DeleteOpenIDConnectProvider",
         "iam:GetOpenIDConnectProvider",
-        "iam:TagOpenIDConnectProvider",
-        "iam:UntagOpenIDConnectProvider",
         "iam:ListOpenIDConnectProviders",
         "iam:CreateServiceLinkedRole",
         "iam:GetServerCertificate",
@@ -143,20 +145,6 @@
       "Resource": "*"
     },
     {
-      "Sid": "EC2LaunchTemplates",
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateLaunchTemplate",
-        "ec2:DeleteLaunchTemplate",
-        "ec2:DescribeLaunchTemplates",
-        "ec2:DescribeLaunchTemplateVersions",
-        "ec2:CreateLaunchTemplateVersion",
-        "ec2:DeleteLaunchTemplateVersions",
-        "ec2:ModifyLaunchTemplate"
-      ],
-      "Resource": "*"
-    },
-    {
       "Sid": "CloudFormationForPulumi",
       "Effect": "Allow",
       "Action": [
@@ -174,7 +162,7 @@
       "Resource": "*"
     },
     {
-      "Sid": "ELBForALBControllerPolicy",
+      "Sid": "ELBForALBController",
       "Effect": "Allow",
       "Action": [
         "elasticloadbalancing:DescribeLoadBalancers",
@@ -196,10 +184,10 @@
         "logs:CreateLogGroup",
         "logs:DeleteLogGroup",
         "logs:DescribeLogGroups",
-        "logs:ListTagsLogGroup",
+        "logs:ListTagsForResource",
         "logs:PutRetentionPolicy",
-        "logs:TagLogGroup",
-        "logs:UntagLogGroup"
+        "logs:TagResource",
+        "logs:UntagResource"
       ],
       "Resource": "*"
     },
