@@ -156,7 +156,7 @@ Pod: 10.0.1.45      Pod: 10.0.1.67
 **Virtual clusters** within a physical cluster.
 
 ```
-Cluster: day-cluster
+Cluster: trantor
 ├── Namespace: production
 │   ├── Deployment: day-service
 │   ├── Service: day-service
@@ -1048,7 +1048,7 @@ s3.list_buckets()        # Works if IAM role has s3:ListBuckets
 **Authentication:**
 ```bash
 # Update kubeconfig with EKS cluster info
-aws eks update-kubeconfig --name day-cluster --region us-east-1
+aws eks update-kubeconfig --name trantor --region us-east-1
 
 # This creates ~/.kube/config entry:
 # - Cluster API endpoint
@@ -1059,7 +1059,7 @@ aws eks update-kubeconfig --name day-cluster --region us-east-1
 kubectl get pods
     ↓
 1. kubectl reads ~/.kube/config
-2. Runs: aws eks get-token --cluster-name day-cluster
+2. Runs: aws eks get-token --cluster-name trantor
 3. AWS returns temporary token (via STS)
 4. kubectl sends token to EKS API Server
 5. EKS validates token with AWS IAM
@@ -1320,14 +1320,14 @@ Our Day cluster demonstrates all these concepts:
 
 ### Infrastructure Stack (Pulumi)
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 
 # 1. VPC (infrastructure layer)
-vpc = aws.ec2.Vpc("day-vpc", cidr_block="10.1.0.0/16")
+vpc = aws.ec2.Vpc("terminus-vpc", cidr_block="10.2.0.0/16")
 
 # 2. EKS Cluster (cluster layer)
 cluster = eks.Cluster(
-    "day-cluster",
+    "terminus",
     vpc_id=vpc.id,
     subnet_ids=[subnet.id for subnet in subnets],
 )
@@ -1355,7 +1355,7 @@ alb_controller = k8s.helm.v3.Release(
 
 ### Application Stack (Pulumi or YAML)
 ```python
-# foundation/gitops/day/__main__.py
+# foundation/gitops/pulumi_deploy/__main__.py
 
 # Reference infrastructure stack
 infra = pulumi.StackReference("organization/infrastructure/day")
@@ -1457,7 +1457,7 @@ Developer → kubectl → API Server → etcd
 **Try it yourself:**
 - [first-deployment.md](first-deployment.md) - Deploy your first cluster
 - [deploy-with-pulumi.md](../02-infrastructure-as-code/deploy-with-pulumi.md) - Pulumi-managed cluster
-- Exploration scripts: `foundation/scripts/explore/`
+- Exploration scripts: `foundation/gitops/manual_deploy/explore/`
 
 **Official documentation:**
 - [Kubernetes Documentation](https://kubernetes.io/docs/)

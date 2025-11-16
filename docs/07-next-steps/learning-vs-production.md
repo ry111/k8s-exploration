@@ -50,18 +50,22 @@ Congratulations! By working through this project, you've learned:
 #### Learning (This Project)
 
 ```
-dawn-service → dawn-cluster (dedicated EKS cluster)
-day-service  → day-cluster (dedicated EKS cluster)
-dusk-service → dusk-cluster (dedicated EKS cluster)
+Trantor cluster (manually provisioned)
+├── dawn-service (dawn-ns, dawn-rc-ns)
+└── day-service (day-ns, day-rc-ns)
+
+Terminus cluster (Pulumi-managed, reserved for future)
+└── (future services)
 ```
 
-**Why we do this:**
-- **Clear isolation** - Easy to understand boundaries
-- **Safe to experiment** - Breaking one cluster doesn't affect others
-- **See full process** - Create complete cluster from scratch
-- **Easy cleanup** - Delete entire cluster when done
+**Why we use this decoupled architecture:**
+- **Demonstrates real-world patterns** - Multiple services sharing a cluster
+- **Cost-effective** - 2 clusters instead of 3 (~$147/month vs $220/month)
+- **Learn namespace isolation** - Services isolated by namespaces, not clusters
+- **Two provisioning methods** - Manual (Trantor) vs IaC (Terminus)
+- **Safe to experiment** - Can still delete entire cluster if needed
 
-**Cost:** ~$220/month (3 clusters × $0.10/hour control plane)
+**Cost:** ~$147/month (2 clusters × $0.10/hour control plane)
 
 #### Production
 

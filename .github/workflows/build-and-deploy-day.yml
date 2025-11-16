@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'foundation/services/day/**'
-      - 'foundation/gitops/day/**'
+      - 'foundation/gitops/pulumi_deploy/**'
       - '.github/workflows/build-and-deploy-day.yml'
 
 env:
@@ -97,13 +97,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd foundation/gitops/day
+          cd foundation/gitops/pulumi_deploy
           pip install -r requirements.txt
 
       - name: Deploy to Dev
         uses: pulumi/actions@v4
         with:
-          work-dir: foundation/gitops/day
+          work-dir: foundation/gitops/pulumi_deploy
           stack-name: dev
           command: up
           config-map: |
@@ -164,13 +164,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd foundation/gitops/day
+          cd foundation/gitops/pulumi_deploy
           pip install -r requirements.txt
 
       - name: Deploy to Production
         uses: pulumi/actions@v4
         with:
-          work-dir: foundation/gitops/day
+          work-dir: foundation/gitops/pulumi_deploy
           stack-name: production
           command: up
           config-map: |

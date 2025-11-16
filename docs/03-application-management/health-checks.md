@@ -8,7 +8,7 @@ Quick reference for monitoring and troubleshooting Dawn cluster.
 
 **Usage:**
 ```bash
-./foundation/scripts/health-check-dawn.sh [region]
+./foundation/gitops/manual_deploy/health-check-dawn.sh [region]
 ```
 
 **What it checks:**
@@ -30,7 +30,7 @@ Quick reference for monitoring and troubleshooting Dawn cluster.
 
 **Example:**
 ```bash
-./foundation/scripts/health-check-dawn.sh us-east-1
+./foundation/gitops/manual_deploy/health-check-dawn.sh us-east-1
 
 # Sample output:
 # ✓ Cluster dawn-cluster exists
@@ -45,7 +45,7 @@ Quick reference for monitoring and troubleshooting Dawn cluster.
 
 **Usage:**
 ```bash
-./foundation/scripts/quick-status-dawn.sh [region]
+./foundation/gitops/manual_deploy/quick-status-dawn.sh [region]
 ```
 
 **What it shows:**
@@ -73,7 +73,7 @@ curl -H "Host: dawn.example.com" http://k8s-dawncluster-abc123.us-east-1.elb.ama
 
 **Usage:**
 ```bash
-./foundation/scripts/watch-dawn.sh [region]
+./foundation/gitops/manual_deploy/watch-dawn.sh [region]
 ```
 
 **What it does:**
@@ -92,7 +92,7 @@ curl -H "Host: dawn.example.com" http://k8s-dawncluster-abc123.us-east-1.elb.ama
 
 **Usage:**
 ```bash
-./foundation/scripts/test-dawn-app.sh [region]
+./foundation/gitops/manual_deploy/test-dawn-app.sh [region]
 ```
 
 **What it tests:**
@@ -128,7 +128,7 @@ Average response time: 45ms
 
 **Usage:**
 ```bash
-./foundation/scripts/troubleshoot-dawn.sh [region]
+./foundation/gitops/manual_deploy/troubleshoot-dawn.sh [region]
 ```
 
 **What it checks:**
@@ -226,7 +226,7 @@ Default region: `us-east-1`
 
 ### "Command not found"
 ```bash
-chmod +x foundation/scripts/*.sh
+chmod +x foundation/gitops/manual_deploy/*.sh
 ```
 
 ### "Cluster not found"

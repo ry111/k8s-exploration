@@ -107,7 +107,7 @@ Your current workflow only covers steps 1-2:
 on:
   push:
     paths:
-      - 'foundation/gitops/day/pulumi/Pulumi.*.yaml'
+      - 'foundation/gitops/pulumi_deploy/pulumi/Pulumi.*.yaml'
 
 jobs:
   deploy:
@@ -127,7 +127,7 @@ jobs:
 - ❌ Slower deployment
 - ❌ Human error possible
 
-**Script:** `foundation/scripts/deploy-image-version.sh`
+**Script:** `foundation/gitops/manual_deploy/deploy-image-version.sh`
 
 **Workflow:**
 ```bash
@@ -136,13 +136,13 @@ git push origin main
 # CI runs, outputs: "Pushed: <ecr-registry>/day:abc123"
 
 # 2. Developer deploys manually
-./foundation/scripts/deploy-image-version.sh dev abc123
+./foundation/gitops/manual_deploy/deploy-image-version.sh dev abc123
 
 # 3. Test in dev
 curl http://$(pulumi stack output alb_hostname)/health
 
 # 4. Deploy to production
-./foundation/scripts/deploy-image-version.sh production abc123
+./foundation/gitops/manual_deploy/deploy-image-version.sh production abc123
 ```
 
 ### Option 4: Hybrid - Build Auto, Deploy Manual
@@ -199,7 +199,7 @@ jobs:
 **Start with:** Option 3 (Manual)
 ```bash
 # Simple, predictable, full control
-./foundation/scripts/deploy-image-version.sh dev <sha>
+./foundation/gitops/manual_deploy/deploy-image-version.sh dev <sha>
 ```
 
 **Graduate to:** Option 1 (Sequential) when ready
@@ -406,7 +406,7 @@ config-map: |
 
 - **Option 1 (Sequential):** `.github/workflows/build-and-deploy-day.yml.example`
 - **Option 2 (GitOps):** `.github/workflows/build-and-commit-day.yml.example`
-- **Option 3 (Manual):** `foundation/scripts/deploy-image-version.sh`
+- **Option 3 (Manual):** `foundation/gitops/manual_deploy/deploy-image-version.sh`
 
 ## Related Documentation
 

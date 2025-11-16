@@ -32,7 +32,7 @@ The IaC tool handles creating, updating, and deleting resources to match your co
 In this project, you started with manual deployment using shell scripts:
 
 ```bash
-cd foundation/scripts
+cd foundation/provisioning/manual
 ./create-dawn-cluster.sh us-east-1      # Creates cluster manually
 ./build-and-push-dawn.sh us-east-1      # Builds and pushes image
 ./deploy-dawn.sh us-east-1               # Deploys application
@@ -73,7 +73,7 @@ cd foundation/scripts
 Your infrastructure is in Git:
 
 ```bash
-git log foundation/infrastructure/pulumi/
+git log foundation/provisioning/pulumi/
 
 # See who changed what and when:
 commit abc123
@@ -247,10 +247,10 @@ pulumi login s3://my-pulumi-state-bucket
 
 ```bash
 # You manually run scripts to:
-./foundation/scripts/create-dawn-cluster.sh us-east-1      # Create EKS cluster
-./foundation/scripts/install-alb-controller-dawn.sh         # Install ALB controller
-./foundation/scripts/build-and-push-dawn.sh                 # Build and push image
-./foundation/scripts/deploy-dawn.sh                         # Deploy application
+./foundation/provisioning/manual/create-dawn-cluster.sh us-east-1      # Create EKS cluster
+./foundation/provisioning/manual/install-alb-controller-dawn.sh         # Install ALB controller
+./foundation/gitops/manual_deploy/build-and-push-dawn.sh                 # Build and push image
+./foundation/gitops/manual_deploy/deploy-dawn.sh                         # Deploy application
 ```
 
 **Best for:**

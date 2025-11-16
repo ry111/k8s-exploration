@@ -209,7 +209,7 @@ Now that GitHub Actions is building your images automatically, let's deploy them
 ### Step 1: Create EKS Cluster (~20 minutes)
 
 ```bash
-cd foundation/scripts
+cd foundation/provisioning/manual
 
 ./create-dawn-cluster.sh us-east-1
 ```
@@ -304,7 +304,7 @@ curl http://$ALB_URL/info
 # 3. Push code to trigger first build
 
 # === DEPLOY CLUSTER (30 minutes) ===
-cd foundation/scripts
+cd foundation/provisioning/manual
 
 # Create cluster
 ./create-dawn-cluster.sh us-east-1

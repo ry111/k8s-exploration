@@ -76,7 +76,7 @@ Pulumi needs to store state. Choose one:
 
 1. **Navigate to Pulumi directory:**
    ```bash
-   cd foundation/infrastructure/pulumi
+   cd foundation/provisioning/pulumi
    ```
 
 2. **Install Python dependencies:**
@@ -93,18 +93,13 @@ Pulumi needs to store state. Choose one:
    pulumi login s3://your-pulumi-state-bucket  # For S3
    ```
 
-4. **Initialize the Day stack:**
+4. **Initialize the Terminus stack:**
    ```bash
-   pulumi stack init day
+   pulumi stack init terminus
    ```
 
-   Or for Dusk:
-   ```bash
-   pulumi stack init dusk
-   ```
-
-5. **Configuration is pre-set in stack files** (Pulumi.day.yaml, Pulumi.dusk.yaml)
-   - No additional config needed - VPC CIDR, service name, etc. already set
+5. **Configuration is pre-set in stack files** (Pulumi.terminus.yaml)
+   - No additional config needed - VPC CIDR (10.2.0.0/16), service name, etc. already set
 
 ## Deploy Infrastructure
 
@@ -179,7 +174,7 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 
 ### Test the Workflow
 
-1. Make a change to `foundation/infrastructure/pulumi/__main__.py`
+1. Make a change to `foundation/provisioning/pulumi/__main__.py`
 2. Create a PR
 3. Check PR comments for Pulumi preview
 4. Merge PR → infrastructure updates automatically
@@ -187,9 +182,9 @@ Add these secrets to your repository at **Settings → Secrets → Actions**:
 ## Dawn Cluster Note
 
 The existing Dawn cluster was created manually and remains managed via eksctl scripts:
-- `./foundation/scripts/create-dawn-cluster.sh`
-- `./foundation/scripts/deploy-dawn.sh`
-- `./foundation/scripts/health-check-dawn.sh`
+- `./foundation/provisioning/manual/create-dawn-cluster.sh`
+- `./foundation/gitops/manual_deploy/deploy-dawn.sh`
+- `./foundation/gitops/manual_deploy/health-check-dawn.sh`
 
 **No migration needed** - Dawn continues to run as-is. Pulumi only manages Day and Dusk.
 
@@ -227,28 +222,19 @@ This compares Pulumi state with actual AWS resources and updates state.
 
 ## Stack Management
 
-The project includes pre-configured stacks for Day and Dusk services:
+The project includes a pre-configured stack for the Terminus cluster:
 
 ```bash
-# Deploy Day cluster
-pulumi stack select day
+# Select and deploy Terminus cluster
+pulumi stack select terminus
 pulumi up
-
-# Deploy Dusk cluster
-pulumi stack select dusk
-pulumi up
-
-# Switch between stacks
-pulumi stack select day
-pulumi stack select dusk
 
 # View all stacks
 pulumi stack ls
 ```
 
 Each stack maintains separate state and resources. Configuration is pre-defined in:
-- `Pulumi.day.yaml` - Day cluster (VPC: 10.1.0.0/16)
-- `Pulumi.dusk.yaml` - Dusk cluster (VPC: 10.2.0.0/16)
+- `Pulumi.terminus.yaml` - Terminus cluster (VPC: 10.2.0.0/16)
 
 ## Cost Estimate
 

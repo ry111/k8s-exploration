@@ -266,7 +266,7 @@ Copy the `Arn` value - this is the IAM principal that needs cluster access.
 From your local machine (where you have admin access to the cluster):
 
 ```bash
-./scripts/grant-github-actions-access-v2.sh \
+./foundation/provisioning/manual/grant-github-actions-access-v2.sh \
   arn:aws:iam::123456789012:user/github-actions-user \
   your-cluster-name
 ```
@@ -278,7 +278,7 @@ This uses the modern EKS Access Entry API which is cleaner than aws-auth ConfigM
 From your local machine:
 
 ```bash
-./scripts/grant-github-actions-access.sh \
+./foundation/provisioning/manual/grant-github-actions-access.sh \
   arn:aws:iam::123456789012:user/github-actions-user \
   your-cluster-name
 ```
@@ -344,7 +344,7 @@ Re-run the GitHub Actions workflow. The deployment should now succeed.
 Run the diagnostic script from your local machine:
 
 ```bash
-./scripts/diagnose-eks-auth.sh your-cluster-name arn:aws:iam::123456789012:user/your-iam-user
+./foundation/provisioning/manual/diagnose-eks-auth.sh your-cluster-name arn:aws:iam::123456789012:user/your-iam-user
 ```
 
 This will check:
@@ -503,7 +503,7 @@ kubectl describe pod -n your-namespace <pod-name>
 aws ecr describe-images --repository-name your-service --region us-east-1
 
 # If missing, rebuild and push:
-cd foundation/scripts
+cd foundation/provisioning/manual
 ./build-and-push-dawn.sh us-east-1
 
 # Or trigger GitHub Actions build
@@ -573,7 +573,7 @@ kubectl get deployment -n kube-system aws-load-balancer-controller
 
 # Should show 2/2 ready
 # If not deployed:
-cd foundation/scripts
+cd foundation/provisioning/manual
 ./install-alb-controller-dawn.sh us-east-1
 ```
 

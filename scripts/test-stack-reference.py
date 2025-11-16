@@ -4,8 +4,8 @@ Test script to verify stack reference works.
 Run this in the application Pulumi directory.
 
 Usage:
-  cd foundation/gitops/day
-  python3 ../../../../test-stack-reference.py
+  cd foundation/gitops/pulumi_deploy
+  python3 ../../../scripts/test-stack-reference.py
 """
 
 import pulumi

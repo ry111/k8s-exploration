@@ -12,17 +12,17 @@ This directory contains the Pulumi program for managing the **Day service applic
 
 ## What This Does NOT Manage
 
-❌ **EKS Cluster** - Managed by `foundation/infrastructure/pulumi/` (infrastructure team)
-❌ **VPC/Networking** - Managed by `foundation/infrastructure/pulumi/`
-❌ **Node Groups** - Managed by `foundation/infrastructure/pulumi/`
-❌ **ALB Controller** - Managed by `foundation/infrastructure/pulumi/`
+❌ **EKS Cluster** - Managed by `foundation/provisioning/pulumi/` (infrastructure team)
+❌ **VPC/Networking** - Managed by `foundation/provisioning/pulumi/`
+❌ **Node Groups** - Managed by `foundation/provisioning/pulumi/`
+❌ **ALB Controller** - Managed by `foundation/provisioning/pulumi/`
 
 ## Setup
 
 ### 1. Install Dependencies
 
 ```bash
-cd foundation/gitops/day
+cd foundation/gitops/pulumi_deploy
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
@@ -55,7 +55,7 @@ export KUBECONFIG=~/.kube/day-cluster-config
 ### 3. Initialize Stack
 
 ```bash
-cd foundation/gitops/day
+cd foundation/gitops/pulumi_deploy
 
 # Create dev stack
 pulumi stack init dev
@@ -167,7 +167,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'foundation/gitops/day/**'
+      - 'foundation/gitops/pulumi_deploy/**'
 
 jobs:
   deploy:
@@ -188,13 +188,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd foundation/gitops/day
+          cd foundation/gitops/pulumi_deploy
           pip install -r requirements.txt
 
       - name: Deploy to Production
         uses: pulumi/actions@v4
         with:
-          work-dir: foundation/gitops/day
+          work-dir: foundation/gitops/pulumi_deploy
           stack-name: production
           command: up
         env:
@@ -352,5 +352,5 @@ pulumi up       # Deploy all resources
 ## Resources
 
 - Main application code: `foundation/services/day/`
-- Infrastructure Pulumi: `foundation/infrastructure/pulumi/`
+- Infrastructure Pulumi: `foundation/provisioning/pulumi/`
 - Pulumi Kubernetes docs: https://www.pulumi.com/registry/packages/kubernetes/

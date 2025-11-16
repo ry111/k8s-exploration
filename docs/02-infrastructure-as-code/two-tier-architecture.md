@@ -14,7 +14,7 @@ This project demonstrates **both approaches working successfully**:
 ```
 ┌─────────────────────────────────────────────────────┐
 │ INFRASTRUCTURE PULUMI STACK                         │
-│ foundation/infrastructure/pulumi/                   │
+│ foundation/provisioning/pulumi/                   │
 ├─────────────────────────────────────────────────────┤
 │ ✅ EKS Cluster, VPC, Nodes                          │
 │ ✅ IAM Roles, OIDC Provider                         │
@@ -23,7 +23,7 @@ This project demonstrates **both approaches working successfully**:
                      ↓ references via stack outputs
 ┌─────────────────────────────────────────────────────┐
 │ APPLICATION PULUMI STACK                            │
-│ foundation/gitops/day/         │
+│ foundation/gitops/pulumi_deploy/         │
 ├─────────────────────────────────────────────────────┤
 │ ✅ Deployments, Services, Ingresses                 │
 │ ✅ ConfigMaps, Secrets                              │
@@ -42,8 +42,8 @@ This project demonstrates **both approaches working successfully**:
 │ ✅ IAM Roles, OIDC Provider                         │
 │ ✅ ALB Controller (Helm)                            │
 │                                                     │
-│ Dusk: Pulumi (foundation/infrastructure/pulumi/)   │
-│ Dawn: eksctl (foundation/scripts/create-dawn-...)  │
+│ Dusk: Pulumi (foundation/provisioning/pulumi/)   │
+│ Dawn: eksctl (foundation/provisioning/manual/create-dawn-...)  │
 └─────────────────────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────────────┐
@@ -96,7 +96,7 @@ This is what we actually built for the Day service, proving Pulumi works great f
 
 **Tier 1: Infrastructure Pulumi Stack**
 ```
-Location: foundation/infrastructure/pulumi/
+Location: foundation/provisioning/pulumi/
 Stack: day (or dusk)
 Manages:
   - AWS EKS Cluster
@@ -113,7 +113,7 @@ Outputs:
 
 **Tier 2: Application Pulumi Stack**
 ```
-Location: foundation/gitops/day/
+Location: foundation/gitops/pulumi_deploy/
 Stack: dev, production
 Manages:
   - Kubernetes Deployment
@@ -129,7 +129,7 @@ References:
 
 **Infrastructure Stack:**
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 cluster = eks.Cluster("day-cluster", ...)
 node_group = aws.eks.NodeGroup(...)
 alb_controller = k8s.helm.v3.Release(...)
@@ -141,7 +141,7 @@ pulumi.export("cluster_name", cluster.eks_cluster.name)
 
 **Application Stack:**
 ```python
-# foundation/gitops/day/__main__.py
+# foundation/gitops/pulumi_deploy/__main__.py
 config = pulumi.Config()
 
 # Get infrastructure reference
@@ -191,7 +191,7 @@ ingress = k8s.networking.v1.Ingress(...)
 
 **Infrastructure changes (rare):**
 ```bash
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 pulumi stack select day
 pulumi preview  # Review infrastructure changes
 pulumi up       # Apply after team review
@@ -234,8 +234,8 @@ This is what we use for Dawn and Dusk services - traditional Kubernetes YAML wit
 
 **Infrastructure:**
 ```
-Dusk: foundation/infrastructure/pulumi/ (Pulumi managed)
-Dawn: foundation/scripts/create-dawn-cluster.sh (eksctl manual script)
+Dusk: foundation/provisioning/pulumi/ (Pulumi managed)
+Dawn: foundation/provisioning/manual/create-dawn-cluster.sh (eksctl manual script)
 
 Both create:
   - AWS EKS Cluster
@@ -273,7 +273,7 @@ Deploy:
 
 **Infrastructure changes (rare):**
 ```bash
-cd foundation/infrastructure/pulumi
+cd foundation/provisioning/pulumi
 pulumi stack select dusk
 pulumi up
 ```
@@ -307,19 +307,19 @@ We demonstrate **both approaches** to show they're equally valid:
 
 ### Dawn Service: eksctl (Manual) + kubectl Applications
 ```
-Infrastructure: foundation/scripts/create-dawn-cluster.sh (eksctl manual script)
+Infrastructure: foundation/provisioning/manual/create-dawn-cluster.sh (eksctl manual script)
 Applications:   foundation/k8s/dawn/*.yaml (kubectl)
 ```
 
 ### Day Service: Two-Tier Pulumi
 ```
-Infrastructure: foundation/infrastructure/pulumi/ (Pulumi stack: day)
-Applications:   foundation/gitops/day/ (Pulumi stacks: dev, production)
+Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: day)
+Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: dev, production)
 ```
 
 ### Dusk Service: Pulumi Infrastructure + kubectl Applications
 ```
-Infrastructure: foundation/infrastructure/pulumi/ (Pulumi stack: dusk)
+Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: dusk)
 Applications:   foundation/k8s/dusk/*.yaml (kubectl)
 ```
 
@@ -399,7 +399,7 @@ Both approaches work! Choose based on team preferences and requirements.
 
 **Two-Tier Pulumi Version:**
 ```python
-# foundation/gitops/day/__main__.py
+# foundation/gitops/pulumi_deploy/__main__.py
 deployment = k8s.apps.v1.Deployment(
     "day-service",
     spec={"replicas": config.get_int("replicas"), ...}
@@ -456,7 +456,7 @@ spec:
 │ - VPC, Subnets, IAM Roles                                 │
 │ - Managed by: Platform Team                               │
 │ - Change Frequency: Monthly                               │
-│ - Repository: foundation/infrastructure/pulumi/           │
+│ - Repository: foundation/provisioning/pulumi/           │
 │ - Stacks: day, dusk                                       │
 └────────────────────────────────────────────────────────────┘
                          ↓
@@ -466,14 +466,14 @@ spec:
 │ - ALB Controller, Metrics Server                          │
 │ - Managed by: Platform Team                               │
 │ - Change Frequency: Weekly                                │
-│ - Repository: foundation/infrastructure/pulumi/           │
+│ - Repository: foundation/provisioning/pulumi/           │
 └────────────────────────────────────────────────────────────┘
                          ↓
 ┌────────────────────────────────────────────────────────────┐
 │ Layer 3: Applications (CHOOSE ONE)                        │
 │                                                            │
 │ Option A: Two-Tier Pulumi (Day Service)                   │
-│ - Location: foundation/gitops/day/   │
+│ - Location: foundation/gitops/pulumi_deploy/   │
 │ - Stacks: dev, production                                 │
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 │                                                            │
@@ -490,7 +490,7 @@ spec:
 
 **DON'T:**
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 cluster = eks.Cluster(...)
 node_group = aws.eks.NodeGroup(...)
 
@@ -507,13 +507,13 @@ dusk_deployment = k8s.apps.v1.Deployment("dusk-service", ...)
 
 **DO:**
 ```python
-# foundation/infrastructure/pulumi/__main__.py
+# foundation/provisioning/pulumi/__main__.py
 cluster = eks.Cluster(...)
 
 # Export for application stacks
 pulumi.export("kubeconfig", cluster.kubeconfig)
 
-# foundation/gitops/day/__main__.py
+# foundation/gitops/pulumi_deploy/__main__.py
 # ✅ GOOD: Applications in separate stack
 deployment = k8s.apps.v1.Deployment(...)
 ```
@@ -539,20 +539,20 @@ We did this for Day service! Here's how:
 **Step 1: Keep infrastructure Pulumi as-is**
 ```bash
 # Already managed
-foundation/infrastructure/pulumi/
+foundation/provisioning/pulumi/
 ```
 
 **Step 2: Create application Pulumi stack**
 ```bash
-mkdir -p foundation/gitops/day
-cd foundation/gitops/day
+mkdir -p foundation/gitops/pulumi_deploy
+cd foundation/gitops/pulumi_deploy
 pulumi new kubernetes-python
 ```
 
 **Step 3: Convert YAML to Pulumi**
 ```python
 # Read existing YAML
-with open("../../k8s/day/deployment.yaml") as f:
+with open("../../k8s/pulumi_deploy/deployment.yaml") as f:
     # Convert to Pulumi resources
 
 deployment = k8s.apps.v1.Deployment(
@@ -570,7 +570,7 @@ kubectl get pods -n production  # Verify
 
 **Step 5: Remove old YAML deployments**
 ```bash
-kubectl delete -f foundation/k8s/day/
+kubectl delete -f foundation/k8s/pulumi_deploy/
 ```
 
 ### From Two-Tier Pulumi to GitOps
@@ -585,7 +585,7 @@ kubectl get deployment,service,configmap,hpa,ingress -n production -o yaml > exp
 **Step 2: Clean up and commit YAML**
 ```bash
 # Edit exported.yaml (remove runtime fields)
-git add foundation/k8s/day/
+git add foundation/k8s/pulumi_deploy/
 git commit -m "Migrate Day to kubectl management"
 ```
 
@@ -624,11 +624,11 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 ## What We Actually Built
 
 ### Infrastructure (Multiple Approaches)
-✅ `foundation/infrastructure/pulumi/` - EKS clusters for Day and Dusk (Pulumi)
-✅ `foundation/scripts/create-dawn-cluster.sh` - Dawn cluster (eksctl manual script)
+✅ `foundation/provisioning/pulumi/` - EKS clusters for Day and Dusk (Pulumi)
+✅ `foundation/provisioning/manual/create-dawn-cluster.sh` - Dawn cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
-✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/day/`)
+✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`)
 ✅ **Dawn Service** - kubectl/YAML (`foundation/k8s/dawn/`)
 ✅ **Dusk Service** - kubectl/YAML (`foundation/k8s/dusk/`)
 
@@ -652,8 +652,8 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 ## References
 
-- Two-tier Pulumi example: `foundation/gitops/day/`
-- Infrastructure Pulumi: `foundation/infrastructure/pulumi/__main__.py`
+- Two-tier Pulumi example: `foundation/gitops/pulumi_deploy/`
+- Infrastructure Pulumi: `foundation/provisioning/pulumi/__main__.py`
 - GitOps examples: `foundation/k8s/dawn/`, `foundation/k8s/dusk/`
 - Application guide: [application-as-code.md](../03-application-management/application-as-code.md)
 - Deployment concepts: [deployment-hierarchy.md](../05-kubernetes-deep-dives/deployment-hierarchy.md)

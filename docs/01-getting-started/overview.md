@@ -1,25 +1,37 @@
 # Foundation - EKS Infrastructure Exploration
 
-This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AWS EKS with production and RC tiers.
+This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AWS EKS with production and RC tiers using a **decoupled architecture** where clusters are infrastructure and services are applications.
 
 ## Quick Start Options
 
-### Option 1: Single Cluster (Dawn only) with Spot Instances - **RECOMMENDED FOR LEARNING**
+### Option 1: Single Cluster (Trantor - hosts Dawn and Day) with Spot Instances - **RECOMMENDED**
 - **Time:** ~40 minutes
 - **Guide:** [first-deployment.md](first-deployment.md)
+- **Method:** Manual scripts in `foundation/provisioning/manual/`
 
-### Option 2: All Three Clusters with On-Demand Instances
-- **Time:** ~90 minutes
-- **Guide:** See "Deployment Steps" below
+### Option 2: Infrastructure as Code with Pulumi (Terminus cluster)
+- **Time:** ~30 minutes
+- **Guide:** [../../02-infrastructure-as-code/pulumi-setup.md](../02-infrastructure-as-code/pulumi-setup.md)
+- **Method:** Declarative Pulumi programs in `foundation/provisioning/pulumi/`
 
 ## Architecture
 
-- **3 EKS Clusters** (one per service)
-- **6 Namespaces** (prod + RC per cluster)
-- **6 Deployments** (2 per cluster)
-- **3 Application Load Balancers** (one per cluster, shared via IngressGroup)
+**Decoupled Design: Clusters ≠ Services**
 
-Each cluster runs:
+- **2 EKS Clusters:**
+  - **Trantor** - Hosts Dawn and Day services (manual provisioning)
+  - **Terminus** - Reserved for future services (Pulumi-managed)
+
+- **Multiple Services per Cluster:**
+  - Trantor cluster runs both Dawn and Day services
+  - Each service has its own namespaces (prod + RC)
+
+- **Namespaces:**
+  - dawn-ns, dawn-rc-ns (on Trantor)
+  - day-ns, day-rc-ns (on Trantor)
+  - Future: additional services on Terminus
+
+Each service deployment includes:
 - Production deployment (2-5 replicas)
 - RC deployment (1-3 replicas)
 
@@ -64,59 +76,52 @@ aws configure
 aws sts get-caller-identity
 ```
 
-## Deployment Steps
+## Deployment Steps (Trantor Cluster - Manual)
 
-### 1. Create EKS Clusters (~45-60 minutes)
+For detailed step-by-step instructions, see [first-deployment.md](first-deployment.md).
+
+### 1. Create Trantor EKS Cluster (~15-20 minutes)
 
 ```bash
-cd foundation/scripts
+cd foundation/provisioning/manual
 
 # Make scripts executable
 chmod +x *.sh
 
-# Create all 3 clusters
-./1-create-clusters.sh us-east-1
+# Create Trantor cluster
+./create-trantor-cluster.sh us-east-1
 ```
 
 This creates:
-- `dawn-cluster` with 2 t3.small nodes
-- `day-cluster` with 2 t3.small nodes
-- `dusk-cluster` with 2 t3.small nodes
+- `trantor` cluster with 2 t3.small nodes (spot instances)
+- OIDC provider for IAM roles
+- Managed node group with autoscaling
 
-### 2. Install AWS Load Balancer Controller (~15 minutes)
+### 2. Install AWS Load Balancer Controller (~5 minutes)
 
 ```bash
-./2-install-alb-controller.sh us-east-1
+./install-alb-controller-trantor.sh us-east-1
 ```
 
-This installs the ALB Ingress Controller on all clusters to enable Ingress resources.
+This installs the ALB Ingress Controller on Trantor cluster to enable Ingress resources.
 
-### 3. Build and Push Docker Images (~10 minutes)
+### 3. Build and Deploy Services (~10 minutes)
 
 ```bash
-./3-build-and-push-images.sh us-east-1
+cd ../../gitops/manual_deploy
+
+# Build and push images to ECR
+./build-and-push-dawn.sh us-east-1
+./build-and-push-day.sh us-east-1
+
+# Deploy services to Trantor cluster
+./deploy-to-trantor.sh us-east-1
 ```
 
 This:
-- Creates ECR repositories for dawn, day, dusk
-- Builds Docker images for each service
-- Pushes `:latest` and `:rc` tags to ECR
-
-### 4. Update Deployment Manifests
-
-```bash
-./4-update-deployment-images.sh us-east-1
-```
-
-This updates K8s deployment files to use ECR image URLs instead of local images.
-
-### 5. Deploy Services (~10 minutes)
-
-```bash
-./5-deploy-to-clusters.sh us-east-1
-```
-
-This deploys both production and RC tiers to each cluster.
+- Creates ECR repositories for dawn and day
+- Builds Docker images
+- Deploys both services to trantor cluster with production configuration
 
 ## Verification
 
@@ -126,23 +131,23 @@ This deploys both production and RC tiers to each cluster.
 # List all clusters
 eksctl get cluster --region us-east-1
 
-# Get nodes for each cluster
-kubectl get nodes --context dawn-cluster
-kubectl get nodes --context day-cluster
-kubectl get nodes --context dusk-cluster
+# Get nodes for Trantor cluster
+kubectl get nodes --context trantor
 ```
 
 ### Check Deployments
 
 ```bash
-# Set context to a cluster
-aws eks update-kubeconfig --name dawn-cluster --region us-east-1
+# Set context to Trantor cluster
+aws eks update-kubeconfig --name trantor --region us-east-1
 
-# View all resources in production namespace
+# View Dawn service resources
 kubectl get all -n dawn-ns
-
-# View all resources in RC namespace
 kubectl get all -n dawn-rc-ns
+
+# View Day service resources
+kubectl get all -n day-ns
+kubectl get all -n day-rc-ns
 ```
 
 ### Get Application Load Balancer URLs
@@ -177,14 +182,20 @@ curl http://$RC_ALB_URL/health
 
 ```
 foundation/
-├── infrastructure/
-│   └── pulumi/       # Infrastructure as Code (Pulumi)
-│       ├── __main__.py      # EKS cluster, VPC, nodes
-│       ├── Pulumi.day.yaml  # Day cluster config
-│       └── Pulumi.dusk.yaml # Dusk cluster config
+├── provisioning/
+│   ├── pulumi/              # Infrastructure as Code (Pulumi)
+│   │   ├── __main__.py      # EKS cluster, VPC, nodes
+│   │   └── Pulumi.terminus.yaml  # Terminus cluster config
+│   └── manual/              # Manual cluster provisioning scripts (Trantor)
+│       ├── create-trantor-cluster.sh
+│       └── install-alb-controller-trantor.sh
 ├── gitops/
-│   └── day/          # Application resources (Pulumi)
-│       └── __main__.py  # Deployment, Service, HPA, etc.
+│   ├── pulumi_deploy/       # Application deployment (Pulumi) - Terminus
+│   │   └── __main__.py      # Deployment, Service, HPA, etc.
+│   └── manual_deploy/       # Manual deployment scripts - Trantor
+│       ├── build-and-push-dawn.sh
+│       ├── build-and-push-day.sh
+│       └── deploy-to-trantor.sh
 ├── services/         # Python Flask applications
 │   ├── dawn/
 │   ├── day/
@@ -196,24 +207,11 @@ foundation/
 │   ├── day-rc/
 │   ├── dusk/
 │   └── dusk-rc/
-└── scripts/          # Deployment automation
-    ├── explore/      # Interactive learning scripts
-    │   ├── explore-deployment-hierarchy.sh
-    │   ├── explore-configmap-relationships.sh
-    │   └── explore-rolling-updates.sh
-    ├── Dawn-only (Spot Instances):
-    │   ├── create-dawn-cluster.sh
-    │   ├── install-alb-controller-dawn.sh
-    │   ├── build-and-push-dawn.sh
-    │   ├── deploy-dawn.sh
-    │   └── cleanup-dawn.sh
-    └── All 3 Clusters (On-Demand):
-        ├── 1-create-clusters.sh
-        ├── 2-install-alb-controller.sh
-        ├── 3-build-and-push-images.sh
-        ├── 4-update-deployment-images.sh
-        ├── 5-deploy-to-clusters.sh
-        └── cleanup.sh
+└── scripts/          # Interactive learning scripts
+    └── explore/
+        ├── explore-deployment-hierarchy.sh
+        ├── explore-configmap-relationships.sh
+        └── explore-rolling-updates.sh
 ```
 
 ## Resource Configuration
@@ -234,16 +232,17 @@ foundation/
 
 ## Cleanup
 
-**⚠️ WARNING: This deletes everything!**
+**⚠️ WARNING: This deletes the Trantor cluster and all resources!**
 
 ```bash
-./cleanup.sh us-east-1
+cd foundation/gitops/manual_deploy
+./cleanup-trantor.sh us-east-1
 ```
 
 This will:
-- Delete all 3 EKS clusters
-- Delete all node groups
-- Delete ECR repositories
+- Delete Trantor EKS cluster
+- Delete Trantor node group
+- Delete ECR repositories (Dawn, Day)
 - Clean up associated AWS resources
 
 ## Troubleshooting

@@ -8,7 +8,7 @@ echo "🔍 Testing Stack Reference Configuration"
 echo "========================================="
 echo ""
 
-cd "$(dirname "$0")/../gitops/day"
+cd "$(dirname "$0")/../gitops/pulumi_deploy"
 
 echo "📍 Current directory: $(pwd)"
 echo ""
@@ -30,7 +30,7 @@ if pulumi stack output kubeconfig --stack ry111/service-infrastructure/day &>/de
 else
     echo "❌ Cannot read from infrastructure stack"
     echo "   Make sure infrastructure stack is deployed:"
-    echo "   cd foundation/infrastructure/pulumi && pulumi up --stack day"
+    echo "   cd foundation/provisioning/pulumi && pulumi up --stack day"
 fi
 echo ""
 
@@ -48,7 +48,7 @@ echo ""
 echo "📝 Summary"
 echo "----------"
 echo "To verify fn::stackReference works at runtime:"
-echo "  cd foundation/gitops/day"
+echo "  cd foundation/gitops/pulumi_deploy"
 echo "  pulumi preview --stack dev"
 echo ""
 echo "If preview works without 'stack reference' errors, it's configured correctly!"

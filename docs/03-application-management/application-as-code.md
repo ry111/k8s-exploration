@@ -8,7 +8,7 @@ This guide shows you how to manage your **Day service Kubernetes application res
 
 ```
 foundation/
-├── infrastructure/
+├── provisioning/
 │   └── pulumi/                      # Infrastructure Pulumi Program
 │       ├── __main__.py              # Manages: EKS cluster, VPC, nodes, ALB controller
 │       ├── Pulumi.yaml
@@ -43,10 +43,10 @@ foundation/
 - **Ingress** - External access via ALB
 
 ### ❌ Application Pulumi Does NOT Manage:
-- EKS Cluster (managed by `foundation/infrastructure/pulumi/`)
-- VPC/Networking (managed by `foundation/infrastructure/pulumi/`)
-- Node Groups (managed by `foundation/infrastructure/pulumi/`)
-- ALB Controller (managed by `foundation/infrastructure/pulumi/`)
+- EKS Cluster (managed by `foundation/provisioning/pulumi/`)
+- VPC/Networking (managed by `foundation/provisioning/pulumi/`)
+- Node Groups (managed by `foundation/provisioning/pulumi/`)
+- ALB Controller (managed by `foundation/provisioning/pulumi/`)
 
 ## Setup
 
@@ -54,7 +54,7 @@ foundation/
 
 1. **Infrastructure already deployed**
    ```bash
-   cd foundation/infrastructure/pulumi
+   cd foundation/provisioning/pulumi
    pulumi stack select day
    pulumi stack output cluster_name  # Should show: day-cluster
    ```
@@ -65,7 +65,7 @@ foundation/
    aws eks update-kubeconfig --name day-cluster --region us-east-1
 
    # Option 2: Export from infrastructure stack
-   cd foundation/infrastructure/pulumi
+   cd foundation/provisioning/pulumi
    pulumi stack output kubeconfig --show-secrets > ~/.kube/day-cluster-config
    export KUBECONFIG=~/.kube/day-cluster-config
 
@@ -77,7 +77,7 @@ foundation/
 
 ```bash
 # Navigate to application Pulumi directory
-cd foundation/gitops/day/pulumi
+cd foundation/gitops/pulumi_deploy/pulumi
 
 # Create virtual environment
 python -m venv venv
@@ -95,7 +95,7 @@ pulumi version
 ### Development Stack
 
 ```bash
-cd foundation/gitops/day/pulumi
+cd foundation/gitops/pulumi_deploy/pulumi
 
 # Create dev stack
 pulumi stack init dev
@@ -446,13 +446,13 @@ ingress = k8s.networking.v1.Ingress(
 ### Step 1: Develop Locally
 ```bash
 # Build and test your application code locally
-cd foundation/gitops/day/src
+cd foundation/gitops/pulumi_deploy/src
 # ... develop and test ...
 ```
 
 ### Step 2: Deploy to Dev
 ```bash
-cd foundation/gitops/day/pulumi
+cd foundation/gitops/pulumi_deploy/pulumi
 
 # Select dev stack
 pulumi stack select dev
@@ -514,7 +514,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'foundation/gitops/day/**'
+      - 'foundation/gitops/pulumi_deploy/**'
 
 jobs:
   deploy-dev:
@@ -539,13 +539,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd foundation/gitops/day/pulumi
+          cd foundation/gitops/pulumi_deploy/pulumi
           pip install -r requirements.txt
 
       - name: Deploy to Dev
         uses: pulumi/actions@v4
         with:
-          work-dir: foundation/gitops/day/pulumi
+          work-dir: foundation/gitops/pulumi_deploy/pulumi
           stack-name: dev
           command: up
         env:
@@ -576,13 +576,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd foundation/gitops/day/pulumi
+          cd foundation/gitops/pulumi_deploy/pulumi
           pip install -r requirements.txt
 
       - name: Deploy to Production
         uses: pulumi/actions@v4
         with:
-          work-dir: foundation/gitops/day/pulumi
+          work-dir: foundation/gitops/pulumi_deploy/pulumi
           stack-name: production
           command: up
         env:
@@ -666,7 +666,7 @@ kubectl apply -f foundation/k8s/day/
 
 **Single Python program:**
 ```bash
-foundation/gitops/day/pulumi/
+foundation/gitops/pulumi_deploy/pulumi/
 ├── __main__.py          # Single file, type-safe
 ├── Pulumi.dev.yaml      # Dev config
 └── Pulumi.production.yaml  # Prod config
@@ -691,7 +691,7 @@ pulumi up
 
 1. **Customize the configuration** for your Day service
    ```bash
-   cd foundation/gitops/day/pulumi
+   cd foundation/gitops/pulumi_deploy/pulumi
    vim Pulumi.dev.yaml  # Update image registry, etc.
    ```
 
@@ -710,13 +710,13 @@ pulumi up
 
 5. **Create similar structure for dusk-service**
    ```bash
-   cp -r foundation/gitops/day foundation/applications/dusk-service
+   cp -r foundation/gitops/pulumi_deploy foundation/applications/dusk-service
    # Update configuration
    ```
 
 ## Resources
 
-- Day service Pulumi code: `foundation/gitops/day/pulumi/__main__.py`
-- Infrastructure Pulumi code: `foundation/infrastructure/pulumi/__main__.py`
+- Day service Pulumi code: `foundation/gitops/pulumi_deploy/pulumi/__main__.py`
+- Infrastructure Pulumi code: `foundation/provisioning/pulumi/__main__.py`
 - Pulumi Kubernetes provider docs: https://www.pulumi.com/registry/packages/kubernetes/
 - Kubernetes API reference: https://kubernetes.io/docs/reference/kubernetes-api/
