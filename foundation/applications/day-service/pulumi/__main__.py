@@ -165,7 +165,7 @@ deployment = k8s.apps.v1.Deployment(
                     "name": app_name,
                     "image": f"{image_registry}/{image_name}:{image_tag}",
                     "ports": [{
-                        "container_port": 8080,
+                        "container_port": 8001,  # Match Dockerfile EXPOSE port
                         "name": "http",
                     }],
                     "env_from": [{
@@ -186,15 +186,15 @@ deployment = k8s.apps.v1.Deployment(
                     "liveness_probe": {
                         "http_get": {
                             "path": "/health",
-                            "port": 8080,
+                            "port": 8001,  # Match service port
                         },
                         "initial_delay_seconds": 30,
                         "period_seconds": 10,
                     },
                     "readiness_probe": {
                         "http_get": {
-                            "path": "/ready",
-                            "port": 8080,
+                            "path": "/health",  # Use /health instead of /ready
+                            "port": 8001,  # Match service port
                         },
                         "initial_delay_seconds": 5,
                         "period_seconds": 5,
@@ -225,7 +225,7 @@ service = k8s.core.v1.Service(
         "selector": labels,
         "ports": [{
             "port": 80,
-            "target_port": 8080,
+            "target_port": 8001,  # Match container port
             "protocol": "TCP",
             "name": "http",
         }],
