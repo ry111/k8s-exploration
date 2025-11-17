@@ -42,7 +42,7 @@ echo "Preparing deployment manifests..."
 TEMP_DIR=$(mktemp -d)
 
 # Copy manifests to temp directory
-cp -r ../../k8s/dawn $TEMP_DIR/
+cp -r ./dawn $TEMP_DIR/
 
 # Update image URLs in temp files (macOS and Linux compatible)
 if [[ "$OSTYPE" == "darwin"* ]]; then

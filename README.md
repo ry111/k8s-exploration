@@ -24,13 +24,13 @@ This project demonstrates a **decoupled multi-cluster architecture** with differ
 
 ### Services (Application Layer)
 
-| Service | Cluster | CI/CD | Deployment Strategy |
-|---------|---------|-------|---------------------|
-| **Dawn** | Trantor | GitHub Actions | Manual deployment (kubectl + YAML) |
-| **Day** | Trantor | GitHub Actions | Pulumi deployment (IaC) |
-| **Dusk** | Terminus | GitHub Actions | ArgoCD (GitOps) |
+| Service | Cluster | CI/CD | Update Tool |
+|---------|---------|-------|-------------|
+| **Dawn** | Trantor | GitHub Actions | kubectl + YAML |
+| **Day** | Trantor | GitHub Actions | IaC (Pulumi) |
+| **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD |
 
-**Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different deployment strategies.
+**Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different update tools - from imperative kubectl to declarative IaC to pull-based GitOps.
 
 ---
 
@@ -66,14 +66,12 @@ k8s-exploration/
 │   │   ├── pulumi/                 # IaC provisioning (Terminus cluster)
 │   │   └── manual/                 # Manual provisioning (Trantor cluster)
 │   ├── gitops/
-│   │   ├── manual_deploy/          # Manual kubectl deployments (Dawn)
+│   │   ├── manual_deploy/          # Manual kubectl deployments + manifests
+│   │   │   ├── deploy-dawn.sh      # Deploy Dawn service script
+│   │   │   ├── dawn/, day/, dusk/  # Kubernetes YAML manifests (prod/rc)
+│   │   │   └── delete-service-images.sh
 │   │   └── pulumi_deploy/          # Pulumi IaC deployments (Day)
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
-│   ├── k8s/                        # Kubernetes YAML manifests
-│   │   ├── apply-service.sh        # Script to apply manifests for any service
-│   │   ├── dawn/prod/, dawn/rc/    # Dawn service manifests
-│   │   ├── day/prod/, day/rc/      # Day service manifests
-│   │   └── dusk/prod/, dusk/rc/    # Dusk service manifests
 │   └── scripts/
 │       └── explore/                # Interactive learning scripts
 │

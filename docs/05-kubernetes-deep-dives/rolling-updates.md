@@ -1103,7 +1103,7 @@ Let's use your actual Deployment configuration.
 
 ### Your Deployment
 
-From `foundation/k8s/day/prod/deployment.yaml`:
+From `foundation/gitops/manual_deploy/day/prod/deployment.yaml`:
 
 ```yaml
 apiVersion: apps/v1

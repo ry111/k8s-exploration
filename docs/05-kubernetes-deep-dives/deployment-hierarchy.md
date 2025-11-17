@@ -142,7 +142,7 @@ Let's trace through the entire process using an example from this repository.
 ### Step 1: You Define and Apply a Deployment
 
 ```bash
-kubectl apply -f foundation/k8s/day/prod/deployment.yaml
+kubectl apply -f foundation/gitops/manual_deploy/day/prod/deployment.yaml
 ```
 
 **deployment.yaml:**
@@ -885,7 +885,7 @@ def create_pod_from_template(rs, api):
 
 ```bash
 # Apply deployment
-kubectl apply -f foundation/k8s/day/prod/deployment.yaml
+kubectl apply -f foundation/gitops/manual_deploy/day/prod/deployment.yaml
 
 # Watch resources being created
 watch kubectl get deployment,rs,pod -n day-ns
@@ -1004,7 +1004,7 @@ metadata:
 ### 2. Set Resource Requests and Limits
 
 ```yaml
-# From foundation/k8s/day/prod/deployment.yaml
+# From foundation/gitops/manual_deploy/day/prod/deployment.yaml
 resources:
   requests:
     cpu: 50m        # Guaranteed CPU
@@ -1235,7 +1235,7 @@ This is why Kubernetes is powerful - you focus on **what** you want, not **how**
 ---
 
 **Related files in this repository:**
-- `foundation/k8s/day/prod/deployment.yaml` - Example Deployment
-- `foundation/k8s/day/prod/service.yaml` - Service that routes to pods
-- `foundation/k8s/day/prod/ingress.yaml` - External access via ALB
+- `foundation/gitops/manual_deploy/day/prod/deployment.yaml` - Example Deployment
+- `foundation/gitops/manual_deploy/day/prod/service.yaml` - Service that routes to pods
+- `foundation/gitops/manual_deploy/day/prod/ingress.yaml` - External access via ALB
 - `foundation/scripts/explore/explore-deployment-hierarchy.sh` - Interactive demonstration script

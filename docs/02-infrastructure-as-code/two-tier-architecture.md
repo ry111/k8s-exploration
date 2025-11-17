@@ -247,7 +247,7 @@ Both create:
 
 **Applications (YAML + kubectl):**
 ```
-Location: foundation/k8s/dawn/, foundation/k8s/dusk/
+Location: foundation/gitops/manual_deploy/dawn/, foundation/gitops/manual_deploy/dusk/
 Structure:
   ├── prod/          # Production manifests
   │   ├── namespace.yaml
@@ -260,13 +260,9 @@ Structure:
       └── ...
 
 Deploy:
-  # Using helper script (applies both prod + rc)
-  cd foundation/k8s
-  ./apply-service.sh dawn all trantor us-east-1
-
-  # Or apply manually
-  kubectl apply -f foundation/k8s/dawn/prod/
-  kubectl apply -f foundation/k8s/dawn/rc/
+  # Apply manually
+  kubectl apply -f foundation/gitops/manual_deploy/dawn/prod/
+  kubectl apply -f foundation/gitops/manual_deploy/dawn/rc/
 ```
 
 ### Advantages of Infrastructure Tool + GitOps
@@ -292,15 +288,11 @@ pulumi up
 **Application changes (frequent):**
 ```bash
 # Edit YAML
-vim foundation/k8s/dawn/prod/deployment.yaml
+vim foundation/gitops/manual_deploy/dawn/prod/deployment.yaml
 
-# Apply using helper script
-cd foundation/k8s
-./apply-service.sh dawn all trantor us-east-1
-
-# OR apply manually
-kubectl apply -f foundation/k8s/dawn/prod/
-kubectl apply -f foundation/k8s/dawn/rc/
+# Apply manually
+kubectl apply -f foundation/gitops/manual_deploy/dawn/prod/
+kubectl apply -f foundation/gitops/manual_deploy/dawn/rc/
 
 # OR with GitOps (ArgoCD syncs automatically)
 git commit -m "Update dawn to v1.2.3"
@@ -324,7 +316,7 @@ We demonstrate **both approaches** to show they're equally valid:
 ### Dawn Service: eksctl (Manual) + kubectl Applications
 ```
 Infrastructure: foundation/provisioning/manual/create-trantor-cluster.sh (eksctl manual script)
-Applications:   foundation/k8s/dawn/prod/*.yaml (kubectl)
+Applications:   foundation/gitops/manual_deploy/dawn/prod/*.yaml (kubectl)
 ```
 
 ### Day Service: Two-Tier Pulumi
@@ -336,7 +328,7 @@ Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: dev, prod)
 ### Dusk Service: Pulumi Infrastructure + kubectl Applications
 ```
 Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: dusk)
-Applications:   foundation/k8s/dusk/prod/*.yaml (kubectl)
+Applications:   foundation/gitops/manual_deploy/dusk/prod/*.yaml (kubectl)
 ```
 
 ## Detailed Resource Breakdown
@@ -494,7 +486,7 @@ spec:
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 │                                                            │
 │ Option B: GitOps/kubectl (Dawn, Dusk Services)            │
-│ - Location: foundation/k8s/dawn/prod/, foundation/k8s/dusk/prod/    │
+│ - Location: foundation/gitops/manual_deploy/dawn/prod/, foundation/gitops/manual_deploy/dusk/prod/    │
 │ - Tool: kubectl apply or ArgoCD                           │
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 └────────────────────────────────────────────────────────────┘
@@ -568,7 +560,7 @@ pulumi new kubernetes-python
 **Step 3: Convert YAML to Pulumi**
 ```python
 # Read existing YAML
-with open("../../k8s/pulumi_deploy/deployment.yaml") as f:
+with open("../../gitops/manual_deploy/day/prod/deployment.yaml") as f:
     # Convert to Pulumi resources
 
 deployment = k8s.apps.v1.Deployment(
@@ -586,7 +578,7 @@ kubectl get pods -n production  # Verify
 
 **Step 5: Remove old YAML deployments**
 ```bash
-kubectl delete -f foundation/k8s/pulumi_deploy/
+kubectl delete -f foundation/gitops/manual_deploy/day/prod/
 ```
 
 ### From Two-Tier Pulumi to GitOps
@@ -601,7 +593,7 @@ kubectl get deployment,service,configmap,hpa,ingress -n production -o yaml > exp
 **Step 2: Clean up and commit YAML**
 ```bash
 # Edit exported.yaml (remove runtime fields)
-git add foundation/k8s/pulumi_deploy/
+git add foundation/gitops/manual_deploy/day/
 git commit -m "Migrate Day to kubectl management"
 ```
 
@@ -645,8 +637,8 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 ### Applications (Demonstrating Both Approaches)
 ✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`)
-✅ **Dawn Service** - kubectl/YAML (`foundation/k8s/dawn/prod/`)
-✅ **Dusk Service** - kubectl/YAML (`foundation/k8s/dusk/prod/`)
+✅ **Dawn Service** - kubectl/YAML (`foundation/gitops/manual_deploy/dawn/prod/`)
+✅ **Dusk Service** - kubectl/YAML (`foundation/gitops/manual_deploy/dusk/prod/`)
 
 **Key Insight:** We use both approaches in the same project successfully. The separation via stacks (for Pulumi) or directories (for YAML) is what matters, not the tool choice.
 
@@ -670,7 +662,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 - Two-tier Pulumi example: `foundation/gitops/pulumi_deploy/`
 - Infrastructure Pulumi: `foundation/provisioning/pulumi/__main__.py`
-- GitOps examples: `foundation/k8s/dawn/prod/`, `foundation/k8s/dusk/prod/`
+- GitOps examples: `foundation/gitops/manual_deploy/dawn/prod/`, `foundation/gitops/manual_deploy/dusk/prod/`
 - Application guide: [application-as-code.md](../03-application-management/application-as-code.md)
 - Deployment concepts: [deployment-hierarchy.md](../05-kubernetes-deep-dives/deployment-hierarchy.md)
 - Pulumi Best Practices: https://www.pulumi.com/docs/using-pulumi/best-practices/

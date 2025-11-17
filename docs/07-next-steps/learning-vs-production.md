@@ -45,23 +45,23 @@ Congratulations! By working through this project, you've learned:
 
 ## Learning Patterns vs Production Patterns
 
-### 1. Deployment Strategy Progression
+### 1. Update Tool Progression
 
 #### Learning (This Project)
 
-This project demonstrates **three deployment strategies** with increasing automation:
+This project demonstrates **three update tools** with different approaches:
 
-| Service | Cluster | Deployment Strategy | Why This Approach |
-|---------|---------|---------------------|-------------------|
-| **Dawn** | Trantor | Manual (kubectl + YAML) | Learn Kubernetes fundamentals hands-on |
-| **Day** | Trantor | Pulumi (IaC) | Understand application-as-code |
-| **Dusk** | Terminus | ArgoCD (GitOps) | Master continuous deployment |
+| Service | Cluster | Update Tool | Why This Approach |
+|---------|---------|-------------|-------------------|
+| **Dawn** | Trantor | kubectl + YAML (via GitHub Actions) | Learn Kubernetes fundamentals hands-on |
+| **Day** | Trantor | IaC (Pulumi via GitHub Actions) | Understand application-as-code |
+| **Dusk** | Terminus | TBD (ArgoCD) | Master continuous deployment |
 
 **Why this progression:**
 - **Pedagogical** - Each approach builds on the previous
-- **Realistic** - Shows how teams mature their deployment practices
-- **Comparative** - Easy to see trade-offs between approaches
-- **Practical** - All three are used in production systems
+- **Realistic** - Shows how teams evolve from imperative to declarative to pull-based GitOps
+- **Comparative** - Easy to see trade-offs between push-based and pull-based approaches
+- **Practical** - All three patterns are used in production systems
 
 ### 2. Cluster Architecture
 
@@ -69,11 +69,11 @@ This project demonstrates **three deployment strategies** with increasing automa
 
 ```
 Trantor cluster (manually provisioned)
-├── dawn-service (dawn-ns, dawn-rc-ns) - Manual kubectl deployment
-└── day-service (day-ns, day-rc-ns) - Pulumi IaC deployment
+├── dawn-service (dawn-ns, dawn-rc-ns) - kubectl (via GitHub Actions)
+└── day-service (day-ns, day-rc-ns) - Pulumi IaC (via GitHub Actions)
 
 Terminus cluster (Pulumi-managed)
-└── dusk-service (dusk-ns, dusk-rc-ns) - ArgoCD GitOps deployment
+└── dusk-service (dusk-ns, dusk-rc-ns) - ArgoCD
 ```
 
 **Why we use this decoupled architecture:**
@@ -81,7 +81,7 @@ Terminus cluster (Pulumi-managed)
 - **Cost-effective** - 2 clusters instead of 3 (~$147/month vs $220/month)
 - **Learn namespace isolation** - Services isolated by namespaces, not clusters
 - **Two provisioning methods** - Manual (Trantor) vs IaC (Terminus)
-- **Three deployment strategies** - Manual → IaC → GitOps progression
+- **Three update tools** - kubectl + YAML → IaC → GitOps progression
 - **Safe to experiment** - Can still delete entire cluster if needed
 
 **Cost:** ~$147/month (2 clusters × $0.10/hour control plane)
