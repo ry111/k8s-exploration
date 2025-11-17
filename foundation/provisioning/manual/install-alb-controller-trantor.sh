@@ -74,9 +74,33 @@ echo ""
 echo "========================================="
 echo "✅ ALB Controller installed successfully!"
 echo "========================================="
+
+# Install metrics-server for HPA
 echo ""
-echo "Verify installation:"
+echo "Installing metrics-server for HPA support..."
+helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ 2>/dev/null || true
+helm repo update
+
+helm install metrics-server metrics-server/metrics-server \
+  -n kube-system \
+  --set args[0]=--kubelet-preferred-address-types=InternalIP
+
+echo ""
+echo "Waiting for metrics-server to be ready..."
+kubectl wait --namespace kube-system \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/name=metrics-server \
+  --timeout=120s
+
+echo ""
+echo "========================================="
+echo "✅ Metrics Server installed successfully!"
+echo "========================================="
+echo ""
+echo "Verify installations:"
 echo "  kubectl get deployment -n kube-system aws-load-balancer-controller"
+echo "  kubectl get deployment -n kube-system metrics-server"
+echo "  kubectl top nodes  # Test metrics-server"
 echo ""
 echo "Next steps:"
 echo "  Deploy your services (see gitops/manual_deploy for deployment scripts)"
