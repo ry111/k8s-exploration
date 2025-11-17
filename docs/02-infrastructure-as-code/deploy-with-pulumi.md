@@ -27,12 +27,12 @@ pip install -r requirements.txt
 ### 3. Select the Terminus stack
 
 ```bash
-pulumi stack select prod
+pulumi stack select production
 # If stack doesn't exist yet:
-# pulumi stack init terminus
+# pulumi stack init production
 ```
 
-The stack configuration is already defined in `Pulumi.prod.yaml`:
+The stack configuration is already defined in `Pulumi.production.yaml`:
 - **Cluster name**: terminus
 - **VPC CIDR**: 10.2.0.0/16 (different from Trantor's 10.0.0.0/16)
 - **Nodes**: 2 desired, 1-4 range
@@ -199,7 +199,7 @@ pulumi destroy
 
 ⚠️ **WARNING**: This deletes all resources including the cluster!
 
-Type the stack name "terminus" to confirm.
+Type the stack name to confirm (e.g., "production" for infrastructure stack, "day" for application stack).
 
 ## CI/CD Integration
 

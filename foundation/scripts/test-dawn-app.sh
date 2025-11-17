@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Update kubeconfig
-aws eks update-kubeconfig --name dawn-cluster --region $REGION &>/dev/null
+aws eks update-kubeconfig --name trantor --region $REGION &>/dev/null
 
 echo "======================================"
 echo "Dawn Application Test Suite"

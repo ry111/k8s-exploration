@@ -5,6 +5,8 @@ metadata:
   namespace: dusk-ns
   labels:
     app: dusk
+    tier: production
+    cluster: terminus
 spec:
   replicas: 2
   selector:
@@ -14,6 +16,8 @@ spec:
     metadata:
       labels:
         app: dusk
+        tier: production
+        cluster: terminus
     spec:
       containers:
       - name: dusk

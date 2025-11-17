@@ -5,7 +5,7 @@ metadata:
   namespace: dusk-ns
   annotations:
     kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/group.name: dusk-cluster
+    alb.ingress.kubernetes.io/group.name: terminus-cluster
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/healthcheck-path: /health

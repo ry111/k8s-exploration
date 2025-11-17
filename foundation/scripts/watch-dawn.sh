@@ -6,7 +6,7 @@
 REGION=${1:-us-east-1}
 
 # Update kubeconfig
-aws eks update-kubeconfig --name dawn-cluster --region $REGION &>/dev/null
+aws eks update-kubeconfig --name trantor --region $REGION &>/dev/null
 
 echo "Watching Dawn cluster... (Press Ctrl+C to exit)"
 echo ""
