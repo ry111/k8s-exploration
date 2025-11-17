@@ -119,9 +119,9 @@ This installs the ALB Ingress Controller on Trantor cluster to enable Ingress re
 ```bash
 cd ../../gitops/manual_deploy
 
-# Build and push images to ECR
-./build-and-push-dawn.sh us-east-1
-./build-and-push-day.sh us-east-1
+# Verify images exist in ECR (built by GitHub Actions)
+aws ecr describe-images --repository-name dawn --region us-east-1
+aws ecr describe-images --repository-name day --region us-east-1
 
 # Deploy services to Trantor cluster
 ./deploy-dawn.sh trantor us-east-1
@@ -129,9 +129,9 @@ cd ../../gitops/manual_deploy
 ```
 
 This:
-- Creates ECR repositories for dawn and day
-- Builds Docker images
+- Verifies container images exist in ECR (built automatically by GitHub Actions)
 - Deploys each service independently to the specified cluster
+- Services can be deployed to any cluster by name
 
 ## Verification
 
@@ -203,9 +203,9 @@ foundation/
 │   ├── pulumi_deploy/       # Application deployment (Pulumi) - Terminus
 │   │   └── __main__.py      # Deployment, Service, HPA, etc.
 │   └── manual_deploy/       # Manual deployment scripts - Trantor
-│       ├── build-and-push-dawn.sh
-│       ├── build-and-push-day.sh
-│       └── deploy-to-trantor.sh
+│       ├── deploy-dawn.sh           # Deploy Dawn to specified cluster
+│       ├── deploy-day.sh            # Deploy Day to specified cluster
+│       └── delete-service-images.sh # Delete ECR images for a service
 ├── services/         # Python Flask applications
 │   ├── dawn/
 │   ├── day/
@@ -242,18 +242,25 @@ foundation/
 
 ## Cleanup
 
-**⚠️ WARNING: This deletes the Trantor cluster and all resources!**
+**⚠️ WARNING: This deletes the cluster and resources!**
+
+Cleanup follows separation of concerns - delete infrastructure and applications separately:
 
 ```bash
+# Delete application images (optional)
 cd foundation/gitops/manual_deploy
-./cleanup-trantor.sh us-east-1
+./delete-service-images.sh dawn us-east-1
+./delete-service-images.sh day us-east-1
+
+# Delete infrastructure
+cd ../../provisioning/manual
+./delete-cluster.sh trantor us-east-1
 ```
 
-This will:
-- Delete Trantor EKS cluster
-- Delete Trantor node group
-- Delete ECR repositories (Dawn, Day)
-- Clean up associated AWS resources
+This approach:
+- **Application cleanup**: Deletes ECR repositories (dawn, day)
+- **Infrastructure cleanup**: Deletes EKS cluster and associated AWS resources
+- Each deletion requires typing `DELETE` to confirm
 
 ## Troubleshooting
 

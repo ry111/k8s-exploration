@@ -502,11 +502,16 @@ kubectl describe pod -n your-namespace <pod-name>
 # Check if image exists in ECR
 aws ecr describe-images --repository-name your-service --region us-east-1
 
-# If missing, rebuild and push:
-cd foundation/provisioning/manual
-./build-and-push-dawn.sh us-east-1
+# If missing, trigger a GitHub Actions build:
+# 1. Go to GitHub repo → Actions tab
+# 2. Select "Build and Push Dawn Images" workflow
+# 3. Click "Run workflow" → "Run workflow"
+# 4. Wait ~2-3 minutes for build to complete
 
-# Or trigger GitHub Actions build
+# Or build locally for testing:
+cd foundation/services/dawn
+docker build -t dawn:local .
+# Note: Local builds won't push to ECR automatically
 ```
 
 **2. Wrong Image URL**
@@ -574,7 +579,7 @@ kubectl get deployment -n kube-system aws-load-balancer-controller
 # Should show 2/2 ready
 # If not deployed:
 cd foundation/provisioning/manual
-./install-alb-controller-dawn.sh us-east-1
+./install-alb-controller-trantor.sh us-east-1
 ```
 
 **2. Missing IAM Permissions**

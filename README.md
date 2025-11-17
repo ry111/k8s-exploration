@@ -94,7 +94,7 @@ cd foundation/provisioning/manual
 
 # 3. Deploy Dawn service (manual deployment)
 cd ../../gitops/manual_deploy
-./deploy-dawn.sh us-east-1
+./deploy-dawn.sh trantor us-east-1
 ```
 
 **Time:** ~40 minutes | **Best for:** Understanding each component

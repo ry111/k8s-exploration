@@ -211,7 +211,7 @@ Now that GitHub Actions is building your images automatically, let's deploy them
 ```bash
 cd foundation/provisioning/manual
 
-./create-trantor.sh us-east-1
+./create-trantor-cluster.sh us-east-1
 ```
 
 This creates:
@@ -230,7 +230,7 @@ kubectl get nodes
 ### Step 2: Install AWS Load Balancer Controller (~5 minutes)
 
 ```bash
-./install-alb-controller-dawn.sh us-east-1
+./install-alb-controller-trantor.sh us-east-1
 ```
 
 **Verify:**
@@ -244,12 +244,12 @@ kubectl get deployment -n kube-system aws-load-balancer-controller
 ### Step 3: Deploy Services (~5 minutes)
 
 ```bash
-./deploy-dawn.sh us-east-1
+./deploy-dawn.sh trantor us-east-1
 ```
 
 This deploys both production and RC tiers using the images from ECR that GitHub Actions built.
 
-**Note:** You skip the `build-and-push-dawn.sh` step because GitHub Actions already built the images!
+**Note:** There's no need to build images locally - GitHub Actions automatically builds and pushes images to ECR when code changes are pushed to the repository!
 
 **Verify:**
 ```bash
@@ -310,7 +310,7 @@ cd foundation/provisioning/manual
 ./create-trantor.sh us-east-1
 
 # Install ALB controller
-./install-alb-controller-dawn.sh us-east-1
+./install-alb-controller-trantor.sh us-east-1
 
 # Skip build - images already in ECR from CI!
 

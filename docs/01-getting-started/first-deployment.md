@@ -111,40 +111,55 @@ kubectl get deployment -n kube-system metrics-server
 
 ---
 
-### Step 3: Build and Push Docker Images (~5 minutes)
+### Step 3: Verify Images in ECR (~2 minutes)
+
+This project uses **GitHub Actions** to automatically build and push Docker images to ECR when code is pushed to the repository. Images are already available if the GitHub Actions workflows have run.
+
+**Check if images exist in ECR:**
 
 ```bash
-./build-and-push-dawn.sh us-east-1
+# Get your AWS account ID
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+# Check for Dawn service images
+aws ecr describe-images --repository-name dawn --region us-east-1 2>/dev/null || echo "Repository doesn't exist yet"
+
+# Check for Day service images
+aws ecr describe-images --repository-name day --region us-east-1 2>/dev/null || echo "Repository doesn't exist yet"
 ```
 
-This script:
-- Creates an ECR (Elastic Container Registry) repository
-- Builds the Dawn service Docker image
-- Pushes the image with `:latest` and `:rc` tags to ECR
+**If images don't exist yet:**
 
-**What you'll see:**
-```
-Step 1/8 : FROM python:3.11-slim
-Step 2/8 : WORKDIR /app
-...
-✓ Pushed dawn:latest
-✓ Pushed dawn:rc
-```
+The GitHub Actions workflows will automatically create ECR repositories and build images when you push code changes. You can also trigger a manual build:
 
-> 💡 **Learning Pattern: Image Tags**
+1. Go to your GitHub repository
+2. Click **Actions** tab
+3. Select **Build and Push Dawn Images** workflow
+4. Click **Run workflow** → **Run workflow**
+5. Wait ~2-3 minutes for the build to complete
+
+**What GitHub Actions does:**
+- Creates ECR repository if it doesn't exist
+- Builds the Docker image from `foundation/services/dawn/`
+- Pushes image with `:latest`, `:rc`, and `:<git-sha>` tags to ECR
+
+> 💡 **Learning Pattern: CI/CD Image Builds**
 >
-> This project uses **`:latest` and `:rc` tags** to make deployment simple and easy to understand.
+> This project uses **GitHub Actions for automated image builds** instead of local Docker builds.
 >
-> **For production:** Use immutable tags like `sha-a1b2c3d` or `v1.2.3` so you can:
-> - Know exactly which code version is deployed
-> - Roll back to specific versions reliably
-> - Track deployment history clearly
+> **Benefits:**
+> - No Docker required on your laptop
+> - Consistent build environment
+> - Automatic builds on every push
+> - Images tagged with git SHA for version tracking
 >
-> The infrastructure already supports this! To use SHA-based tags:
+> **For local development:** If you need to build images locally for testing, you can use:
 > ```bash
-> # In CI/CD or scripts, tag with git commit SHA:
-> docker tag dawn:latest $ECR_REGISTRY/dawn:$(git rev-parse --short HEAD)
+> cd foundation/services/dawn
+> docker build -t dawn:local .
 > ```
+>
+> See [GitHub Actions Setup](../04-cicd-automation/github-actions-setup.md) for details on the CI/CD pipeline.
 
 ---
 
@@ -253,12 +268,14 @@ cd foundation/provisioning/manual
 # 2. Install ALB controller (~5 min)
 ./install-alb-controller-trantor.sh us-east-1
 
-# 3. Build and push images (~5 min)
-cd ../../gitops/manual_deploy
-./build-and-push-dawn.sh us-east-1
-./build-and-push-day.sh us-east-1
+# 3. Verify images in ECR (~2 min)
+# Images are built automatically by GitHub Actions
+# Trigger manual build if needed: GitHub repo → Actions → Run workflow
+aws ecr describe-images --repository-name dawn --region us-east-1
+aws ecr describe-images --repository-name day --region us-east-1
 
 # 4. Deploy services (~5 min)
+cd ../../gitops/manual_deploy
 ./deploy-dawn.sh trantor us-east-1
 ./deploy-day.sh trantor us-east-1
 
@@ -457,19 +474,33 @@ When you're done experimenting, clean up all resources:
 
 **⚠️ WARNING: This deletes everything!**
 
+Cleanup follows the separation of concerns - infrastructure and applications are deleted separately:
+
+**Step 1: Delete application images (optional)**
 ```bash
 cd foundation/gitops/manual_deploy
-./cleanup-trantor.sh us-east-1
+
+# Delete Dawn service images
+./delete-service-images.sh dawn us-east-1
+
+# Delete Day service images
+./delete-service-images.sh day us-east-1
 ```
 
-This will:
-- Delete the Trantor EKS cluster and all workloads
-- Delete worker nodes
-- Delete ECR repository and images
-- Delete ALBs
-- Remove IAM roles
+**Step 2: Delete infrastructure**
+```bash
+cd ../../provisioning/manual
 
-You'll need to type `DELETE` to confirm.
+# Delete the Trantor cluster
+./delete-cluster.sh trantor us-east-1
+```
+
+This approach:
+- **Application cleanup** (delete-service-images.sh): Deletes ECR repositories and container images
+- **Infrastructure cleanup** (delete-cluster.sh): Deletes EKS cluster, nodes, ALBs, and IAM roles
+- Each script requires typing `DELETE` to confirm
+
+You can delete the cluster without deleting ECR images (to redeploy later) or vice versa.
 
 ---
 
