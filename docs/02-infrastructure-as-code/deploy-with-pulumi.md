@@ -27,12 +27,12 @@ pip install -r requirements.txt
 ### 3. Select the Terminus stack
 
 ```bash
-pulumi stack select terminus
+pulumi stack select prod
 # If stack doesn't exist yet:
 # pulumi stack init terminus
 ```
 
-The stack configuration is already defined in `Pulumi.terminus.yaml`:
+The stack configuration is already defined in `Pulumi.prod.yaml`:
 - **Cluster name**: terminus
 - **VPC CIDR**: 10.2.0.0/16 (different from Trantor's 10.0.0.0/16)
 - **Nodes**: 2 desired, 1-4 range
@@ -158,7 +158,7 @@ aws eks update-kubeconfig --name trantor --region us-east-1
 kubectl get pods -A
 
 # Work with Terminus cluster (Pulumi-managed)
-pulumi stack select terminus
+pulumi stack select prod
 aws eks update-kubeconfig --name terminus --region us-east-1
 kubectl get pods -A
 ```
@@ -235,7 +235,7 @@ Simply change code and create PR - infrastructure updates automatically.
 ```bash
 # Verify stack is selected
 pulumi stack ls
-pulumi stack select terminus
+pulumi stack select prod
 ```
 
 ### AWS authentication errors

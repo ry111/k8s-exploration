@@ -113,7 +113,7 @@ config:
   vpc_cidr: 10.1.0.0/16
   desired_nodes: 2
 
-# Pulumi.production.yaml
+# Pulumi.prod.yaml
 config:
   service_name: day
   vpc_cidr: 10.2.0.0/16
@@ -126,7 +126,7 @@ pulumi stack select dev
 pulumi up
 
 # Deploy to production (same code, different config)
-pulumi stack select production
+pulumi stack select prod
 pulumi up
 ```
 

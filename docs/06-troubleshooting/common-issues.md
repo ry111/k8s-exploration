@@ -104,7 +104,7 @@ deployment = k8s.apps.v1.Deployment(
 Use simple config values instead of `fn::` syntax:
 
 ```yaml
-# Pulumi.dev.yaml or Pulumi.production.yaml
+# Pulumi.dev.yaml or Pulumi.prod.yaml
 config:
   # Simple boolean and string configs - no fn:: syntax
   day-service-app:use_stack_reference: true

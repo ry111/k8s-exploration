@@ -98,7 +98,7 @@ Pulumi needs to store state. Choose one:
    pulumi stack init terminus
    ```
 
-5. **Configuration is pre-set in stack files** (Pulumi.terminus.yaml)
+5. **Configuration is pre-set in stack files** (Pulumi.prod.yaml)
    - No additional config needed - VPC CIDR (10.2.0.0/16), service name, etc. already set
 
 ## Deploy Infrastructure
@@ -225,7 +225,7 @@ The project includes a pre-configured stack for the Terminus cluster:
 
 ```bash
 # Select and deploy Terminus cluster
-pulumi stack select terminus
+pulumi stack select prod
 pulumi up
 
 # View all stacks
@@ -233,7 +233,7 @@ pulumi stack ls
 ```
 
 Each stack maintains separate state and resources. Configuration is pre-defined in:
-- `Pulumi.terminus.yaml` - Terminus cluster (VPC: 10.2.0.0/16)
+- `Pulumi.prod.yaml` - Terminus cluster (VPC: 10.2.0.0/16)
 
 ## Cost Estimate
 
