@@ -122,7 +122,7 @@ jobs:
 
   deploy-production:
     name: Deploy to Production
-    needs: [build-and-push, deploy-dev]
+    needs: [build-and-push, deploy-rc]
     runs-on: ubuntu-latest
     environment: production  # Requires manual approval
 
