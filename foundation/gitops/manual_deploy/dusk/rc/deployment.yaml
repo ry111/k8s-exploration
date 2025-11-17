@@ -6,7 +6,7 @@ metadata:
   labels:
     app: dusk
     tier: rc
-    cluster: trantor
+    cluster: terminus
 spec:
   replicas: 1
   selector:
@@ -18,7 +18,7 @@ spec:
       labels:
         app: dusk
         tier: rc
-        cluster: trantor
+        cluster: terminus
     spec:
       containers:
       - name: dusk
