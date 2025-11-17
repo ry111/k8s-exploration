@@ -307,7 +307,7 @@ curl http://$ALB_URL/info
 cd foundation/provisioning/manual
 
 # Create cluster
-./create-trantor.sh us-east-1
+./create-trantor-cluster.sh us-east-1
 
 # Install ALB controller
 ./install-alb-controller-trantor.sh us-east-1
@@ -315,7 +315,7 @@ cd foundation/provisioning/manual
 # Skip build - images already in ECR from CI!
 
 # Deploy services
-./deploy-dawn.sh us-east-1
+./deploy-dawn.sh trantor us-east-1
 
 # === TEST ===
 curl http://$(kubectl get ingress dawn-ingress -n dawn-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/health
@@ -365,16 +365,16 @@ curl http://$ALB_URL/
 The workflows automatically run when:
 
 **Dawn Service:**
-- Push to `main` or `claude/**` branches
+- Push to `main` branch
 - Changes in `foundation/services/dawn/**`
 - Manual trigger via GitHub UI
 
 **Day Service:**
-- Push to `main` or `claude/**` branches
+- Push to `main` branch
 - Changes in `foundation/services/day/**`
 
 **Dusk Service:**
-- Push to `main` or `claude/**` branches
+- Push to `main` branch
 - Changes in `foundation/services/dusk/**`
 
 ### Manual Trigger
