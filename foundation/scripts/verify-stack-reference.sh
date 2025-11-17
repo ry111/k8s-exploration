@@ -6,7 +6,7 @@ set -e
 
 INFRA_STACK="${1:-day}"
 APP_STACK="${2:-production}"
-INFRA_PROJECT="service-infrastructure"
+INFRA_PROJECT="foundation"
 APP_PROJECT="day-service-app"
 
 echo "🔍 Verifying Stack Reference Configuration"

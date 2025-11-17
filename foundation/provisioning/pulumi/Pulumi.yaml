@@ -1,4 +1,4 @@
-name: service-infrastructure
+name: foundation
 runtime: python
 description: EKS infrastructure for Terminus cluster with spot instances
 
@@ -6,8 +6,8 @@ config:
   aws:region:
     description: AWS region for deployment
     value: us-east-1
-  service-infrastructure:service_name:
+  foundation:service_name:
     description: Cluster identifier for resource naming (optional, derived from cluster_name if not provided)
-  service-infrastructure:vpc_cidr:
+  foundation:vpc_cidr:
     description: VPC CIDR block (must be unique per cluster)
     default: 10.1.0.0/16

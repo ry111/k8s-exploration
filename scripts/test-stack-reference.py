@@ -11,7 +11,7 @@ Usage:
 import pulumi
 
 # Test reading from infrastructure stack
-infra_stack = pulumi.StackReference("service-infrastructure/day")
+infra_stack = pulumi.StackReference("foundation/day")
 
 # Try to read the kubeconfig output
 kubeconfig = infra_stack.get_output("kubeconfig")

@@ -196,7 +196,7 @@ pulumi stack
 
 ### Update a configuration value:
 ```bash
-pulumi config set service-infrastructure:max_nodes 5
+pulumi config set foundation:max_nodes 5
 pulumi up
 ```
 

@@ -25,8 +25,8 @@ echo ""
 # Test 2: Try to read from infrastructure stack
 echo "Test 2: Can we read from infrastructure stack?"
 echo "-----------------------------------------------"
-if pulumi stack output kubeconfig --stack ry111/service-infrastructure/day &>/dev/null; then
-    echo "✅ Can read kubeconfig from ry111/service-infrastructure/day"
+if pulumi stack output kubeconfig --stack ry111/foundation/day &>/dev/null; then
+    echo "✅ Can read kubeconfig from ry111/foundation/day"
 else
     echo "❌ Cannot read from infrastructure stack"
     echo "   Make sure infrastructure stack is deployed:"
@@ -37,7 +37,7 @@ echo ""
 # Test 3: Check if config file has fn::stackReference
 echo "Test 3: Config file content"
 echo "----------------------------"
-if grep -A 2 "fn::stackReference" Pulumi.dev.yaml | grep -q "ry111/service-infrastructure/day"; then
+if grep -A 2 "fn::stackReference" Pulumi.dev.yaml | grep -q "ry111/foundation/day"; then
     echo "✅ Pulumi.dev.yaml has fn::stackReference configured"
     echo "   $(grep -A 2 'fn::stackReference' Pulumi.dev.yaml | grep 'name:' | sed 's/^/   /')"
 else

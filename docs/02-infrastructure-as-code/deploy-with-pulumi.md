@@ -177,7 +177,7 @@ To change cluster configuration:
 # Edit Pulumi.day.yaml
 # For example, increase max nodes from 3 to 5:
 vim Pulumi.day.yaml
-# Change: service-infrastructure:max_nodes: "5"
+# Change: foundation:max_nodes: "5"
 
 # Preview changes
 pulumi preview

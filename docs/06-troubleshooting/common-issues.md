@@ -43,7 +43,7 @@ For example, this **does NOT work**:
 config:
   kubernetes:kubeconfig:
     fn::stackReference:
-      name: ry111/service-infrastructure/day
+      name: ry111/foundation/day
       output: kubeconfig
 ```
 
@@ -72,7 +72,7 @@ if use_stack_reference is None:
 
 if use_stack_reference:
     # Get the infrastructure stack name from config
-    infra_stack_name = config.get("infra_stack_name") or "ry111/service-infrastructure/day"
+    infra_stack_name = config.get("infra_stack_name") or "ry111/foundation/day"
 
     # Create stack reference to infrastructure stack
     infra_stack = pulumi.StackReference(infra_stack_name)
@@ -108,7 +108,7 @@ Use simple config values instead of `fn::` syntax:
 config:
   # Simple boolean and string configs - no fn:: syntax
   day-service-app:use_stack_reference: true
-  day-service-app:infra_stack_name: ry111/service-infrastructure/day
+  day-service-app:infra_stack_name: ry111/foundation/day
 
   # Rest of config...
   day-service-app:namespace: dev
@@ -139,7 +139,7 @@ pulumi preview
 # Expected error: "failed to resolve stack reference 'invalid/stack/name'"
 
 # Fix it back
-pulumi config set infra_stack_name ry111/service-infrastructure/day
+pulumi config set infra_stack_name ry111/foundation/day
 ```
 
 **Test 2: Check Outputs**
@@ -149,7 +149,7 @@ pulumi preview
 
 # Should show in outputs:
 # using_stack_reference: true
-# infra_stack_referenced: ry111/service-infrastructure/day
+# infra_stack_referenced: ry111/foundation/day
 ```
 
 **Test 3: Disable Stack Reference (Use Local Kubeconfig)**
@@ -185,7 +185,7 @@ pulumi preview
 ```bash
 # Use stack reference (production/CI-CD)
 pulumi config set use_stack_reference true
-pulumi config set infra_stack_name ry111/service-infrastructure/day
+pulumi config set infra_stack_name ry111/foundation/day
 
 # Use local kubeconfig (development)
 pulumi config set use_stack_reference false

@@ -281,7 +281,7 @@ pulumi.export("app_namespace", "production")
 2. Read it in application stack:
 ```python
 # application/__main__.py
-infra_stack = pulumi.StackReference("ry111/service-infrastructure/day")
+infra_stack = pulumi.StackReference("ry111/foundation/day")
 namespace = infra_stack.require_output("app_namespace")
 
 # Don't create namespace, just use the name
