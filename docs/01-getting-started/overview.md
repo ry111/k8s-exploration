@@ -29,13 +29,18 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 
 This project demonstrates **two configuration approaches** (YAML vs IaC) and different CD strategies:
 
-| Service | Cluster | CI/CD | Configuration Approach | Learning Goal |
-|---------|---------|-------|------------------------|---------------|
-| **Dawn** | Trantor | GitHub Actions | YAML (kubectl) | Understand Kubernetes fundamentals |
-| **Day** | Trantor | GitHub Actions | IaC (Pulumi) | Learn application-as-code |
-| **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD | Master continuous deployment with GitOps |
+| Service | Cluster | Status | Configuration | CD Strategy | Learning Goal |
+|---------|---------|--------|---------------|-------------|---------------|
+| **Dawn** | Trantor | ✅ Active | YAML (kubectl) | GitHub Actions (push) | Kubernetes fundamentals |
+| **Day** | Trantor | ✅ Active | IaC (Pulumi) | GitHub Actions (push) | Application-as-code |
+| **Dusk** | Terminus | 📋 Planned | YAML (kubectl) | ArgoCD (pull) | GitOps workflow |
 
-**Key Learning:** All three services are automated via CI/CD. Dawn and Day show two configuration approaches (YAML vs IaC), both deployed via GitHub Actions (push-based). Dusk demonstrates ArgoCD (pull-based GitOps) as a CD strategy. Each service demonstrates a different pattern while using the same underlying Kubernetes concepts.
+**Key Learning:** This project demonstrates different deployment patterns:
+- **Dawn** uses traditional YAML manifests with kubectl
+- **Day** uses Pulumi IaC to manage Kubernetes resources as code
+- **Dusk** (planned) will demonstrate ArgoCD for pull-based GitOps deployment
+
+All services use GitHub Actions for CI (building images), but differ in how they handle CD (deploying to Kubernetes).
 
 ### Service Isolation
 
@@ -196,7 +201,7 @@ foundation/
 ├── provisioning/
 │   ├── pulumi/              # Infrastructure as Code (Pulumi)
 │   │   ├── __main__.py      # EKS cluster, VPC, nodes
-│   │   └── Pulumi.prod.yaml  # Terminus cluster config
+│   │   └── Pulumi.production.yaml  # Terminus cluster config
 │   └── manual/              # Manual cluster provisioning scripts (Trantor)
 │       ├── create-trantor-cluster.sh
 │       └── install-alb-controller-trantor.sh
@@ -301,12 +306,19 @@ kubectl describe node | grep -A 5 "iam.amazonaws.com"
 
 ## Next Steps
 
+Once you've completed your first deployment, explore these topics:
+
+**Within This Project:**
+- **[CI/CD Automation](../04-cicd-automation/github-actions-setup.md)** - Already implemented! Learn how it works
+- **[Application as Code](../03-application-management/application-as-code.md)** - Deploy Day service with Pulumi
+- **[Kubernetes Deep Dives](../05-kubernetes-deep-dives/deployment-hierarchy.md)** - Understand how deployments work
+- **[Interactive Scripts](../../foundation/scripts/explore/)** - Hands-on exploration
+
+**Future Enhancements:**
 - Add monitoring with Prometheus/Grafana
-- Set up logging with Fluentd/CloudWatch
-- Configure DNS with Route53
-- Add SSL/TLS with ACM
-- Implement CI/CD with GitHub Actions
-- Add Pulumi for Infrastructure as Code
+- Set up centralized logging with Fluentd/CloudWatch
+- Configure custom DNS with Route53
+- Add SSL/TLS with AWS Certificate Manager
 
 ## Resources
 

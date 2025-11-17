@@ -15,20 +15,22 @@ A comprehensive hands-on learning project for Kubernetes (EKS) and Infrastructur
 
 This project demonstrates a **decoupled multi-cluster architecture** with different provisioning and deployment strategies.
 
+> **Note on Project Status:** This is an active learning project. "Planned" items indicate future experiments that build on current working implementations.
+
 ### Clusters (Infrastructure Layer)
 
-| Cluster | Provisioning | VPC CIDR | Purpose |
-|---------|--------------|----------|---------|
-| **Trantor** | Manual (eksctl) | 10.0.0.0/16 | Learn manual cluster creation |
-| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | Learn Infrastructure as Code |
+| Cluster | Provisioning | VPC CIDR | Status | Purpose |
+|---------|--------------|----------|--------|---------|
+| **Trantor** | Manual (eksctl) | 10.0.0.0/16 | ✅ Active | Learn manual cluster creation |
+| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | ✅ Active | Learn Infrastructure as Code |
 
 ### Services (Application Layer)
 
-| Service | Cluster | CI/CD | Configuration Approach | CD Strategy |
-|---------|---------|-------|------------------------|-------------|
-| **Dawn** | Trantor | GitHub Actions | YAML (kubectl) | GitHub Actions (push-based) |
-| **Day** | Trantor | GitHub Actions | IaC (Pulumi) | GitHub Actions (push-based) |
-| **Dusk** | Terminus (planned) | GitHub Actions | YAML (kubectl) | ArgoCD (pull-based, planned) |
+| Service | Cluster | Status | Configuration | CD Strategy |
+|---------|---------|--------|---------------|-------------|
+| **Dawn** | Trantor | ✅ Deployed | YAML (kubectl) | GitHub Actions (push-based) |
+| **Day** | Trantor | ✅ Deployed | IaC (Pulumi) | GitHub Actions (push-based) |
+| **Dusk** | Terminus | 📋 Planned | YAML (kubectl) | ArgoCD (pull-based) |
 
 **Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different configuration approaches (YAML vs IaC) and CD strategies (push-based via GitHub Actions vs pull-based via ArgoCD).
 
@@ -113,17 +115,26 @@ cd foundation/provisioning/pulumi
 pulumi login
 pulumi stack select production
 pulumi up
+
+# Note: This creates the Terminus cluster infrastructure.
+# Dusk service deployment on Terminus is planned but not yet implemented.
+# For now, use Option 1 to deploy and interact with a working service.
 ```
 
 **Time:** ~30 minutes | **Best for:** Learning automation and repeatability
+**Note:** Creates cluster infrastructure; service deployment coming in future iterations
 
 ## 🎯 What You'll Learn
 
-- ✅ **Kubernetes Fundamentals** - Deployments, Services, ConfigMaps, HPA
-- ✅ **AWS EKS** - Managed Kubernetes on AWS
-- ✅ **Infrastructure as Code** - Pulumi for managing infrastructure as code
-- ✅ **Application Management** - Managing K8s apps with code (not YAML)
-- ✅ **CI/CD** - GitHub Actions for automated deployments
+Through hands-on experimentation with this project, you'll gain practical experience in:
+
+- ✅ **Kubernetes Fundamentals** - Deployments, Services, ConfigMaps, HPA, and how they work together
+- ✅ **AWS EKS** - Managed Kubernetes on AWS with real cluster provisioning
+- ✅ **Infrastructure as Code** - Pulumi for declaring and managing infrastructure
+- ✅ **Application Management** - Two approaches: YAML manifests and IaC (Pulumi)
+- ✅ **CI/CD** - GitHub Actions for automated builds and deployments
+
+> **New to Kubernetes?** Start with the [recommended learning path](#-learning-path) below to build knowledge progressively.
 
 ## 📖 Key Concepts Explored
 
@@ -168,17 +179,21 @@ foundation/scripts/explore/explore-rolling-updates.sh           # Watch rolling 
 
 ## 🎓 Learning Path
 
-**Recommended progression:**
+**Recommended progression for beginners:**
 
-1. **Start:** [Project Overview](docs/01-getting-started/overview.md)
-2. **Understand:** [Kubernetes 101](docs/01-getting-started/kubernetes-101.md)
-3. **Deploy:** [Your First Deployment](docs/01-getting-started/first-deployment.md)
-4. **Explore:** Run interactive scripts in `foundation/scripts/explore/`
-5. **Learn Internals:** [Deployment Hierarchy](docs/05-kubernetes-deep-dives/deployment-hierarchy.md)
-6. **Automate:** [Infrastructure as Code](docs/02-infrastructure-as-code/why-infrastructure-as-code.md)
-7. **Master:** [CI/CD Automation](docs/04-cicd-automation/github-actions-setup.md)
+| Step | Topic | What You'll Do | Time |
+|------|-------|----------------|------|
+| 1 | [Project Overview](docs/01-getting-started/overview.md) | Understand the architecture and goals | 10 min |
+| 2 | [Kubernetes 101](docs/01-getting-started/kubernetes-101.md) | Learn core K8s concepts | 20 min |
+| 3 | [Your First Deployment](docs/01-getting-started/first-deployment.md) | Deploy Dawn service to Trantor cluster | 40 min |
+| 4 | [Interactive Scripts](foundation/scripts/explore/) | Explore deployments, ConfigMaps, rolling updates | 30 min |
+| 5 | [Deployment Hierarchy](docs/05-kubernetes-deep-dives/deployment-hierarchy.md) | Understand Deployments → ReplicaSets → Pods | 15 min |
+| 6 | [Infrastructure as Code](docs/02-infrastructure-as-code/why-infrastructure-as-code.md) | Learn why and how to use IaC | 20 min |
+| 7 | [CI/CD Automation](docs/04-cicd-automation/github-actions-setup.md) | Automate builds and deployments | 30 min |
 
-**For complete learning paths**, see [docs/README.md](docs/README.md) - 4 paths based on your goals!
+**Total estimated time:** ~2.5 hours hands-on learning
+
+**Alternative paths available:** See [docs/README.md](docs/README.md) for 4 different learning paths based on your background and goals!
 
 ## 🤝 Contributing
 

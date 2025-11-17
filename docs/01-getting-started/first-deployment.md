@@ -330,25 +330,31 @@ trantor (EKS Cluster)
     └── HPA: dawn-rc-hpa (auto-scaling 1-3 pods)
 ```
 
-> 💡 **Learning Pattern: One Cluster Per Service**
+> 💡 **Learning Pattern: Multiple Services Per Cluster**
 >
-> This project creates **separate clusters** for each service (dawn, day, dusk).
+> This project demonstrates **multiple services sharing a cluster** using namespaces:
 >
-> **Why we do this for learning:**
-> - Clear isolation helps understand cluster boundaries
-> - Easier to experiment and clean up
-> - See the full cluster creation process
->
-> **Production pattern:** Run multiple services in one cluster using **namespaces**:
+> **Trantor cluster (manual provisioning):**
 > ```
-> shared-prod-cluster
-> ├── dawn-ns (namespace)
-> ├── day-ns (namespace)
-> └── dusk-ns (namespace)
+> trantor (EKS cluster)
+> ├── dawn-ns (Dawn service)
+> └── day-ns (Day service)
 > ```
-> This is more cost-effective (fewer control planes) and better resource utilization.
 >
-> See `07-next-steps/learning-vs-production.md` for migration guidance.
+> **Terminus cluster (Pulumi IaC):**
+> ```
+> terminus (EKS cluster - planned)
+> └── dusk-ns (Dusk service)
+> ```
+>
+> **Why two clusters for learning:**
+> - **Trantor** demonstrates manual cluster creation with eksctl
+> - **Terminus** demonstrates Infrastructure as Code with Pulumi
+> - Each cluster shows a different provisioning approach
+>
+> **Production pattern:** This IS the production pattern! Multiple services per cluster is cost-effective and efficient.
+>
+> See [learning-vs-production.md](../07-next-steps/learning-vs-production.md) for scaling considerations.
 
 ### Interactive Exploration Scripts
 
@@ -544,7 +550,7 @@ Congratulations! You've successfully:
 2. **Automate with Infrastructure as Code**
    - [Why Infrastructure as Code?](../02-infrastructure-as-code/why-infrastructure-as-code.md)
    - [Pulumi Setup](../02-infrastructure-as-code/pulumi-setup.md) - Manage infrastructure with Python
-   - [Deploy with Pulumi](../02-infrastructure-as-code/deploy-with-pulumi.md) - The Day cluster example
+   - [Deploy with Pulumi](../02-infrastructure-as-code/deploy-with-pulumi.md) - The Terminus cluster example
 
 3. **Add CI/CD**
    - [GitHub Actions Setup](../04-cicd-automation/github-actions-setup.md) - Automate builds and deployments

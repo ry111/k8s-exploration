@@ -170,7 +170,7 @@ Choose your path based on your goals:
 1. [kubernetes-101.md](01-getting-started/kubernetes-101.md) - 30 min
 2. [overview.md](01-getting-started/overview.md) - 10 min
 3. [first-deployment.md](01-getting-started/first-deployment.md) - 40 min
-4. **Explore:** Run scripts in `foundation/gitops/manual_deploy/explore/`
+4. **Explore:** Run scripts in `foundation/scripts/explore/` - 30 min
 5. [deployment-hierarchy.md](05-kubernetes-deep-dives/deployment-hierarchy.md) - 30 min
 6. [configmap-relationships.md](05-kubernetes-deep-dives/configmap-relationships.md) - 30 min
 7. [rolling-updates.md](05-kubernetes-deep-dives/rolling-updates.md) - 30 min
@@ -267,14 +267,16 @@ k8s-exploration/
 ├── foundation/
 │   ├── provisioning/
 │   │   ├── pulumi/                  # Infrastructure as Code (EKS, VPC, nodes)
-│   │   └── manual/                  # Manual cluster provisioning (Trantor)
+│   │   └── manual/                  # Manual cluster provisioning scripts (Trantor)
 │   ├── gitops/
-│   │   ├── manual_deploy/           # YAML (kubectl) deployments (Dawn)
-│   │   └── pulumi_deploy/           # Pulumi IaC deployments (Day)
+│   │   ├── manual_deploy/           # YAML manifests + kubectl deployments
+│   │   │   ├── dawn/                # Dawn service (YAML deployment)
+│   │   │   ├── day/                 # Day service manifests
+│   │   │   └── dusk/                # Dusk service (planned for Terminus)
+│   │   └── pulumi_deploy/           # Pulumi IaC deployments (Day service)
 │   ├── services/                    # Source code (dawn, day, dusk Flask apps)
-│   ├── k8s/                         # Kubernetes YAML manifests
-│   └── scripts/                     # Interactive learning scripts
-│       └── explore/                 # 👈 Exploration scripts
+│   └── scripts/
+│       └── explore/                 # 👈 Interactive exploration scripts
 │           ├── explore-deployment-hierarchy.sh
 │           ├── explore-configmap-relationships.sh
 │           └── explore-rolling-updates.sh
@@ -283,7 +285,7 @@ k8s-exploration/
 
 **Exploration Scripts** (hands-on learning):
 ```bash
-cd foundation/gitops/manual_deploy/explore
+cd foundation/scripts/explore
 
 ./explore-deployment-hierarchy.sh       # See Deployment → ReplicaSet → Pod
 ./explore-configmap-relationships.sh    # Understand ConfigMap usage
@@ -300,11 +302,12 @@ This project uses **simplified patterns for learning**. Key examples:
 
 | Learning (This Project) | Production | Why Different |
 |------------------------|------------|---------------|
-| Multiple services per cluster | Production: single large cluster | Demonstrates isolation via namespaces |
-| `:latest` image tags | Immutable SHA/semver tags | Reproducibility, rollback |
-| "RC" terminology | Staging/canary | Industry standards |
+| Multiple small clusters (Trantor, Terminus) | Single large cluster | Demonstrates different provisioning methods |
+| `:latest` and `:rc` image tags | Immutable SHA/semver tags | Reproducibility, rollback capability |
+| Spot instances only | Mix of on-demand + spot | Cost savings vs reliability tradeoff |
+| Public ALBs for all services | Private ALBs, API Gateway | Security and access control |
 
-**These patterns are intentional!** They make learning easier.
+**These patterns are intentional!** They make learning easier while keeping costs low.
 See [learning-vs-production.md](07-next-steps/learning-vs-production.md) for migration guidance.
 
 ### Two-Tier Pulumi Architecture
