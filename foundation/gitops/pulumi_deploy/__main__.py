@@ -92,10 +92,15 @@ feature_new_ui = config.get_bool("feature_new_ui") or True
 # Labels and Metadata
 # ============================================================================
 
+# Determine tier based on namespace
+tier = "rc" if "rc" in namespace else "production"
+
 labels = {
     "app": app_name,
     "managed-by": "pulumi",
     "environment": namespace,
+    "tier": tier,
+    "cluster": "trantor",
 }
 
 # ============================================================================
@@ -112,6 +117,9 @@ ns = k8s.core.v1.Namespace(
             "name": namespace,
             "managed-by": "pulumi",
             "app": app_name,
+            "tier": tier,
+            "cluster": "trantor",
+            "environment": "production" if tier == "production" else "rc",
         },
     },
     opts=provider_opts,
@@ -297,6 +305,7 @@ ingress = k8s.networking.v1.Ingress(
         "annotations": {
             # AWS Load Balancer Controller annotations
             "kubernetes.io/ingress.class": "alb",
+            "alb.ingress.kubernetes.io/group.name": "trantor-cluster",
             "alb.ingress.kubernetes.io/scheme": "internet-facing",
             "alb.ingress.kubernetes.io/target-type": "ip",
             "alb.ingress.kubernetes.io/healthcheck-path": "/health",

@@ -5,3 +5,5 @@ metadata:
   labels:
     name: day-ns
     environment: production
+    tier: production
+    cluster: trantor
