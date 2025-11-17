@@ -49,13 +49,13 @@ This project demonstrates **different approaches** to managing these two layers:
 | Service | Cluster | Infrastructure | Application | Key Learning |
 |---------|---------|---------------|-------------|--------------|
 | **Dawn** | Trantor | Manual scripts | YAML + kubectl | Kubernetes fundamentals, hands-on learning |
-| **Day** | Trantor | Manual scripts (reused) | Pulumi IaC | Application-layer IaC on existing infrastructure |
-| **Dusk** | Terminus | Pulumi IaC | _TBD_ | Full-stack IaC with different deployment strategies |
+| **Day** | Terminus | Pulumi IaC | Pulumi IaC | Full-stack IaC - both infrastructure and application as code |
+| **Dusk** | Terminus | Pulumi IaC (shared) | Pulumi IaC | Application-layer IaC on shared Pulumi infrastructure |
 
 **Why this progression?**
 - **Dawn** (on Trantor): Manual foundation - you understand each piece step by step
-- **Day** (on Trantor): Introduces IaC for the application layer while reusing the manual infrastructure
-- **Dusk** (on Terminus): Shows full-stack IaC - both infrastructure and application managed as code
+- **Day** (on Terminus): Full-stack Pulumi IaC - both infrastructure and application managed as code
+- **Dusk** (on Terminus): Application-layer IaC on shared Pulumi infrastructure - demonstrates multi-service deployment
 
 ---
 
@@ -141,12 +141,18 @@ Date: Mon Nov 15
 Create identical environments with different configs:
 
 ```bash
-# Same code, different config values
-pulumi stack select dev
-pulumi up      # Creates dev environment
-
+# Infrastructure: Same code, different config values
+cd foundation/provisioning/pulumi
 pulumi stack select production
-pulumi up      # Creates production environment (different VPC CIDR, more nodes)
+pulumi up      # Creates Terminus cluster (VPC: 10.2.0.0/16, 2-4 nodes)
+
+# Application: Same code, different environments
+cd ../../gitops/pulumi_deploy
+pulumi stack select day-rc
+pulumi up      # Creates RC environment (1 replica, DEBUG logging)
+
+pulumi stack select day-production
+pulumi up      # Creates production environment (5 replicas, INFO logging)
 ```
 
 ### 3. Preview Before Apply
@@ -156,12 +162,12 @@ See **exactly** what will change before it happens:
 ```bash
 $ pulumi preview
 
-Previewing update (dev):
-     Type                 Name                Plan
- +   pulumi:pulumi:Stack  infrastructure-dev  create
- +   ├─ aws:ec2:Vpc       day-vpc             create
- +   ├─ eks:Cluster       terminus            create
- +   └─ k8s:apps:Deployment day               create
+Previewing update (production):
+     Type                    Name                          Plan
+ +   pulumi:pulumi:Stack     foundation-provisioning-production  create
+ +   ├─ aws:ec2:Vpc          terminus-vpc                  create
+ +   ├─ eks:Cluster          terminus                      create
+ +   └─ aws:eks:NodeGroup    terminus-nodes                create
 
 Resources:
     + 4 to create
@@ -231,12 +237,12 @@ for i, az in enumerate(availability_zones):
 Manage **infrastructure** (AWS) and **applications** (Kubernetes) with the same tool:
 
 ```python
-# Infrastructure layer
+# Infrastructure layer (foundation/provisioning/pulumi/)
 cluster = eks.Cluster("terminus", ...)
-vpc = aws.ec2.Vpc("day-vpc", ...)
+vpc = aws.ec2.Vpc("terminus-vpc", cidr_block="10.2.0.0/16")
 
-# Application layer (same file, same language!)
-deployment = k8s.apps.v1.Deployment("day", ...)
+# Application layer (foundation/gitops/pulumi_deploy/)
+deployment = k8s.apps.v1.Deployment("day-service", ...)
 service = k8s.core.v1.Service("day-service", ...)
 ```
 
@@ -289,8 +295,8 @@ pulumi login s3://my-state-bucket         # S3
 
 **For this project:**
 - **Dawn** (Trantor): Manual infrastructure + YAML applications = Learn the fundamentals
-- **Day** (Trantor): Reuse manual infrastructure + Pulumi for applications = Learn application-layer IaC
-- **Dusk** (Terminus): Pulumi for both layers + TBD deployment = Learn full-stack IaC
+- **Day** (Terminus): Pulumi infrastructure + Pulumi applications = Learn full-stack IaC
+- **Dusk** (Terminus): Shared Pulumi infrastructure + Pulumi applications = Learn multi-service deployment
 
 ---
 
