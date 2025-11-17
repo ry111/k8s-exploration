@@ -44,7 +44,7 @@ jobs:
         uses: pulumi/actions@v4
         with:
           command: preview
-          stack-name: prod
+          stack-name: production
           work-dir: foundation/provisioning/pulumi
           comment-on-pr: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
