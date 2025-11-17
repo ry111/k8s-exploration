@@ -1032,9 +1032,9 @@ s3.list_buckets()        # Works if IAM role has s3:ListBuckets
    - VPC CNI (networking) - pre-installed
    - kube-proxy - pre-installed
    - CoreDNS - pre-installed
-   - AWS Load Balancer Controller - install yourself
-   - EBS CSI Driver - install yourself
-   - Metrics Server - install yourself
+   - AWS Load Balancer Controller - installed by provisioning scripts
+   - Metrics Server - installed by provisioning scripts
+   - EBS CSI Driver - install yourself if needed
 
 4. Deploy Applications
    - kubectl apply or Helm or ArgoCD

@@ -124,13 +124,14 @@ cd ../../gitops/manual_deploy
 ./build-and-push-day.sh us-east-1
 
 # Deploy services to Trantor cluster
-./deploy-to-trantor.sh us-east-1
+./deploy-dawn.sh trantor us-east-1
+./deploy-day.sh trantor us-east-1
 ```
 
 This:
 - Creates ECR repositories for dawn and day
 - Builds Docker images
-- Deploys both services to trantor cluster with production configuration
+- Deploys each service independently to the specified cluster
 
 ## Verification
 

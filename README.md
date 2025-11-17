@@ -157,7 +157,7 @@ foundation/scripts/explore/explore-rolling-updates.sh           # Watch rolling 
 - EKS clusters with OIDC
 - Managed node groups (spot instances)
 - AWS ALB Ingress Controller
-- HPA with metrics server
+- HPA (HorizontalPodAutoscaler) with metrics-server
 
 ### CI/CD
 - GitHub Actions workflows

@@ -83,7 +83,7 @@ helm repo update
 
 helm install metrics-server metrics-server/metrics-server \
   -n kube-system \
-  --set args[0]=--kubelet-preferred-address-types=InternalIP
+  --set 'args[0]=--kubelet-preferred-address-types=InternalIP'
 
 echo ""
 echo "Waiting for metrics-server to be ready..."

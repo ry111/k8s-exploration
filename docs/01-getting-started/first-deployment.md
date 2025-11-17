@@ -82,27 +82,31 @@ kubectl get nodes
 
 ---
 
-### Step 2: Install AWS Load Balancer Controller (~5 minutes)
+### Step 2: Install AWS Load Balancer Controller + Metrics Server (~5 minutes)
 
 ```bash
 ./install-alb-controller-trantor.sh us-east-1
 ```
 
-The AWS Load Balancer Controller automatically creates AWS Application Load Balancers (ALBs) when you create Kubernetes Ingress resources.
+This script installs two essential cluster components:
 
-**What it does:**
+**AWS Load Balancer Controller:**
 - Watches for Ingress resources in your cluster
 - Provisions AWS ALBs automatically
 - Configures routing rules
 - Manages target groups pointing to your pods
 
-**Verify the controller is running:**
+**Metrics Server:**
+- Collects resource metrics (CPU, memory) from nodes and pods
+- Required for HorizontalPodAutoscaler (HPA) to function
+- Enables `kubectl top nodes` and `kubectl top pods` commands
+
+**Verify both are running:**
 ```bash
 kubectl get deployment -n kube-system aws-load-balancer-controller
+kubectl get deployment -n kube-system metrics-server
 
-# Should show:
-# NAME                           READY   UP-TO-DATE   AVAILABLE
-# aws-load-balancer-controller   2/2     2            2
+# Both should show READY status
 ```
 
 ---
@@ -144,37 +148,42 @@ Step 2/8 : WORKDIR /app
 
 ---
 
-### Step 4: Deploy Services to Trantor (~5 minutes)
+### Step 4: Deploy Services (~5 minutes)
+
+Deploy each service individually by specifying the target cluster:
 
 ```bash
-./deploy-to-trantor.sh us-east-1
+# Deploy Dawn service to Trantor cluster
+./deploy-dawn.sh trantor us-east-1
+
+# Deploy Day service to Trantor cluster
+./deploy-day.sh trantor us-east-1
 ```
 
-This deploys services to the Trantor cluster:
-- **Dawn service** (dawn-ns and dawn-rc-ns namespaces)
-  - Production tier: 2 pods with HPA
-  - RC tier: 1 pod with HPA
-- **Day service** (day-ns and day-rc-ns namespaces)
-  - Production tier: 2 pods with HPA
-  - RC tier: 1 pod with HPA
-- Services (ClusterIP) for internal routing
-- Ingress resources for external access
+**What gets deployed:**
 
-> 💡 **Learning Pattern: "RC" Terminology**
+**Dawn service (dawn-ns namespace):**
+- Deployment: 2 pods with rolling updates
+- Service (ClusterIP) for internal routing
+- Ingress for external access via ALB
+- ConfigMap for configuration
+- HPA for auto-scaling (2-5 pods based on CPU/memory)
+
+**Day service (day-ns namespace):**
+- Deployment: 2 pods with rolling updates
+- Service (ClusterIP) for internal routing
+- Ingress for external access via ALB
+- ConfigMap for configuration
+- HPA for auto-scaling (2-5 pods based on CPU/memory)
+
+> 💡 **Deployment Strategy**
 >
-> We use **"RC"** (Release Candidate) to represent a pre-production environment.
->
-> **Industry standard terms:**
-> - Staging
-> - Pre-production
-> - Canary
->
-> The concept is the same: test changes before promoting to production.
+> These scripts are **cluster-agnostic** - they can deploy to any cluster by name. The first argument explicitly specifies the target cluster, making it clear and safe. This demonstrates the separation between infrastructure (clusters) and applications (services).
 
 **Verify your pods are running:**
 ```bash
 kubectl get pods -n dawn-ns
-kubectl get pods -n dawn-rc-ns
+kubectl get pods -n day-ns
 
 # Should show running pods:
 # NAME                    READY   STATUS    RESTARTS   AGE
@@ -250,7 +259,8 @@ cd ../../gitops/manual_deploy
 ./build-and-push-day.sh us-east-1
 
 # 4. Deploy services (~5 min)
-./deploy-to-trantor.sh us-east-1
+./deploy-dawn.sh trantor us-east-1
+./deploy-day.sh trantor us-east-1
 
 # 5. Wait for ALB to be ready (~2-3 min)
 watch kubectl get ingress -n dawn-ns
@@ -352,7 +362,7 @@ These scripts show you exactly how Kubernetes manages your application!
 # Get all pods across all namespaces
 kubectl get pods --all-namespaces
 
-# Check node resource usage (requires metrics-server)
+# Check node resource usage
 kubectl top nodes
 
 # Check pod resource usage
