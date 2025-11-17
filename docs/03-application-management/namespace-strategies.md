@@ -188,11 +188,11 @@ production/      ← One namespace for all production services
 
 **Config:**
 ```yaml
-# Pulumi.dev.yaml
-day-service-app:namespace: dev
+# Pulumi.day-rc.yaml
+foundation-services:namespace: day-rc-ns
 
-# Pulumi.prod.yaml
-day-service-app:namespace: production
+# Pulumi.day-production.yaml
+foundation-services:namespace: day-ns
 ```
 
 ### Pattern 2: Namespace Per Service Per Environment
@@ -208,11 +208,11 @@ dusk-service-production/
 # In __main__.py
 namespace = config.get("namespace") or f"{app_name}-production"
 
-# Pulumi.dev.yaml
-day-service-app:namespace: day-service-dev
+# Pulumi.day-rc.yaml
+foundation-services:namespace: day-service-rc
 
-# Pulumi.prod.yaml
-day-service-app:namespace: day-service-production
+# Pulumi.day-production.yaml
+foundation-services:namespace: day-service-production
 ```
 
 ### Pattern 3: Team-Based Namespaces
@@ -281,7 +281,7 @@ pulumi.export("app_namespace", "production")
 2. Read it in application stack:
 ```python
 # application/__main__.py
-infra_stack = pulumi.StackReference("ry111/foundation/day")
+infra_stack = pulumi.StackReference("ry111/foundation-provisioning/production")
 namespace = infra_stack.require_output("app_namespace")
 
 # Don't create namespace, just use the name
@@ -299,7 +299,7 @@ namespace = infra_stack.require_output("app_namespace")
 
 **Config:**
 ```yaml
-day-service-app:namespace: dev  # or production
+foundation-services:namespace: day-rc-ns  # or day-ns
 ```
 
 **Code:**
