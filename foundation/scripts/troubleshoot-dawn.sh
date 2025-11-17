@@ -11,7 +11,7 @@ echo "======================================"
 echo ""
 
 # Update kubeconfig
-aws eks update-kubeconfig --name dawn-cluster --region $REGION &>/dev/null
+aws eks update-kubeconfig --name trantor --region $REGION &>/dev/null
 
 # 1. Check for pod issues
 echo "1. Checking for pod problems..."

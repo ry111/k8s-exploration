@@ -6,7 +6,7 @@
 set -e
 
 REGION=${1:-us-east-1}
-CLUSTER_NAME="dawn-cluster"
+CLUSTER_NAME="trantor"
 
 # Colors for output
 GREEN='\033[0;32m'

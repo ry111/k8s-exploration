@@ -6,7 +6,7 @@
 REGION=${1:-us-east-1}
 
 # Update kubeconfig silently
-aws eks update-kubeconfig --name dawn-cluster --region $REGION &>/dev/null
+aws eks update-kubeconfig --name trantor --region $REGION &>/dev/null
 
 # One-liner checks
 echo "Nodes:     $(kubectl get nodes --no-headers 2>/dev/null | grep -c Ready)/$(kubectl get nodes --no-headers 2>/dev/null | wc -l) Ready"

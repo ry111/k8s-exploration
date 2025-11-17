@@ -187,27 +187,27 @@ alb_policy_doc = aws.iam.get_policy_document(
                 "elasticloadbalancing:DescribeLoadBalancers",
                 "elasticloadbalancing:DescribeLoadBalancerAttributes",
                 "elasticloadbalancing:DescribeListeners",
-                "elasticloadbalancing:DescribeListenerAttributes",  # Missing!
+                "elasticloadbalancing:DescribeListenerAttributes",
                 "elasticloadbalancing:DescribeListenerCertificates",
                 "elasticloadbalancing:DescribeRules",
                 "elasticloadbalancing:DescribeTargetGroups",
                 "elasticloadbalancing:DescribeTargetGroupAttributes",
                 "elasticloadbalancing:DescribeTargetHealth",
                 "elasticloadbalancing:DescribeTags",
-                "elasticloadbalancing:DescribeSSLPolicies",  # Missing!
+                "elasticloadbalancing:DescribeSSLPolicies",
                 "elasticloadbalancing:CreateLoadBalancer",
                 "elasticloadbalancing:CreateListener",
                 "elasticloadbalancing:CreateRule",
                 "elasticloadbalancing:CreateTargetGroup",
                 "elasticloadbalancing:ModifyLoadBalancerAttributes",
-                "elasticloadbalancing:ModifyListener",  # Missing!
-                "elasticloadbalancing:ModifyRule",  # Missing!
+                "elasticloadbalancing:ModifyListener",
+                "elasticloadbalancing:ModifyRule",
                 "elasticloadbalancing:ModifyTargetGroupAttributes",
                 "elasticloadbalancing:RegisterTargets",
                 "elasticloadbalancing:DeregisterTargets",
-                "elasticloadbalancing:SetWebAcl",  # Missing!
-                "elasticloadbalancing:SetSecurityGroups",  # Missing!
-                "elasticloadbalancing:SetSubnets",  # Missing!
+                "elasticloadbalancing:SetWebAcl",
+                "elasticloadbalancing:SetSecurityGroups",
+                "elasticloadbalancing:SetSubnets",
                 "elasticloadbalancing:DeleteLoadBalancer",
                 "elasticloadbalancing:DeleteListener",
                 "elasticloadbalancing:DeleteRule",
