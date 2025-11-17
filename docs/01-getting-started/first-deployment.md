@@ -343,7 +343,7 @@ trantor (EKS Cluster)
 >
 > **Terminus cluster (Pulumi IaC):**
 > ```
-> terminus (EKS cluster - planned)
+> terminus (EKS cluster)
 > └── dusk-ns (Dusk service)
 > ```
 >

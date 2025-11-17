@@ -12,7 +12,7 @@ This project demonstrates **two configuration approaches** for Kubernetes resour
 |---------|------------------------|-----|
 | **Dawn** | YAML (kubectl) | Learn Kubernetes fundamentals |
 | **Day** ← You are here | Pulumi IaC | Application-as-code with type safety |
-| **Dusk** | TBD | Will demonstrate ArgoCD as a CD strategy |
+| **Dusk** | TBD | Exploring different deployment strategies |
 
 **Day service** demonstrates managing applications as code with Pulumi instead of YAML manifests. Both Dawn and Day are automated via GitHub Actions (push-based deployment), but Pulumi offers type safety, preview capabilities, and programmatic infrastructure management.
 
