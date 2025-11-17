@@ -49,19 +49,19 @@ Congratulations! By working through this project, you've learned:
 
 #### Learning (This Project)
 
-This project demonstrates **three update tools** with increasing automation:
+This project demonstrates **three update tools** with different approaches:
 
 | Service | Cluster | Update Tool | Why This Approach |
 |---------|---------|-------------|-------------------|
-| **Dawn** | Trantor | kubectl + YAML | Learn Kubernetes fundamentals hands-on |
-| **Day** | Trantor | IaC (Pulumi) | Understand application-as-code |
-| **Dusk** | Terminus | TBD | Master continuous deployment |
+| **Dawn** | Trantor | kubectl + YAML (via GitHub Actions) | Learn Kubernetes fundamentals hands-on |
+| **Day** | Trantor | IaC (Pulumi via GitHub Actions) | Understand application-as-code |
+| **Dusk** | Terminus | TBD (ArgoCD - GitOps operator) | Master continuous deployment |
 
 **Why this progression:**
 - **Pedagogical** - Each approach builds on the previous
-- **Realistic** - Shows how teams mature their update practices
-- **Comparative** - Easy to see trade-offs between approaches
-- **Practical** - All three are used in production systems
+- **Realistic** - Shows how teams evolve from imperative to declarative to pull-based GitOps
+- **Comparative** - Easy to see trade-offs between push-based and pull-based approaches
+- **Practical** - All three patterns are used in production systems
 
 ### 2. Cluster Architecture
 
@@ -69,11 +69,11 @@ This project demonstrates **three update tools** with increasing automation:
 
 ```
 Trantor cluster (manually provisioned)
-├── dawn-service (dawn-ns, dawn-rc-ns) - Manual kubectl deployment
-└── day-service (day-ns, day-rc-ns) - Pulumi IaC deployment
+├── dawn-service (dawn-ns, dawn-rc-ns) - kubectl (via GitHub Actions)
+└── day-service (day-ns, day-rc-ns) - Pulumi IaC (via GitHub Actions)
 
 Terminus cluster (Pulumi-managed)
-└── dusk-service (dusk-ns, dusk-rc-ns) - ArgoCD GitOps deployment
+└── dusk-service (dusk-ns, dusk-rc-ns) - ArgoCD GitOps (continuous reconciliation)
 ```
 
 **Why we use this decoupled architecture:**

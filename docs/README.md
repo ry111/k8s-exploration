@@ -269,8 +269,8 @@ k8s-exploration/
 │   │   ├── pulumi/                  # Infrastructure as Code (EKS, VPC, nodes)
 │   │   └── manual/                  # Manual cluster provisioning (Trantor)
 │   ├── gitops/
-│   │   ├── manual_deploy/           # Manual deployments (services)
-│   │   └── pulumi_deploy/           # Pulumi deployments (services)
+│   │   ├── manual_deploy/           # kubectl + YAML deployments (Dawn)
+│   │   └── pulumi_deploy/           # Pulumi IaC deployments (Day)
 │   ├── services/                    # Source code (dawn, day, dusk Flask apps)
 │   ├── k8s/                         # Kubernetes YAML manifests
 │   └── scripts/                     # Interactive learning scripts

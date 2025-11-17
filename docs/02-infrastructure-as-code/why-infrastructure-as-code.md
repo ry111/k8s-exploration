@@ -4,15 +4,15 @@ This brief guide explains the benefits of Infrastructure as Code (IaC) and why t
 
 ## Your Learning Journey
 
-This project demonstrates **three update tools** with increasing automation:
+This project demonstrates **three update tools** with different approaches:
 
 | Service | Update Tool | Key Learning |
 |---------|-------------|--------------|
-| **Dawn** | kubectl + YAML | Kubernetes fundamentals |
-| **Day** | IaC (Pulumi) | Application & infrastructure as code |
-| **Dusk** | TBD | Continuous deployment |
+| **Dawn** | kubectl + YAML (via GitHub Actions) | Kubernetes fundamentals |
+| **Day** | IaC (Pulumi via GitHub Actions) | Application & infrastructure as code |
+| **Dusk** | TBD (ArgoCD - GitOps operator) | Continuous deployment |
 
-This progression mirrors how teams evolve their update practices from manual to fully automated. Each step builds on the previous, showing the benefits and trade-offs of each approach.
+This progression shows how update tools evolve from imperative push-based approaches to declarative pull-based GitOps. Each step builds on the previous, showing the benefits and trade-offs of each approach.
 
 ## What is Infrastructure as Code?
 
@@ -317,9 +317,9 @@ pulumi destroy
 - ✅ You're the only person managing it
 
 **For this learning project:**
-- ✅ Dawn (manual) - Learn the fundamentals
-- ✅ Day (Pulumi) - Learn infrastructure as code
-- ✅ Dusk (Pulumi) - Practice IaC skills
+- ✅ Dawn (kubectl + YAML via GitHub Actions) - Learn Kubernetes fundamentals
+- ✅ Day (Pulumi IaC via GitHub Actions) - Learn infrastructure as code
+- ✅ Dusk (ArgoCD - GitOps operator) - Learn continuous deployment
 
 ---
 
