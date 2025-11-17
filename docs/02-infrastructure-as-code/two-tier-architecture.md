@@ -325,10 +325,10 @@ Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: day)
 Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: dev, prod)
 ```
 
-### Dusk Service: Pulumi Infrastructure + kubectl Applications
+### Dusk Service: Pulumi Infrastructure + TBD Applications
 ```
 Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: dusk)
-Applications:   foundation/gitops/manual_deploy/dusk/prod/*.yaml (kubectl)
+Applications:   TBD (exploring deployment options)
 ```
 
 ## Detailed Resource Breakdown

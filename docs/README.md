@@ -272,7 +272,7 @@ k8s-exploration/
 │   │   ├── manual_deploy/           # YAML manifests + kubectl deployments
 │   │   │   ├── dawn/                # Dawn service (YAML deployment)
 │   │   │   ├── day/                 # Day service manifests
-│   │   │   └── dusk/                # Dusk service (planned for Terminus)
+│   │   │   └── dusk/                # Dusk service (for Terminus)
 │   │   └── pulumi_deploy/           # Pulumi IaC deployments (Day service)
 │   ├── services/                    # Source code (dawn, day, dusk Flask apps)
 │   └── scripts/

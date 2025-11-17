@@ -55,7 +55,7 @@ This project demonstrates **two configuration approaches** (YAML and IaC) with d
 |---------|---------|------------------------|-------------|-------------------|
 | **Dawn** | Trantor | YAML (kubectl) | GitHub Actions (push-based) | Learn Kubernetes fundamentals hands-on |
 | **Day** | Trantor | IaC (Pulumi) | GitHub Actions (push-based) | Understand application-as-code |
-| **Dusk** | Terminus | TBD | ArgoCD (pull-based GitOps) | Master continuous deployment |
+| **Dusk** | Terminus | TBD | TBD | Explore deployment strategies on Pulumi infrastructure |
 
 **Why this progression:**
 - **Pedagogical** - Each approach builds on the previous
@@ -73,7 +73,7 @@ Trantor cluster (manually provisioned)
 └── day-service (day-ns, day-rc-ns) - Pulumi IaC (via GitHub Actions)
 
 Terminus cluster (Pulumi-managed)
-└── dusk-service (dusk-ns, dusk-rc-ns) - ArgoCD
+└── dusk-service (dusk-ns, dusk-rc-ns) - TBD deployment approach
 ```
 
 **Why we use this decoupled architecture:**
@@ -82,7 +82,7 @@ Terminus cluster (Pulumi-managed)
 - **Learn namespace isolation** - Services isolated by namespaces, not clusters
 - **Two provisioning methods** - Manual (Trantor) vs IaC (Terminus)
 - **Two configuration approaches** - YAML (kubectl) and Pulumi IaC
-- **Different CD strategies** - Push-based (GitHub Actions) and pull-based (ArgoCD)
+- **Exploring CD strategies** - Currently using push-based (GitHub Actions), exploring options
 - **Safe to experiment** - Can still delete entire cluster if needed
 
 **Cost:** ~$147/month (2 clusters × $0.10/hour control plane)
