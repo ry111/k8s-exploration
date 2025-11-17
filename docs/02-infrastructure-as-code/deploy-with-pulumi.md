@@ -219,7 +219,7 @@ Simply change code and create PR - infrastructure updates automatically.
 | **Updates** | Delete/recreate | In-place updates |
 | **State** | None | Pulumi state |
 | **Preview** | ❌ | ✅ |
-| **Repeatable** | ⚠️ Requires scripts | ✅ Fully declarative |
+| **Repeatable** | ⚠️ Requires scripts | ✅ Codified as IaC |
 
 ## Next Steps
 
