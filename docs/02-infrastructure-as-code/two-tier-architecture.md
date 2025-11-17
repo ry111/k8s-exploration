@@ -94,21 +94,16 @@ This is what we actually built for the Day service, proving Pulumi works great f
 
 ### Architecture
 
-**Tier 1: Infrastructure Pulumi Stack**
+**Tier 1: Infrastructure (Manual)**
 ```
-Location: foundation/provisioning/pulumi/
-Stack: production
+Location: foundation/provisioning/manual/
+Method: eksctl scripts
 Manages:
-  - AWS EKS Cluster
+  - Trantor EKS Cluster
   - VPC and Networking
   - Managed Node Groups
   - IAM Roles for IRSA
-  - ALB Controller (Helm)
-  - Platform-level resources
-Outputs:
-  - cluster_name
-  - kubeconfig
-  - oidc_provider_arn
+  - ALB Controller (manual installation)
 ```
 
 **Tier 2: Application Pulumi Stack**
@@ -122,7 +117,7 @@ Manages:
   - HorizontalPodAutoscaler
   - Ingress
 References:
-  - Imports kubeconfig from infrastructure stack
+  - Uses kubeconfig from Trantor cluster
 ```
 
 ### How It Works
@@ -319,16 +314,16 @@ Infrastructure: foundation/provisioning/manual/create-trantor-cluster.sh (eksctl
 Applications:   foundation/gitops/manual_deploy/dawn/prod/*.yaml (kubectl)
 ```
 
-### Day Service: Two-Tier Pulumi
+### Day Service: Application-Layer Pulumi on Manual Infrastructure
 ```
-Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: production)
+Infrastructure: foundation/provisioning/manual/create-trantor-cluster.sh (eksctl - shares Trantor cluster)
 Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: day-production, day-rc)
 ```
 
-### Dusk Service: YAML + kubectl
+### Dusk Service: Two-Tier Pulumi
 ```
-Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: production - shares Terminus cluster)
-Applications:   foundation/gitops/manual_deploy/dusk/ (YAML manifests)
+Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: production - Terminus cluster)
+Applications:   foundation/gitops/pulumi_deploy/ (Pulumi IaC)
 ```
 
 ## Detailed Resource Breakdown
@@ -637,9 +632,9 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 ✅ `foundation/provisioning/manual/create-trantor-cluster.sh` - Trantor cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
-✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`, stacks: day-production, day-rc)
-✅ **Dawn Service** - kubectl/YAML (`foundation/gitops/manual_deploy/dawn/prod/`)
-✅ **Dusk Service** - kubectl/YAML (`foundation/gitops/manual_deploy/dusk/prod/`)
+✅ **Day Service** - Application-layer Pulumi on manual infrastructure (`foundation/gitops/pulumi_deploy/`, stacks: day-production, day-rc, runs on Trantor)
+✅ **Dawn Service** - kubectl/YAML (`foundation/gitops/manual_deploy/dawn/prod/`, runs on Trantor)
+✅ **Dusk Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`, runs on Terminus with Pulumi infrastructure)
 
 **Key Insight:** We use both approaches in the same project successfully. The separation via stacks (for Pulumi) or directories (for YAML) is what matters, not the tool choice.
 

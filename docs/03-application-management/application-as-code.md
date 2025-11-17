@@ -16,33 +16,33 @@ This project demonstrates **two configuration approaches** for Kubernetes resour
 
 **Day service** demonstrates managing applications as code with Pulumi instead of YAML manifests. Both Dawn and Day are automated via GitHub Actions (push-based deployment), but Pulumi offers type safety, preview capabilities, and programmatic infrastructure management.
 
-## The Architecture: Two Separate Pulumi Programs
+## The Architecture: Pulumi for Applications on Manual Infrastructure
+
+Day service demonstrates using **Pulumi for application deployment** while running on a **manually-provisioned cluster** (Trantor).
 
 ```
 foundation/
 ├── provisioning/
-│   └── pulumi/                      # Infrastructure Pulumi Program
-│       ├── __main__.py              # Manages: EKS cluster, VPC, nodes, ALB controller
-│       ├── Pulumi.yaml
-│       └── Pulumi.production.yaml
+│   └── manual/                      # Manual Infrastructure
+│       ├── create-trantor-cluster.sh    # Creates Trantor EKS cluster
+│       └── install-alb-controller-trantor.sh
 │
 └── gitops/
-    └── pulumi_deploy/               # Application Pulumi Program (SEPARATE)
+    └── pulumi_deploy/               # Application Pulumi Program
         ├── __main__.py              # Manages: Deployment, Service, ConfigMap, HPA, Ingress
         ├── Pulumi.yaml
         ├── Pulumi.day-production.yaml
         └── Pulumi.day-rc.yaml
 ```
 
-### Why Separate Programs?
+### Why This Approach?
 
-| Aspect | Infrastructure Program | Application Program |
-|--------|----------------------|-------------------|
-| **Manages** | EKS cluster, VPC, nodes | Deployments, Services, ConfigMaps |
-| **Owned by** | Platform/DevOps team | Application team |
-| **Changes** | Monthly | Daily/Hourly |
-| **Impact** | Entire cluster | Single service |
-| **Stack names** | `production` | `day-production`, `day-rc` |
+| Aspect | Manual Infrastructure | Pulumi Applications |
+|--------|----------------------|---------------------|
+| **Cluster** | Trantor (manually created) | Reuses existing cluster |
+| **Infrastructure** | Manual scripts | Not managed |
+| **Applications** | N/A | Pulumi manages |
+| **Learning Focus** | Cluster already exists | Focus on application-layer IaC |
 
 ## What Gets Managed
 
@@ -54,33 +54,28 @@ foundation/
 - **Ingress** - External access via ALB
 
 ### ❌ Application Pulumi Does NOT Manage:
-- EKS Cluster (managed by `foundation/provisioning/pulumi/`)
-- VPC/Networking (managed by `foundation/provisioning/pulumi/`)
-- Node Groups (managed by `foundation/provisioning/pulumi/`)
-- ALB Controller (managed by `foundation/provisioning/pulumi/`)
+- EKS Cluster (manually provisioned Trantor cluster)
+- VPC/Networking (manually provisioned via eksctl)
+- Node Groups (manually provisioned via eksctl)
+- ALB Controller (manually installed on Trantor)
 
 ## Setup
 
 ### Prerequisites
 
-1. **Infrastructure already deployed**
+1. **Trantor cluster already deployed**
    ```bash
-   cd foundation/provisioning/pulumi
-   pulumi stack select production
-   pulumi stack output cluster_name  # Should show: terminus
+   # Verify Trantor cluster exists
+   aws eks update-kubeconfig --name trantor --region us-east-1
+   kubectl get nodes  # Should show Trantor nodes
    ```
 
 2. **Kubernetes access configured**
    ```bash
-   # Option 1: Using AWS CLI
-   aws eks update-kubeconfig --name terminus --region us-east-1
+   # Using AWS CLI
+   aws eks update-kubeconfig --name trantor --region us-east-1
 
-   # Option 2: Export from infrastructure stack
-   cd foundation/provisioning/pulumi
-   pulumi stack output kubeconfig --show-secrets > ~/.kube/terminus-config
-   export KUBECONFIG=~/.kube/terminus-config
-
-   # Verify
+   # Verify connection
    kubectl get nodes
    ```
 
@@ -88,7 +83,7 @@ foundation/
 
 ```bash
 # Navigate to application Pulumi directory
-cd foundation/gitops/pulumi_deploy/pulumi
+cd foundation/gitops/pulumi_deploy
 
 # Create virtual environment
 python -m venv venv
@@ -99,6 +94,9 @@ pip install -r requirements.txt
 
 # Verify Pulumi installation
 pulumi version
+
+# Verify connected to Trantor cluster
+kubectl get nodes
 ```
 
 ## Initialize Stacks
@@ -608,8 +606,8 @@ jobs:
 # Verify AWS credentials
 aws sts get-caller-identity
 
-# Update kubeconfig
-aws eks update-kubeconfig --name terminus --region us-east-1
+# Update kubeconfig for Trantor
+aws eks update-kubeconfig --name trantor --region us-east-1
 
 # Verify connection
 kubectl get nodes
