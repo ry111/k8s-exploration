@@ -27,15 +27,15 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 
 ### Services (Application Layer)
 
-This project demonstrates **three update tools** with increasing levels of declarative configuration:
+This project demonstrates **two configuration approaches** (YAML vs IaC) and different CD strategies:
 
-| Service | Cluster | CI/CD | Update Tool | Learning Goal |
-|---------|---------|-------|-------------|---------------|
-| **Dawn** | Trantor | GitHub Actions | kubectl + YAML | Understand Kubernetes fundamentals |
+| Service | Cluster | CI/CD | Configuration Approach | Learning Goal |
+|---------|---------|-------|------------------------|---------------|
+| **Dawn** | Trantor | GitHub Actions | YAML (kubectl) | Understand Kubernetes fundamentals |
 | **Day** | Trantor | GitHub Actions | IaC (Pulumi) | Learn application-as-code |
-| **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD | Master continuous deployment |
+| **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD | Master continuous deployment with GitOps |
 
-**Key Learning:** All three services are automated via GitHub Actions. The progression shows different update tools: imperative kubectl (push-based) → declarative IaC (push-based) → GitOps operator (pull-based, continuous reconciliation). Each service demonstrates a different approach while using the same underlying Kubernetes concepts.
+**Key Learning:** All three services are automated via CI/CD. Dawn and Day show two configuration approaches (YAML vs IaC), both deployed via GitHub Actions (push-based). Dusk demonstrates ArgoCD (pull-based GitOps) as a CD strategy. Each service demonstrates a different pattern while using the same underlying Kubernetes concepts.
 
 ### Service Isolation
 
@@ -123,7 +123,7 @@ cd ../../gitops/manual_deploy
 aws ecr describe-images --repository-name dawn --region us-east-1
 aws ecr describe-images --repository-name day --region us-east-1
 
-# Deploy Dawn service to Trantor cluster (kubectl + YAML)
+# Deploy Dawn service to Trantor cluster (YAML via kubectl)
 ./deploy-dawn.sh trantor us-east-1
 
 # Day service is deployed via Pulumi (see docs/03-application-management/application-as-code.md)
@@ -203,7 +203,7 @@ foundation/
 ├── gitops/
 │   ├── pulumi_deploy/       # Application deployment (Pulumi IaC)
 │   │   └── __main__.py      # Deployment, Service, HPA, etc.
-│   └── manual_deploy/       # kubectl + YAML deployments + manifests
+│   └── manual_deploy/       # YAML (kubectl) deployments + manifests
 │       ├── deploy-dawn.sh           # Deploy Dawn to specified cluster
 │       ├── delete-service-images.sh # Delete ECR images for a service
 │       ├── dawn/            # Dawn Kubernetes manifests

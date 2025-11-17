@@ -168,7 +168,7 @@ The GitHub Actions workflows will automatically create ECR repositories and buil
 Deploy each service individually by specifying the target cluster:
 
 ```bash
-# Deploy Dawn service to Trantor cluster (kubectl + YAML)
+# Deploy Dawn service to Trantor cluster (YAML via kubectl)
 ./deploy-dawn.sh trantor us-east-1
 
 # Day service is deployed via Pulumi
