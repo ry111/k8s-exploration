@@ -49,13 +49,13 @@ This project demonstrates **different approaches** to managing these two layers:
 | Service | Cluster | Infrastructure | Application | Key Learning |
 |---------|---------|---------------|-------------|--------------|
 | **Dawn** | Trantor | Manual scripts | YAML + kubectl | Kubernetes fundamentals, hands-on learning |
-| **Day** | Terminus | Pulumi IaC | Pulumi IaC | Both layers as code, unified tooling |
-| **Dusk** | Terminus | Pulumi IaC | _TBD_ | Exploring deployment strategies on IaC infrastructure |
+| **Day** | Trantor | Manual scripts (reused) | Pulumi IaC | Application-layer IaC on existing infrastructure |
+| **Dusk** | Terminus | Pulumi IaC | _TBD_ | Full-stack IaC with different deployment strategies |
 
 **Why this progression?**
 - **Dawn** (on Trantor): Manual foundation - you understand each piece step by step
-- **Day** (on Terminus): Full automation - both infrastructure and apps managed as code
-- **Dusk** (on Terminus): Reuses the Pulumi-provisioned infrastructure, exploring different deployment approaches
+- **Day** (on Trantor): Introduces IaC for the application layer while reusing the manual infrastructure
+- **Dusk** (on Terminus): Shows full-stack IaC - both infrastructure and application managed as code
 
 ---
 
@@ -289,8 +289,8 @@ pulumi login s3://my-state-bucket         # S3
 
 **For this project:**
 - **Dawn** (Trantor): Manual infrastructure + YAML applications = Learn the fundamentals
-- **Day** (Terminus): Pulumi for both layers = Learn full automation
-- **Dusk** (Terminus): Pulumi infrastructure + TBD deployment = Explore deployment strategies
+- **Day** (Trantor): Reuse manual infrastructure + Pulumi for applications = Learn application-layer IaC
+- **Dusk** (Terminus): Pulumi for both layers + TBD deployment = Learn full-stack IaC
 
 ---
 
