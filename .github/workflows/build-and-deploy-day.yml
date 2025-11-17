@@ -81,7 +81,7 @@ jobs:
           aws sts get-caller-identity
 
           # Update kubeconfig
-          aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
+          aws eks update-kubeconfig --name trantor --region us-east-1
 
           # Verify kubeconfig was created
           echo "Kubeconfig location: $HOME/.kube/config"
@@ -89,7 +89,7 @@ jobs:
 
           # Test eks get-token command directly
           echo "Testing eks get-token..."
-          aws eks get-token --cluster-name day-cluster-eksCluster-f3c27b8 --region us-east-1
+          aws eks get-token --cluster-name trantor --region us-east-1
 
           # Test kubectl connection
           echo "Testing kubectl connection..."
@@ -148,7 +148,7 @@ jobs:
           aws sts get-caller-identity
 
           # Update kubeconfig
-          aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
+          aws eks update-kubeconfig --name trantor --region us-east-1
 
           # Verify kubeconfig was created
           echo "Kubeconfig location: $HOME/.kube/config"
@@ -156,7 +156,7 @@ jobs:
 
           # Test eks get-token command directly
           echo "Testing eks get-token..."
-          aws eks get-token --cluster-name day-cluster-eksCluster-f3c27b8 --region us-east-1
+          aws eks get-token --cluster-name trantor --region us-east-1
 
           # Test kubectl connection
           echo "Testing kubectl connection..."
