@@ -1,38 +1,81 @@
 # Why Infrastructure as Code?
 
-This brief guide explains the benefits of Infrastructure as Code (IaC) and why this project uses Pulumi to manage Kubernetes infrastructure.
+This guide explains the benefits of Infrastructure as Code (IaC) and why this project uses Pulumi to manage both infrastructure and application resources.
+
+## Two Types of Infrastructure as Code
+
+Before diving deeper, it's important to understand that "Infrastructure as Code" can mean two different things in this project:
+
+### 1. Infrastructure Provisioning (AWS Resources)
+
+Creating the underlying cloud infrastructure: VPC, EKS cluster, load balancers, IAM roles.
+
+**Example:** Creating an EKS cluster with Pulumi
+```python
+cluster = eks.Cluster("terminus",
+    vpc_id=vpc.id,
+    subnet_ids=[subnet1.id, subnet2.id],
+    desired_capacity=3
+)
+```
+
+### 2. Application Deployment (Kubernetes Resources)
+
+Deploying your applications: Deployments, Services, Ingress, ConfigMaps.
+
+**Example:** Deploying the Day service with Pulumi
+```python
+deployment = k8s.apps.v1.Deployment("day",
+    spec={
+        "replicas": 3,
+        "template": {
+            "spec": {
+                "containers": [{
+                    "name": "day",
+                    "image": "my-registry/day:v1"
+                }]
+            }
+        }
+    }
+)
+```
+
+**Key Insight:** Pulumi can manage **both layers** with the same tool and language. This is different from the traditional approach of using Terraform/CloudFormation for infrastructure and kubectl/Helm for applications.
 
 ## Your Learning Journey
 
-This project demonstrates **two configuration approaches** (YAML vs IaC):
+This project demonstrates **different approaches** to managing these two layers:
 
-| Service | Configuration Approach | Key Learning |
-|---------|------------------------|--------------|
-| **Dawn** | YAML (kubectl) | Kubernetes fundamentals |
-| **Day** | IaC (Pulumi) | Application & infrastructure as code |
-| **Dusk** | YAML (kubectl) | Continuous deployment with ArgoCD (GitOps CD strategy) |
+| Service | Infrastructure | Application | Key Learning |
+|---------|---------------|-------------|--------------|
+| **Dawn** | Manual scripts | YAML + kubectl | Kubernetes fundamentals, hands-on learning |
+| **Day** | Pulumi IaC | Pulumi IaC | Both layers as code, unified tooling |
+| **Dusk** | Manual scripts | YAML + ArgoCD | GitOps continuous deployment |
 
-This progression shows YAML configuration (Dawn) versus IaC configuration (Day), both deployed via GitHub Actions. Dusk will demonstrate ArgoCD as a CD strategy. Each approach builds on the previous, showing different benefits and trade-offs.
+**Why this progression?**
+- **Dawn** shows you the manual foundation - you understand each piece
+- **Day** shows you full automation - both infrastructure and apps as code
+- **Dusk** shows you GitOps CD - a different automation strategy focused on the application layer
+
+---
 
 ## What is Infrastructure as Code?
 
 **Infrastructure as Code (IaC)** is the practice of managing and provisioning infrastructure through code instead of manual processes.
 
-**Traditional approach (Manual):**
+**Traditional approach:**
 ```bash
-# You run commands manually:
+# Manual commands, no tracking, hard to reproduce:
 $ aws eks create-cluster --name my-cluster ...
-$ aws ec2 create-vpc --cidr-block 10.0.0.0/16 ...
 $ kubectl apply -f deployment.yaml
+$ aws ec2 modify-security-group ...
 ```
 
 **IaC approach:**
 ```python
-# You write code that declares what you want:
-cluster = eks.Cluster("my-cluster",
-    vpc_id=vpc.id,
-    subnet_ids=[subnet1.id, subnet2.id],
-)
+# Declare what you want in code:
+cluster = eks.Cluster("my-cluster", ...)
+deployment = k8s.apps.v1.Deployment("my-app", ...)
 ```
 
 The IaC tool handles creating, updating, and deleting resources to match your code.
@@ -41,56 +84,47 @@ The IaC tool handles creating, updating, and deleting resources to match your co
 
 ## The Problem with Manual Infrastructure
 
-In this project, you started with manual deployment using shell scripts:
+Your manual deployment (Trantor cluster) uses shell scripts:
 
 ```bash
 cd foundation/provisioning/manual
-./create-trantor-cluster.sh us-east-1                # Creates cluster manually
-./install-alb-controller-trantor.sh us-east-1        # Installs ALB controller
+./create-trantor-cluster.sh us-east-1
+./install-alb-controller-trantor.sh us-east-1
 
 cd ../../gitops/manual_deploy
-./deploy-dawn.sh trantor us-east-1                   # Deploys Dawn service
-# (Images are built automatically by GitHub Actions, not locally)
+./deploy-dawn.sh trantor us-east-1
 ```
 
-**This works great for learning!** But it has limitations:
+**This is great for learning** - you see every step explicitly. But it has limitations:
 
-### 1. Hard to Reproduce
-```bash
-# If you want a second environment (staging), you have to:
-# - Remember all the steps
-# - Update cluster names, VPC CIDRs, namespaces
-# - Run commands in the right order
-# - Hope nothing changed since last time
-```
+**1. Hard to Reproduce**
+- Want a second environment? Remember all steps, update all names, run in correct order
+- Scripts work once, then configuration drifts
 
-### 2. No Change Tracking
-- What changed between last week and today?
-- Who made that VPC change?
-- Can we revert to the previous configuration?
-
-### 3. State Drift
-- Someone manually edits a security group in AWS Console
-- Your scripts no longer reflect reality
-- Next deployment might break unexpectedly
-
-### 4. Documentation Gets Outdated
+**2. No Change Tracking**
+- What changed? Who changed it? Can we revert?
 - README says "2 nodes" but cluster has 3
-- Scripts reference old subnet IDs
-- Comments don't match reality
+
+**3. Manual State Management**
+- What resources exist right now?
+- Is that security group from last week still in use?
+
+**4. No Safety Net**
+- Changes apply immediately
+- No preview before execution
+- No easy rollback
 
 ---
 
 ## Benefits of Infrastructure as Code
 
-### 1. Version Control
+### 1. Version Control & Audit Trail
 
-Your infrastructure is in Git:
+Your infrastructure is in Git with full history:
 
 ```bash
-git log foundation/provisioning/pulumi/
+$ git log foundation/provisioning/pulumi/
 
-# See who changed what and when:
 commit abc123
 Author: Alice
 Date: Mon Nov 15
@@ -104,36 +138,20 @@ Date: Mon Nov 15
 
 ### 2. Reproducibility
 
-Create identical environments:
-
-```python
-# Same code works for dev, staging, production
-# Just different config values:
-
-# Pulumi.dev.yaml
-config:
-  service_name: day
-  vpc_cidr: 10.1.0.0/16
-  desired_nodes: 2
-
-# Pulumi.production.yaml
-config:
-  service_name: day
-  vpc_cidr: 10.2.0.0/16
-  desired_nodes: 3
-```
+Create identical environments with different configs:
 
 ```bash
-# Deploy to dev
+# Same code, different config values
 pulumi stack select dev
-pulumi up
+pulumi up      # Creates dev environment
 
-# Deploy to production (same code, different config)
 pulumi stack select production
-pulumi up
+pulumi up      # Creates production environment (different VPC CIDR, more nodes)
 ```
 
-### 3. Preview Changes Before Applying
+### 3. Preview Before Apply
+
+See **exactly** what will change before it happens:
 
 ```bash
 $ pulumi preview
@@ -142,69 +160,61 @@ Previewing update (dev):
      Type                 Name                Plan
  +   pulumi:pulumi:Stack  infrastructure-dev  create
  +   ├─ aws:ec2:Vpc       day-vpc             create
- +   ├─ aws:ec2:Subnet    day-subnet-1        create
- +   └─ eks:Cluster       terminus         create
+ +   ├─ eks:Cluster       terminus            create
+ +   └─ k8s:apps:Deployment day               create
 
 Resources:
     + 4 to create
 ```
 
-You see **exactly** what will change before it happens!
-
 ### 4. Automated State Management
 
-Pulumi tracks the current state of your infrastructure:
+The tool tracks what exists and what needs to change:
 
 ```bash
-# Pulumi knows:
-# - What resources exist
-# - Their current configuration
-# - What needs to change to match your code
-
 $ pulumi up
 # Automatically:
 # - Creates missing resources
 # - Updates modified resources
 # - Deletes removed resources
+# - Detects and corrects manual changes (drift)
 ```
 
-### 5. Prevent Configuration Drift
+### 5. Consistency & Standards
 
-```bash
-# Someone manually changes security group in AWS Console
-# Next pulumi up detects and reverts the manual change:
+Enforce organizational standards through code:
 
-$ pulumi up
-Updating (dev):
-     Type                    Name        Plan       Info
-     aws:ec2:SecurityGroup   day-sg      update     [diff: ~ingress]
-
-# Pulumi brings infrastructure back to match your code
+```python
+# Every cluster gets the same security settings
+def create_cluster(name):
+    return eks.Cluster(name,
+        enabled_cluster_log_types=["api", "audit"],  # Required logging
+        encryption_config=[...],                      # Required encryption
+        tags={"ManagedBy": "Pulumi"}                  # Required tags
+    )
 ```
 
 ---
 
 ## Why Pulumi Instead of Other Tools?
 
-This project uses **Pulumi**, but there are several IaC tools:
+There are several IaC tools available:
 
-| Tool | Language | Approach | When to Use |
-|------|----------|----------|-------------|
-| **Pulumi** | Python, TypeScript, Go, C#, Java | General-purpose programming language | Want to use familiar programming language, complex logic |
-| **Terraform** | HCL (HashiCorp Configuration Language) | Declarative DSL | Industry standard, large community, tons of providers |
-| **AWS CloudFormation** | YAML/JSON | Declarative, AWS-specific | AWS-only, native AWS integration |
-| **AWS CDK** | Python, TypeScript, Java, C#, Go | Programming language, compiles to CloudFormation | AWS-only, want programming language |
+| Tool | Language | Scope | Best For |
+|------|----------|-------|----------|
+| **Pulumi** | Python, TypeScript, Go, etc. | Multi-cloud | Using real programming languages, both infra + apps |
+| **Terraform** | HCL (custom DSL) | Multi-cloud | Industry standard, huge ecosystem, infra focus |
+| **AWS CDK** | TypeScript, Python, etc. | AWS only | AWS-native, compiles to CloudFormation |
+| **kubectl/Helm** | YAML | Kubernetes only | Application deployment only (not infrastructure) |
 
 ### Why This Project Uses Pulumi
 
-**1. Real Programming Language (Python)**
+**1. Real Programming Language**
 
-You're already writing Python for the Pulumi code. Same language for infrastructure!
+Use Python (or TypeScript, Go, etc.) - not a custom DSL:
 
 ```python
-# This is just Python!
-# Use loops, conditionals, functions, classes
-
+# Use loops, functions, conditionals - it's just Python
 subnets = []
 for i, az in enumerate(availability_zones):
     subnet = aws.ec2.Subnet(
@@ -216,113 +226,71 @@ for i, az in enumerate(availability_zones):
     subnets.append(subnet)
 ```
 
-**2. Type Safety and IDE Support**
+**2. Unified Tooling for Both Layers**
+
+Manage **infrastructure** (AWS) and **applications** (Kubernetes) with the same tool:
 
 ```python
-# Your IDE provides autocomplete and type checking!
+# Infrastructure layer
+cluster = eks.Cluster("terminus", ...)
+vpc = aws.ec2.Vpc("day-vpc", ...)
+
+# Application layer (same file, same language!)
+deployment = k8s.apps.v1.Deployment("day", ...)
+service = k8s.core.v1.Service("day-service", ...)
+```
+
+**3. Type Safety & IDE Support**
+
+Full autocomplete, type checking, and inline documentation:
+
+```python
 cluster = eks.Cluster(
     "my-cluster",
-    vpc_id=vpc.id,           # ← IDE knows what properties exist
-    subnet_ids=[...],         # ← Type hints show what's expected
+    vpc_id=vpc.id,        # IDE shows available properties
+    subnet_ids=[...],      # Type hints show expected types
 )
 ```
 
-**3. State Management Included**
+**4. Preview Every Change**
 
-Pulumi automatically tracks state (what resources exist). No need to manually manage state files like Terraform.
-
-**4. Preview Changes**
+Always see what will happen before it happens:
 
 ```bash
-# Always see changes before applying
-pulumi preview  # Show what will change
-pulumi up       # Apply changes
+pulumi preview  # Show planned changes
+pulumi up       # Apply changes (with confirmation)
 ```
 
-**5. Multiple Backends**
+**5. Flexible State Backends**
+
+Choose where to store state:
 
 ```bash
-# Use Pulumi Cloud (free for individuals)
-pulumi login
-
-# Or use local filesystem
-pulumi login --local
-
-# Or use S3
-pulumi login s3://my-pulumi-state-bucket
+pulumi login                              # Pulumi Cloud (free)
+pulumi login --local                      # Local filesystem
+pulumi login s3://my-state-bucket         # S3
 ```
-
----
-
-## Manual vs IaC in This Project
-
-### Trantor Cluster: Manual (Learning)
-
-**Purpose:** Understand each step explicitly
-
-```bash
-# You manually run scripts to:
-./foundation/provisioning/manual/create-trantor-cluster.sh us-east-1         # Create EKS cluster
-./foundation/provisioning/manual/install-alb-controller-trantor.sh us-east-1 # Install ALB controller
-# Then deploy services (see gitops/manual_deploy for deployment scripts)
-```
-
-**Best for:**
-- Learning what each component does
-- Understanding cluster creation process
-- Hands-on experimentation
-
-**Limitations:**
-- Hard to create multiple environments
-- Manual tracking of what exists
-- No preview of changes
-
-### Terminus Cluster: Pulumi IaC (Automation)
-
-**Purpose:** Declare what you want, let Pulumi handle it
-
-```python
-# Single file describes entire infrastructure:
-cluster = eks.Cluster("terminus", ...)
-vpc = aws.ec2.Vpc("day-vpc", ...)
-alb_controller = k8s.helm.v3.Release("alb-controller", ...)
-```
-
-```bash
-# One command to create everything:
-pulumi up
-
-# One command to tear it down:
-pulumi destroy
-```
-
-**Best for:**
-- Multiple environments (dev, staging, prod)
-- Team collaboration
-- Auditable changes
-- Reproducible infrastructure
 
 ---
 
 ## When to Use IaC
 
-**Use IaC when:**
-- ✅ You need multiple environments (dev, staging, production)
-- ✅ Multiple people manage the infrastructure
-- ✅ You want to track changes over time
-- ✅ You need to reproduce infrastructure reliably
-- ✅ Compliance requires audit trail
+**Use IaC when you need:**
+- ✅ Multiple environments (dev, staging, production)
+- ✅ Team collaboration with audit trail
+- ✅ Reproducible infrastructure
+- ✅ Change previews before applying
+- ✅ Automated drift detection
 
-**Manual is fine when:**
-- ✅ Learning and experimenting
+**Manual is fine for:**
+- ✅ Learning and experimentation
 - ✅ One-off throwaway environments
-- ✅ Very simple, static infrastructure
-- ✅ You're the only person managing it
+- ✅ Solo projects with simple, static infrastructure
 
-**For this learning project:**
-- ✅ Dawn (YAML via kubectl, deployed via GitHub Actions) - Learn Kubernetes fundamentals
-- ✅ Day (Pulumi IaC via GitHub Actions) - Learn infrastructure as code
-- ✅ Dusk (ArgoCD) - Learn continuous deployment
+**For this project:**
+- **Dawn**: Manual infrastructure + YAML applications = Learn the fundamentals
+- **Day**: Pulumi for both layers = Learn full automation
+- **Dusk**: Manual infrastructure + ArgoCD = Learn GitOps CD
 
 ---
 
@@ -331,8 +299,8 @@ pulumi destroy
 Ready to try Infrastructure as Code?
 
 1. **[Pulumi Setup](./pulumi-setup.md)** - Install and configure Pulumi
-2. **[Deploy with Pulumi](./deploy-with-pulumi.md)** - Deploy the Terminus cluster
-3. **[Two-Tier Architecture](./two-tier-architecture.md)** - Understand infrastructure vs application code
+2. **[Two-Tier Architecture](./two-tier-architecture.md)** - Deep dive into infrastructure vs application layers
+3. **[Deploy with Pulumi](./deploy-with-pulumi.md)** - Deploy the Terminus cluster
 
 **Further Reading:**
 - [What is Infrastructure as Code?](https://www.pulumi.com/what-is/what-is-infrastructure-as-code/)
@@ -341,4 +309,4 @@ Ready to try Infrastructure as Code?
 
 ---
 
-**Key Takeaway:** Infrastructure as Code treats infrastructure like software - version controlled, tested, reviewed, and deployed automatically. It's not required for learning, but it's industry standard for production systems.
+**Key Takeaway:** Infrastructure as Code treats your infrastructure like software - version controlled, reviewed, tested, and deployed automatically. In this project, you'll see how Pulumi manages **both** infrastructure provisioning and application deployment as code.
