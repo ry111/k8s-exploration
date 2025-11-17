@@ -26,9 +26,9 @@ This project demonstrates a **decoupled multi-cluster architecture** with differ
 
 | Service | Cluster | CI/CD | Deployment Strategy |
 |---------|---------|-------|---------------------|
-| **Dawn** | Trantor | GitHub Actions | Manual deployment (kubectl + YAML) |
-| **Day** | Trantor | GitHub Actions | Pulumi deployment (IaC) |
-| **Dusk** | Terminus | GitHub Actions | ArgoCD (GitOps) |
+| **Dawn** | Trantor | GitHub Actions | kubectl + YAML |
+| **Day** | Trantor | GitHub Actions | IaC (Pulumi) |
+| **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD |
 
 **Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different deployment strategies.
 
