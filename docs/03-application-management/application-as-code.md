@@ -4,12 +4,12 @@
 
 This guide shows you how to manage your **Day service Kubernetes application resources** (Deployment, Service, ConfigMap, HPA, Ingress) using **Pulumi** instead of YAML manifests.
 
-### Update Tool Progression
+### Configuration Approach Progression
 
-This project demonstrates three different update tools (all automated via CI/CD):
+This project demonstrates three different configuration approaches (all automated via CI/CD):
 
-| Service | Update Tool | Why |
-|---------|-------------|-----|
+| Service | Configuration Approach | Why |
+|---------|------------------------|-----|
 | **Dawn** | kubectl + YAML (via GitHub Actions) | Learn Kubernetes fundamentals |
 | **Day** ← You are here | Pulumi IaC (via GitHub Actions) | Application-as-code, declarative |
 | **Dusk** | ArgoCD | Continuous reconciliation |

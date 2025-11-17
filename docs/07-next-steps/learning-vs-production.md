@@ -45,14 +45,14 @@ Congratulations! By working through this project, you've learned:
 
 ## Learning Patterns vs Production Patterns
 
-### 1. Update Tool Progression
+### 1. Configuration Approach Progression
 
 #### Learning (This Project)
 
-This project demonstrates **three update tools** with different approaches:
+This project demonstrates **three configuration approaches** with different patterns:
 
-| Service | Cluster | Update Tool | Why This Approach |
-|---------|---------|-------------|-------------------|
+| Service | Cluster | Configuration Approach | Why This Approach |
+|---------|---------|------------------------|-------------------|
 | **Dawn** | Trantor | kubectl + YAML (via GitHub Actions) | Learn Kubernetes fundamentals hands-on |
 | **Day** | Trantor | IaC (Pulumi via GitHub Actions) | Understand application-as-code |
 | **Dusk** | Terminus | TBD (ArgoCD) | Master continuous deployment |
@@ -81,7 +81,7 @@ Terminus cluster (Pulumi-managed)
 - **Cost-effective** - 2 clusters instead of 3 (~$147/month vs $220/month)
 - **Learn namespace isolation** - Services isolated by namespaces, not clusters
 - **Two provisioning methods** - Manual (Trantor) vs IaC (Terminus)
-- **Three update tools** - kubectl + YAML → IaC → GitOps progression
+- **Three configuration approaches** - kubectl + YAML → IaC → GitOps progression
 - **Safe to experiment** - Can still delete entire cluster if needed
 
 **Cost:** ~$147/month (2 clusters × $0.10/hour control plane)
