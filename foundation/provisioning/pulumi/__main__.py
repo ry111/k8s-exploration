@@ -6,6 +6,7 @@ This creates:
 - EKS cluster with OIDC provider
 - Managed node group using spot instances (t3.small)
 - ALB controller using Helm
+- Metrics server using Helm (required for HPA)
 
 Supports Terminus cluster via stack configuration.
 Note: Trantor cluster is managed manually via eksctl scripts.
@@ -349,6 +350,29 @@ alb_controller = k8s.helm.v3.Release(
     opts=pulumi.ResourceOptions(
         provider=k8s_provider,
         depends_on=[alb_service_account, alb_role_policy_attachment],
+    ),
+)
+
+# Install metrics-server for HPA
+# Required for HorizontalPodAutoscaler to get CPU/memory metrics
+metrics_server = k8s.helm.v3.Release(
+    "metrics-server",
+    k8s.helm.v3.ReleaseArgs(
+        chart="metrics-server",
+        repository_opts=k8s.helm.v3.RepositoryOptsArgs(
+            repo="https://kubernetes-sigs.github.io/metrics-server/",
+        ),
+        namespace="kube-system",
+        values={
+            # Required for EKS
+            "args": [
+                "--kubelet-preferred-address-types=InternalIP",
+            ],
+        },
+    ),
+    opts=pulumi.ResourceOptions(
+        provider=k8s_provider,
+        depends_on=[cluster],
     ),
 )
 
