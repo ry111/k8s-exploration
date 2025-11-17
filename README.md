@@ -70,6 +70,10 @@ k8s-exploration/
 │   │   └── pulumi_deploy/          # Pulumi IaC deployments (Day)
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
 │   ├── k8s/                        # Kubernetes YAML manifests
+│   │   ├── apply-service.sh        # Script to apply manifests for any service
+│   │   ├── dawn/prod/, dawn/rc/    # Dawn service manifests
+│   │   ├── day/prod/, day/rc/      # Day service manifests
+│   │   └── dusk/prod/, dusk/rc/    # Dusk service manifests
 │   └── scripts/
 │       └── explore/                # Interactive learning scripts
 │

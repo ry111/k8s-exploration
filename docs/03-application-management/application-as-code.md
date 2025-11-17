@@ -654,7 +654,7 @@ kubectl get service day-service -n dev -o yaml
 
 **Multiple YAML files to manage:**
 ```bash
-foundation/k8s/day/
+foundation/k8s/day/prod/
 ├── deployment.yaml      # 50 lines
 ├── service.yaml         # 20 lines
 ├── configmap.yaml       # 15 lines
@@ -664,7 +664,7 @@ foundation/k8s/day/
 
 **Deployment:**
 ```bash
-kubectl apply -f foundation/k8s/day/
+kubectl apply -f foundation/k8s/day/prod/
 ```
 
 **Problems:**

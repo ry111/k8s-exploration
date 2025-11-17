@@ -1103,7 +1103,7 @@ Let's use your actual Deployment configuration.
 
 ### Your Deployment
 
-From `foundation/k8s/day/deployment.yaml`:
+From `foundation/k8s/day/prod/deployment.yaml`:
 
 ```yaml
 apiVersion: apps/v1
@@ -1765,7 +1765,7 @@ Update complete when new ReplicaSet has all replicas
 ---
 
 **Related files in this repository:**
-- `foundation/k8s/day/deployment.yaml` - Example Deployment
+- `foundation/k8s/day/prod/deployment.yaml` - Example Deployment
 - `deployment-hierarchy.md` - How Deployments create Pods
 - `configmap-relationships.md` - How ConfigMaps relate to Deployments
 - `foundation/scripts/explore/explore-rolling-updates.sh` - Interactive demonstration script

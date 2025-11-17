@@ -47,19 +47,24 @@ cp -r ../../k8s/day $TEMP_DIR/
 # Update image URLs in temp files (macOS and Linux compatible)
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # macOS
-  sed -i '' "s|image: day:latest|image: ${ECR_REGISTRY}/day:latest|g" $TEMP_DIR/day/deployment.yaml
+  sed -i '' "s|image: day:latest|image: ${ECR_REGISTRY}/day:latest|g" $TEMP_DIR/day/prod/deployment.yaml
+  sed -i '' "s|image: day:rc|image: ${ECR_REGISTRY}/day:rc|g" $TEMP_DIR/day/rc/deployment.yaml
 else
   # Linux
-  sed -i "s|image: day:latest|image: ${ECR_REGISTRY}/day:latest|g" $TEMP_DIR/day/deployment.yaml
+  sed -i "s|image: day:latest|image: ${ECR_REGISTRY}/day:latest|g" $TEMP_DIR/day/prod/deployment.yaml
+  sed -i "s|image: day:rc|image: ${ECR_REGISTRY}/day:rc|g" $TEMP_DIR/day/rc/deployment.yaml
 fi
 
-echo "Applying Day manifests..."
-kubectl apply -f $TEMP_DIR/day/
+echo "Applying Day manifests (prod + rc)..."
+kubectl apply -f $TEMP_DIR/day/prod/
+kubectl apply -f $TEMP_DIR/day/rc/
 
 echo ""
-echo "Waiting for Day deployment to be ready..."
+echo "Waiting for Day deployments to be ready..."
 kubectl wait --for=condition=available --timeout=300s \
-  deployment/day -n day-ns 2>/dev/null || echo "⚠️  Deployment may still be in progress"
+  deployment/day -n day-ns 2>/dev/null || echo "⚠️  Production deployment may still be in progress"
+kubectl wait --for=condition=available --timeout=300s \
+  deployment/day-rc -n day-rc-ns 2>/dev/null || echo "⚠️  RC deployment may still be in progress"
 
 # Cleanup temp directory
 rm -rf $TEMP_DIR
@@ -69,16 +74,22 @@ echo "========================================="
 echo "Day Service Status"
 echo "========================================="
 echo ""
+echo "Production (day-ns):"
 kubectl get all -n day-ns
+echo ""
+echo "RC (day-rc-ns):"
+kubectl get all -n day-rc-ns
 
 echo ""
 echo "========================================="
 echo "✅ Day service deployed successfully!"
 echo "========================================="
 echo ""
-echo "Get service URL:"
-echo "  kubectl get ingress -n day-ns"
+echo "Get service URLs:"
+echo "  kubectl get ingress -n day-ns        # Production"
+echo "  kubectl get ingress -n day-rc-ns     # RC"
 echo ""
-echo "Test service:"
+echo "Test services:"
 echo "  curl http://\$(kubectl get ingress day-ingress -n day-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/health"
+echo "  curl http://\$(kubectl get ingress day-rc-ingress -n day-rc-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/health"
 echo ""
