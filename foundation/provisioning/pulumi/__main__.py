@@ -118,6 +118,7 @@ public_rt_association_2 = aws.ec2.RouteTableAssociation(
 # Create EKS cluster (without default node group)
 cluster = eks.Cluster(
     f"{cluster_name}-cluster",
+    name=cluster_name,  # Explicitly set the AWS EKS cluster name
     vpc_id=vpc.id,
     public_subnet_ids=[public_subnet_1.id, public_subnet_2.id],
     skip_default_node_group=True,  # We'll create managed node group separately
