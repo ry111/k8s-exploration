@@ -5,7 +5,7 @@ metadata:
   namespace: day-ns
   labels:
     app: day
-    tier: prod
+    tier: production
     cluster: trantor
 spec:
   replicas: 2
@@ -16,7 +16,7 @@ spec:
     metadata:
       labels:
         app: day
-        tier: prod
+        tier: production
         cluster: trantor
     spec:
       containers:

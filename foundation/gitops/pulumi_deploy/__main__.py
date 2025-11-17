@@ -93,7 +93,7 @@ feature_new_ui = config.get_bool("feature_new_ui") or True
 # ============================================================================
 
 # Determine tier based on namespace
-tier = "rc" if "rc" in namespace else "prod"
+tier = "rc" if "rc" in namespace else "production"
 
 labels = {
     "app": app_name,
@@ -119,7 +119,7 @@ ns = k8s.core.v1.Namespace(
             "app": app_name,
             "tier": tier,
             "cluster": "trantor",
-            "environment": "production" if tier == "prod" else "rc",
+            "environment": "production" if tier == "production" else "rc",
         },
     },
     opts=provider_opts,
