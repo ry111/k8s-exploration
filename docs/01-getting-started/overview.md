@@ -123,14 +123,15 @@ cd ../../gitops/manual_deploy
 ./build-and-push-dawn.sh us-east-1
 ./build-and-push-day.sh us-east-1
 
-# Deploy services to Trantor cluster
-./deploy-to-trantor.sh us-east-1
+# Deploy services (to current kubectl context)
+./deploy-dawn.sh us-east-1
+./deploy-day.sh us-east-1
 ```
 
 This:
 - Creates ECR repositories for dawn and day
 - Builds Docker images
-- Deploys both services to trantor cluster with production configuration
+- Deploys each service independently to your configured cluster
 
 ## Verification
 

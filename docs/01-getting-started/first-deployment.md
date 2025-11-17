@@ -148,37 +148,42 @@ Step 2/8 : WORKDIR /app
 
 ---
 
-### Step 4: Deploy Services to Trantor (~5 minutes)
+### Step 4: Deploy Services (~5 minutes)
+
+Deploy each service individually (they can be deployed to any cluster):
 
 ```bash
-./deploy-to-trantor.sh us-east-1
+# Deploy Dawn service
+./deploy-dawn.sh us-east-1
+
+# Deploy Day service
+./deploy-day.sh us-east-1
 ```
 
-This deploys services to the Trantor cluster:
-- **Dawn service** (dawn-ns and dawn-rc-ns namespaces)
-  - Production tier: 2 pods with HPA
-  - RC tier: 1 pod with HPA
-- **Day service** (day-ns and day-rc-ns namespaces)
-  - Production tier: 2 pods with HPA
-  - RC tier: 1 pod with HPA
-- Services (ClusterIP) for internal routing
-- Ingress resources for external access
+**What gets deployed:**
 
-> 💡 **Learning Pattern: "RC" Terminology**
+**Dawn service (dawn-ns namespace):**
+- Deployment: 2 pods with rolling updates
+- Service (ClusterIP) for internal routing
+- Ingress for external access via ALB
+- ConfigMap for configuration
+- HPA for auto-scaling (2-5 pods based on CPU/memory)
+
+**Day service (day-ns namespace):**
+- Deployment: 2 pods with rolling updates
+- Service (ClusterIP) for internal routing
+- Ingress for external access via ALB
+- ConfigMap for configuration
+- HPA for auto-scaling (2-5 pods based on CPU/memory)
+
+> 💡 **Deployment Strategy**
 >
-> We use **"RC"** (Release Candidate) to represent a pre-production environment.
->
-> **Industry standard terms:**
-> - Staging
-> - Pre-production
-> - Canary
->
-> The concept is the same: test changes before promoting to production.
+> These scripts are **cluster-agnostic** - they deploy to whatever cluster is configured in your kubectl context. This demonstrates the separation between infrastructure (clusters) and applications (services).
 
 **Verify your pods are running:**
 ```bash
 kubectl get pods -n dawn-ns
-kubectl get pods -n dawn-rc-ns
+kubectl get pods -n day-ns
 
 # Should show running pods:
 # NAME                    READY   STATUS    RESTARTS   AGE
@@ -254,7 +259,8 @@ cd ../../gitops/manual_deploy
 ./build-and-push-day.sh us-east-1
 
 # 4. Deploy services (~5 min)
-./deploy-to-trantor.sh us-east-1
+./deploy-dawn.sh us-east-1
+./deploy-day.sh us-east-1
 
 # 5. Wait for ALB to be ready (~2-3 min)
 watch kubectl get ingress -n dawn-ns
