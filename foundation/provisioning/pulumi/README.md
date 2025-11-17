@@ -31,7 +31,7 @@ Pulumi manages all infrastructure components as code:
 foundation/provisioning/pulumi/
 ├── __main__.py            # Main Pulumi program (EKS infrastructure)
 ├── Pulumi.yaml            # Project metadata
-├── Pulumi.terminus.yaml   # Terminus cluster config (VPC: 10.2.0.0/16)
+├── Pulumi.production.yaml # Terminus cluster config (VPC: 10.2.0.0/16)
 ├── requirements.txt       # Python dependencies
 ├── .gitignore            # Git ignore rules
 └── README.md             # This file
@@ -42,7 +42,7 @@ foundation/provisioning/pulumi/
 | Cluster | Stack Name | VPC CIDR | Management |
 |---------|------------|----------|------------|
 | **Trantor** | N/A | 10.0.0.0/16 | Manual (eksctl) |
-| **Terminus** | terminus | 10.2.0.0/16 | Pulumi (IaC) |
+| **Terminus** | production | 10.2.0.0/16 | Pulumi (IaC) |
 
 ## Quick Start
 
@@ -56,7 +56,7 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 pulumi login
-pulumi stack select terminus  # or: pulumi stack init terminus
+pulumi stack select production  # or: pulumi stack init production
 pulumi up
 ```
 
@@ -129,7 +129,7 @@ pulumi up
 Once set up, infrastructure changes follow GitOps:
 
 ```
-1. Edit __main__.py or Pulumi.terminus.yaml
+1. Edit __main__.py or Pulumi.production.yaml
    ↓
 2. Create PR
    ↓
@@ -161,11 +161,11 @@ eksctl delete cluster --name trantor
 
 **Pulumi approach (Terminus cluster):**
 ```yaml
-# Edit Pulumi.terminus.yaml
-foundation:max_nodes: "6"  # Changed from "4"
+# Edit Pulumi.production.yaml
+foundation-provisioning:max_nodes: "6"  # Changed from "4"
 ```
 ```bash
-pulumi stack select terminus
+pulumi stack select production
 pulumi preview  # See what will change
 pulumi up       # Apply change (takes ~2 minutes)
 ```
@@ -226,7 +226,7 @@ pulumi up
 ## Next Steps
 
 1. ✅ **Set up Pulumi** - Follow [pulumi-setup.md](../../../docs/02-infrastructure-as-code/pulumi-setup.md)
-2. ⏭️ **Deploy Terminus cluster** - Run `pulumi up` with terminus stack
+2. ⏭️ **Deploy Terminus cluster** - Run `pulumi up` with production stack
 3. ⏭️ **Deploy applications** - Use gitops/pulumi_deploy for IaC app deployment
 4. ⏭️ **Set up CI/CD** - Automate infrastructure and app deployments
 
