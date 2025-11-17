@@ -104,7 +104,7 @@ jobs:
         uses: pulumi/actions@v4
         with:
           work-dir: foundation/gitops/pulumi_deploy
-          stack-name: rc
+          stack-name: day-rc
           command: up
           config-map: |
             {
@@ -171,7 +171,7 @@ jobs:
         uses: pulumi/actions@v4
         with:
           work-dir: foundation/gitops/pulumi_deploy
-          stack-name: production
+          stack-name: day-production
           command: up
           config-map: |
             {
