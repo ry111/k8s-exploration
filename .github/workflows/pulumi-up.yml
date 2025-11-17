@@ -41,7 +41,7 @@ jobs:
         uses: pulumi/actions@v4
         with:
           command: up
-          stack-name: day
+          stack-name: prod
           work-dir: foundation/provisioning/pulumi
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
