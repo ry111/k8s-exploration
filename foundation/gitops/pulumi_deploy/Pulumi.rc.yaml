@@ -3,23 +3,23 @@ config:
   day-service-app:use_stack_reference: "true" # Set to false to use local kubeconfig
   day-service-app:infra_stack_name: ry111-org/foundation/day
   # Application settings
-  day-service-app:namespace: dev
+  day-service-app:namespace: day-rc-ns
   day-service-app:image_registry: 612974049499.dkr.ecr.us-east-1.amazonaws.com # Set to: {account-id}.dkr.ecr.us-east-1.amazonaws.com
   day-service-app:image_name: day # ECR repository name (matches build workflow)
-  day-service-app:image_tag: latest
+  day-service-app:image_tag: rc
   day-service-app:replicas: "1"
   # Autoscaling
   day-service-app:min_replicas: "1"
   day-service-app:max_replicas: "3"
   day-service-app:cpu_target: "70"
   day-service-app:memory_target: "80"
-  # Resources (small for dev)
+  # Resources (small for rc)
   day-service-app:cpu_request: 50m
   day-service-app:memory_request: 64Mi
   day-service-app:cpu_limit: 200m
   day-service-app:memory_limit: 256Mi
   # Application config
   day-service-app:log_level: DEBUG
-  day-service-app:database_host: postgres.dev.svc.cluster.local
+  day-service-app:database_host: postgres.day-rc-ns.svc.cluster.local
   day-service-app:cache_ttl: "60"
   day-service-app:feature_new_ui: "true"

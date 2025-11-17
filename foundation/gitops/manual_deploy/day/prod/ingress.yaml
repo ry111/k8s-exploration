@@ -5,7 +5,7 @@ metadata:
   namespace: day-ns
   annotations:
     kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/group.name: day-cluster
+    alb.ingress.kubernetes.io/group.name: trantor-cluster
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/healthcheck-path: /health

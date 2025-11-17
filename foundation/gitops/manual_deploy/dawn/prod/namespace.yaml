@@ -5,3 +5,5 @@ metadata:
   labels:
     name: dawn-ns
     environment: production
+    tier: prod
+    cluster: trantor

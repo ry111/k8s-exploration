@@ -5,6 +5,8 @@ metadata:
   namespace: dawn-ns
   labels:
     app: dawn
+    tier: prod
+    cluster: trantor
 spec:
   replicas: 2
   selector:
@@ -14,6 +16,8 @@ spec:
     metadata:
       labels:
         app: dawn
+        tier: prod
+        cluster: trantor
     spec:
       containers:
       - name: dawn
