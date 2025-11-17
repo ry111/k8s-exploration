@@ -12,7 +12,7 @@ This architecture decouples services from clusters, allowing multiple services t
 
 ## What's Managed by Pulumi
 
-Pulumi declaratively manages all infrastructure components:
+Pulumi manages all infrastructure components as code:
 
 | Component | Manual Approach | Pulumi Approach |
 |-----------|----------------|-----------------|
@@ -21,7 +21,7 @@ Pulumi declaratively manages all infrastructure components:
 | **VPC & Networking** | Auto-created by eksctl | Explicit VPC, subnets, routing |
 | **IAM Roles** | Manual IAM policy creation | Automated IRSA setup |
 | **ALB Controller** | Helm install script | Helm release in code |
-| **State Tracking** | None (imperative) | Pulumi state (declarative) |
+| **State Tracking** | None | Pulumi state |
 | **Change Preview** | Manual verification | `pulumi preview` |
 | **CI/CD** | Manual runs | Automated via GitHub Actions |
 
@@ -204,7 +204,7 @@ Outputs:
 
 **Terminus cluster (Pulumi provisioning):**
 - Created with `pulumi up`
-- Managed declaratively via Infrastructure as Code
+- Managed via Infrastructure as Code
 - State tracked in Pulumi backend
 - Updates via `pulumi up` after config changes
 - IaC-managed cluster for any services
@@ -227,7 +227,7 @@ pulumi up
 
 1. ✅ **Set up Pulumi** - Follow [pulumi-setup.md](../../../docs/02-infrastructure-as-code/pulumi-setup.md)
 2. ⏭️ **Deploy Terminus cluster** - Run `pulumi up` with terminus stack
-3. ⏭️ **Deploy applications** - Use gitops/pulumi_deploy for declarative app deployment
+3. ⏭️ **Deploy applications** - Use gitops/pulumi_deploy for IaC app deployment
 4. ⏭️ **Set up CI/CD** - Automate infrastructure and app deployments
 
 ## Support

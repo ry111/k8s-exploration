@@ -20,7 +20,7 @@ This project demonstrates a **decoupled multi-cluster architecture** with differ
 | Cluster | Provisioning | VPC CIDR | Purpose |
 |---------|--------------|----------|---------|
 | **Trantor** | Manual (eksctl) | 10.0.0.0/16 | Learn manual cluster creation |
-| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | Learn declarative infrastructure |
+| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | Learn Infrastructure as Code |
 
 ### Services (Application Layer)
 
@@ -121,7 +121,7 @@ pulumi up
 
 - ✅ **Kubernetes Fundamentals** - Deployments, Services, ConfigMaps, HPA
 - ✅ **AWS EKS** - Managed Kubernetes on AWS
-- ✅ **Infrastructure as Code** - Pulumi for declarative infrastructure
+- ✅ **Infrastructure as Code** - Pulumi for managing infrastructure as code
 - ✅ **Application Management** - Managing K8s apps with code (not YAML)
 - ✅ **CI/CD** - GitHub Actions for automated deployments
 

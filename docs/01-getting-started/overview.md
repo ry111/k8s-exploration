@@ -12,7 +12,7 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 ### Option 2: Infrastructure as Code with Pulumi (Terminus cluster)
 - **Time:** ~30 minutes
 - **Guide:** [../../02-infrastructure-as-code/pulumi-setup.md](../02-infrastructure-as-code/pulumi-setup.md)
-- **Method:** Declarative Pulumi programs in `foundation/provisioning/pulumi/`
+- **Method:** Pulumi IaC programs in `foundation/provisioning/pulumi/`
 
 ## Architecture
 
@@ -23,7 +23,7 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 | Cluster | Provisioning | VPC CIDR | Purpose |
 |---------|--------------|----------|---------|
 | **Trantor** | Manual (eksctl) | 10.0.0.0/16 | Learn manual cluster creation |
-| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | Learn declarative infrastructure |
+| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | Learn Infrastructure as Code |
 
 ### Services (Application Layer)
 

@@ -24,7 +24,7 @@ Congratulations! By working through this project, you've learned:
 - AWS Load Balancer Controller
 
 ✅ **Infrastructure as Code**
-- Pulumi for declarative infrastructure
+- Pulumi for managing infrastructure as code
 - Two-tier architecture (infrastructure vs application)
 - Stack references for cross-stack communication
 - State management
