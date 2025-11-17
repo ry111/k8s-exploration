@@ -54,8 +54,8 @@ jobs:
 
           echo "✅ Pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-  deploy-dev:
-    name: Deploy to Dev
+  deploy-rc:
+    name: Deploy to RC
     needs: build-and-push
     runs-on: ubuntu-latest
 
@@ -100,11 +100,11 @@ jobs:
           cd foundation/gitops/pulumi_deploy
           pip install -r requirements.txt
 
-      - name: Deploy to Dev
+      - name: Deploy to RC
         uses: pulumi/actions@v4
         with:
           work-dir: foundation/gitops/pulumi_deploy
-          stack-name: dev
+          stack-name: rc
           command: up
           config-map: |
             {
