@@ -72,8 +72,8 @@ Review the preview, type "yes" to proceed.
 pulumi stack output
 
 # Get kubeconfig
-pulumi stack output kubeconfig --show-secrets > day-kubeconfig.yaml
-export KUBECONFIG=$(pwd)/day-kubeconfig.yaml
+pulumi stack output kubeconfig --show-secrets > terminus-kubeconfig.yaml
+export KUBECONFIG=$(pwd)/terminus-kubeconfig.yaml
 
 # Verify cluster is running
 kubectl get nodes
@@ -91,62 +91,28 @@ kubectl get pods -A
 | **IAM Role** | terminus-alb-controller-role | For ALB controller IRSA |
 | **ALB Controller** | Helm release | In kube-system namespace |
 
-## Deploy Day Application
+## Verify Infrastructure
 
-After the cluster is created, deploy the Day service:
-
-### Option 1: Using Existing Scripts
+After deployment, verify the infrastructure components:
 
 ```bash
-# Update kubeconfig
-aws eks update-kubeconfig --name terminus --region us-east-1
+# Check nodes are ready
+kubectl get nodes
 
-# Apply manifests
-kubectl apply -f foundation/gitops/manual_deploy/day/prod/namespace.yaml
-kubectl apply -f foundation/gitops/manual_deploy/day/prod/configmap.yaml
-kubectl apply -f foundation/gitops/manual_deploy/day/prod/deployment.yaml
-kubectl apply -f foundation/gitops/manual_deploy/day/prod/service.yaml
-kubectl apply -f foundation/gitops/manual_deploy/day/prod/hpa.yaml
-kubectl apply -f foundation/gitops/manual_deploy/day/prod/ingress.yaml
+# Verify ALB controller is running
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+
+# Check cluster info
+kubectl cluster-info
+
+# View all namespaces
+kubectl get namespaces
 ```
 
-### Option 2: Create Deployment Script
-
-Example deployment script for Terminus cluster:
-
-```bash
-#!/bin/bash
-CLUSTER_NAME="terminus"
-REGION="us-east-1"
-
-aws eks update-kubeconfig --name $CLUSTER_NAME --region $REGION
-# Deploy your services (see gitops/ folder for deployment scripts)
-```
-
-## Verify Deployment
-
-```bash
-# Check pods are running
-kubectl get pods -n day-ns
-
-# Check ingress provisioned ALB
-kubectl get ingress -n day-ns
-
-# Get ALB URL
-kubectl get ingress day-ingress -n day-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
-
-# Test the service (replace ALB_URL with actual URL)
-curl -H "Host: day.example.com" http://ALB_URL/health
-```
-
-Expected response:
-```json
-{
-  "status": "healthy",
-  "service": "Day",
-  "timestamp": "2025-11-15T12:00:00.000000"
-}
-```
+Expected output:
+- 2 nodes in Ready state
+- ALB controller pods running in kube-system namespace
+- Cluster accessible via kubectl
 
 ## Multi-Cluster Management
 
@@ -224,10 +190,10 @@ Simply change code and create PR - infrastructure updates automatically.
 ## Next Steps
 
 1. ✅ **Deploy Terminus cluster** - Run `pulumi up`
-2. ⏭️ **Deploy applications** - Deploy services to Terminus (see gitops/)
-3. ⏭️ **Set up CI/CD** - Update GitHub Actions for automated deployments
-4. ⏭️ **Add ArgoCD** - Automate application deployment
-5. ⏭️ **Scale infrastructure** - Adjust cluster sizing as needed
+2. ⏭️ **Deploy applications** - Use Pulumi application deployment for services (see [two-tier-architecture.md](two-tier-architecture.md))
+3. ⏭️ **Set up CI/CD** - GitHub Actions for automated infrastructure updates
+4. ⏭️ **Scale infrastructure** - Adjust cluster sizing as needed
+5. ⏭️ **Add monitoring** - Set up CloudWatch, Prometheus, or other monitoring tools
 
 ## Troubleshooting
 
@@ -248,7 +214,8 @@ aws configure
 ### Cluster creation fails
 - Check AWS account limits (EKS clusters, VPCs, EIPs)
 - Verify region has t3.small spot availability
-- Check CloudWatch Logs for eksctl errors
+- Check CloudWatch Logs for EKS cluster errors
+- Ensure IAM permissions are sufficient
 
 ### Can't connect to cluster
 ```bash
@@ -259,8 +226,18 @@ aws eks update-kubeconfig --name terminus --region us-east-1
 kubectl get svc
 ```
 
+### ALB controller not running
+```bash
+# Check controller pods
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+
+# Check logs
+kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
+```
+
 ## Support
 
 - Main setup guide: [pulumi-setup.md](pulumi-setup.md)
 - Infrastructure Pulumi README: [foundation/provisioning/pulumi/README.md](../../foundation/provisioning/pulumi/README.md)
+- Architecture overview: [two-tier-architecture.md](two-tier-architecture.md)
 - Pulumi docs: https://www.pulumi.com/docs/
