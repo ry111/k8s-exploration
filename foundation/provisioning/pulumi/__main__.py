@@ -21,10 +21,9 @@ config = pulumi.Config()
 aws_config = pulumi.Config("aws")
 region = aws_config.get("region") or "us-east-1"
 
-# Service-specific configuration
+# Cluster configuration
 cluster_name = config.get("cluster_name") or "terminus-cluster"
-service_name = config.get("service_name") or cluster_name.split("-")[0]  # Optional, derive from cluster_name if not provided
-vpc_cidr = config.get("vpc_cidr") or "10.0.0.0/16"  # Different for each service
+vpc_cidr = config.get("vpc_cidr") or "10.0.0.0/16"
 min_nodes = config.get_int("min_nodes") or 1
 max_nodes = config.get_int("max_nodes") or 3
 desired_nodes = config.get_int("desired_nodes") or 2
@@ -39,23 +38,23 @@ common_tags = {
     "Project": project_name,
     "Stack": stack_name,
     "ManagedBy": "Pulumi",
-    "Service": service_name.capitalize(),
+    "Cluster": cluster_name,
 }
 
 # Create VPC for EKS cluster
 vpc = aws.ec2.Vpc(
-    f"{service_name}-vpc",
+    f"{cluster_name}-vpc",
     cidr_block=vpc_cidr,
     enable_dns_hostnames=True,
     enable_dns_support=True,
-    tags={**common_tags, "Name": f"{service_name}-vpc-{stack_name}"},
+    tags={**common_tags, "Name": f"{cluster_name}-vpc-{stack_name}"},
 )
 
 # Internet Gateway
 igw = aws.ec2.InternetGateway(
-    f"{service_name}-igw",
+    f"{cluster_name}-igw",
     vpc_id=vpc.id,
-    tags={**common_tags, "Name": f"{service_name}-igw-{stack_name}"},
+    tags={**common_tags, "Name": f"{cluster_name}-igw-{stack_name}"},
 )
 
 # Calculate subnet CIDRs from VPC CIDR
@@ -66,34 +65,34 @@ subnet_2_cidr = f"{vpc_cidr_parts[0]}.{vpc_cidr_parts[1]}.2.0/24"
 
 # Public subnets for ALB
 public_subnet_1 = aws.ec2.Subnet(
-    f"{service_name}-public-subnet-1",
+    f"{cluster_name}-public-subnet-1",
     vpc_id=vpc.id,
     cidr_block=subnet_1_cidr,
     availability_zone=f"{region}a",
     map_public_ip_on_launch=True,
     tags={
         **common_tags,
-        "Name": f"{service_name}-public-subnet-1-{stack_name}",
+        "Name": f"{cluster_name}-public-subnet-1-{stack_name}",
         "kubernetes.io/role/elb": "1",  # Required for ALB
     },
 )
 
 public_subnet_2 = aws.ec2.Subnet(
-    f"{service_name}-public-subnet-2",
+    f"{cluster_name}-public-subnet-2",
     vpc_id=vpc.id,
     cidr_block=subnet_2_cidr,
     availability_zone=f"{region}b",
     map_public_ip_on_launch=True,
     tags={
         **common_tags,
-        "Name": f"{service_name}-public-subnet-2-{stack_name}",
+        "Name": f"{cluster_name}-public-subnet-2-{stack_name}",
         "kubernetes.io/role/elb": "1",
     },
 )
 
 # Route table for public subnets
 public_route_table = aws.ec2.RouteTable(
-    f"{service_name}-public-rt",
+    f"{cluster_name}-public-rt",
     vpc_id=vpc.id,
     routes=[
         aws.ec2.RouteTableRouteArgs(
@@ -101,24 +100,24 @@ public_route_table = aws.ec2.RouteTable(
             gateway_id=igw.id,
         )
     ],
-    tags={**common_tags, "Name": f"{service_name}-public-rt-{stack_name}"},
+    tags={**common_tags, "Name": f"{cluster_name}-public-rt-{stack_name}"},
 )
 
 public_rt_association_1 = aws.ec2.RouteTableAssociation(
-    f"{service_name}-public-rt-assoc-1",
+    f"{cluster_name}-public-rt-assoc-1",
     subnet_id=public_subnet_1.id,
     route_table_id=public_route_table.id,
 )
 
 public_rt_association_2 = aws.ec2.RouteTableAssociation(
-    f"{service_name}-public-rt-assoc-2",
+    f"{cluster_name}-public-rt-assoc-2",
     subnet_id=public_subnet_2.id,
     route_table_id=public_route_table.id,
 )
 
 # Create EKS cluster (without default node group)
 cluster = eks.Cluster(
-    f"{service_name}-cluster",
+    f"{cluster_name}-cluster",
     vpc_id=vpc.id,
     public_subnet_ids=[public_subnet_1.id, public_subnet_2.id],
     skip_default_node_group=True,  # We'll create managed node group separately
@@ -128,7 +127,7 @@ cluster = eks.Cluster(
 
 # Create managed node group with spot instances
 node_group = aws.eks.NodeGroup(
-    f"{service_name}-node-group",
+    f"{cluster_name}-node-group",
     cluster_name=cluster.eks_cluster.name,
     node_role_arn=cluster.instance_roles[0].arn,
     subnet_ids=[public_subnet_1.id, public_subnet_2.id],
@@ -139,12 +138,12 @@ node_group = aws.eks.NodeGroup(
         min_size=min_nodes,
         max_size=max_nodes,
     ),
-    tags={**common_tags, "Name": f"{service_name}-node-group"},
+    tags={**common_tags, "Name": f"{cluster_name}-node-group"},
 )
 
 # Create Kubernetes provider using the cluster's kubeconfig
 k8s_provider = k8s.Provider(
-    f"{service_name}-k8s",
+    f"{cluster_name}-k8s",
     kubeconfig=cluster.kubeconfig,
 )
 
@@ -269,7 +268,7 @@ alb_policy_doc = aws.iam.get_policy_document(
 )
 
 alb_policy = aws.iam.Policy(
-    f"{service_name}-alb-controller-policy",
+    f"{cluster_name}-alb-controller-policy",
     policy=alb_policy_doc.json,
     tags=common_tags,
 )
@@ -300,13 +299,13 @@ alb_role_assume_policy = pulumi.Output.all(oidc_provider_url, oidc_provider_arn)
 )
 
 alb_role = aws.iam.Role(
-    f"{service_name}-alb-controller-role",
+    f"{cluster_name}-alb-controller-role",
     assume_role_policy=alb_role_assume_policy,
     tags=common_tags,
 )
 
 alb_role_policy_attachment = aws.iam.RolePolicyAttachment(
-    f"{service_name}-alb-controller-policy-attachment",
+    f"{cluster_name}-alb-controller-policy-attachment",
     role=alb_role.name,
     policy_arn=alb_policy.arn,
 )
