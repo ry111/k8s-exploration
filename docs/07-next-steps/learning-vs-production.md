@@ -45,23 +45,23 @@ Congratulations! By working through this project, you've learned:
 
 ## Learning Patterns vs Production Patterns
 
-### 1. Configuration Approach Progression
+### 1. Configuration Approaches and CD Strategies
 
 #### Learning (This Project)
 
-This project demonstrates **three configuration approaches** with different patterns:
+This project demonstrates **two configuration approaches** (YAML and IaC) with different CD strategies:
 
-| Service | Cluster | Configuration Approach | Why This Approach |
-|---------|---------|------------------------|-------------------|
-| **Dawn** | Trantor | kubectl + YAML (via GitHub Actions) | Learn Kubernetes fundamentals hands-on |
-| **Day** | Trantor | IaC (Pulumi via GitHub Actions) | Understand application-as-code |
-| **Dusk** | Terminus | TBD (ArgoCD) | Master continuous deployment |
+| Service | Cluster | Configuration Approach | CD Strategy | Why This Approach |
+|---------|---------|------------------------|-------------|-------------------|
+| **Dawn** | Trantor | kubectl + YAML | GitHub Actions (push-based) | Learn Kubernetes fundamentals hands-on |
+| **Day** | Trantor | IaC (Pulumi) | GitHub Actions (push-based) | Understand application-as-code |
+| **Dusk** | Terminus | TBD | ArgoCD (pull-based GitOps) | Master continuous deployment |
 
 **Why this progression:**
 - **Pedagogical** - Each approach builds on the previous
-- **Realistic** - Shows how teams evolve from imperative to declarative to pull-based GitOps
-- **Comparative** - Easy to see trade-offs between push-based and pull-based approaches
-- **Practical** - All three patterns are used in production systems
+- **Realistic** - Shows two ways to configure resources and different CD strategies
+- **Comparative** - Easy to see trade-offs between YAML vs IaC and push-based vs pull-based CD
+- **Practical** - All patterns are used in production systems
 
 ### 2. Cluster Architecture
 
@@ -81,7 +81,8 @@ Terminus cluster (Pulumi-managed)
 - **Cost-effective** - 2 clusters instead of 3 (~$147/month vs $220/month)
 - **Learn namespace isolation** - Services isolated by namespaces, not clusters
 - **Two provisioning methods** - Manual (Trantor) vs IaC (Terminus)
-- **Three configuration approaches** - kubectl + YAML → IaC → GitOps progression
+- **Two configuration approaches** - kubectl + YAML and Pulumi IaC
+- **Different CD strategies** - Push-based (GitHub Actions) and pull-based (ArgoCD)
 - **Safe to experiment** - Can still delete entire cluster if needed
 
 **Cost:** ~$147/month (2 clusters × $0.10/hour control plane)

@@ -30,7 +30,7 @@ This project demonstrates a **decoupled multi-cluster architecture** with differ
 | **Day** | Trantor | GitHub Actions | IaC (Pulumi) |
 | **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD |
 
-**Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different configuration approaches - from imperative kubectl to declarative IaC to pull-based GitOps.
+**Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different configuration approaches (YAML vs IaC) and CD strategies (push-based via GitHub Actions vs pull-based via ArgoCD).
 
 ---
 

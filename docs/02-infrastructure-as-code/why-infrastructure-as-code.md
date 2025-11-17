@@ -4,15 +4,15 @@ This brief guide explains the benefits of Infrastructure as Code (IaC) and why t
 
 ## Your Learning Journey
 
-This project demonstrates **three configuration approaches** with different patterns:
+This project demonstrates **two configuration approaches** (YAML vs IaC):
 
 | Service | Configuration Approach | Key Learning |
 |---------|------------------------|--------------|
-| **Dawn** | kubectl + YAML (via GitHub Actions) | Kubernetes fundamentals |
-| **Day** | IaC (Pulumi via GitHub Actions) | Application & infrastructure as code |
-| **Dusk** | TBD (ArgoCD) | Continuous deployment |
+| **Dawn** | kubectl + YAML | Kubernetes fundamentals |
+| **Day** | IaC (Pulumi) | Application & infrastructure as code |
+| **Dusk** | TBD | Continuous deployment with ArgoCD (GitOps CD strategy) |
 
-This progression shows how configuration approaches evolve from imperative push-based to declarative pull-based GitOps. Each step builds on the previous, showing the benefits and trade-offs of each approach.
+This progression shows YAML configuration (Dawn) versus IaC configuration (Day), both deployed via GitHub Actions. Dusk will demonstrate ArgoCD as a CD strategy. Each approach builds on the previous, showing different benefits and trade-offs.
 
 ## What is Infrastructure as Code?
 
