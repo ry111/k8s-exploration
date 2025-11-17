@@ -1,4 +1,4 @@
-name: day-service-app
+name: foundation-services
 runtime: python
 description: Day service Kubernetes application resources (Deployment, Service, ConfigMap, HPA, Ingress)
 

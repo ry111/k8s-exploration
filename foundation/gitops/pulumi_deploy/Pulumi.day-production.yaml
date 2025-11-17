@@ -1,0 +1,25 @@
+config:
+  # Kubernetes provider configuration
+  foundation-services:use_stack_reference: "true" # Set to false to use local kubeconfig
+  foundation-services:infra_stack_name: ry111-org/foundation-provisioning/production
+  # Application settings
+  foundation-services:namespace: day-ns
+  foundation-services:image_registry: 612974049499.dkr.ecr.us-east-1.amazonaws.com # Set to: {account-id}.dkr.ecr.us-east-1.amazonaws.com
+  foundation-services:image_name: day # ECR repository name (matches build workflow)
+  foundation-services:image_tag: v1.2.3
+  foundation-services:replicas: "5"
+  # Autoscaling (aggressive for production)
+  foundation-services:min_replicas: "3"
+  foundation-services:max_replicas: "20"
+  foundation-services:cpu_target: "70"
+  foundation-services:memory_target: "80"
+  # Resources (larger for production)
+  foundation-services:cpu_request: 200m
+  foundation-services:memory_request: 256Mi
+  foundation-services:cpu_limit: 1000m
+  foundation-services:memory_limit: 1Gi
+  # Application config
+  foundation-services:log_level: INFO
+  foundation-services:database_host: postgres.day-ns.svc.cluster.local
+  foundation-services:cache_ttl: "300"
+  foundation-services:feature_new_ui: "true"
