@@ -46,16 +46,16 @@ deployment = k8s.apps.v1.Deployment("day",
 
 This project demonstrates **different approaches** to managing these two layers:
 
-| Service | Infrastructure | Application | Key Learning |
-|---------|---------------|-------------|--------------|
-| **Dawn** | Manual scripts | YAML + kubectl | Kubernetes fundamentals, hands-on learning |
-| **Day** | Pulumi IaC | Pulumi IaC | Both layers as code, unified tooling |
-| **Dusk** | Manual scripts | YAML + ArgoCD | GitOps continuous deployment |
+| Service | Cluster | Infrastructure | Application | Key Learning |
+|---------|---------|---------------|-------------|--------------|
+| **Dawn** | Trantor | Manual scripts | YAML + kubectl | Kubernetes fundamentals, hands-on learning |
+| **Day** | Terminus | Pulumi IaC | Pulumi IaC | Both layers as code, unified tooling |
+| **Dusk** | Terminus | Pulumi IaC | _TBD_ | Exploring deployment strategies on IaC infrastructure |
 
 **Why this progression?**
-- **Dawn** shows you the manual foundation - you understand each piece
-- **Day** shows you full automation - both infrastructure and apps as code
-- **Dusk** shows you GitOps CD - a different automation strategy focused on the application layer
+- **Dawn** (on Trantor): Manual foundation - you understand each piece step by step
+- **Day** (on Terminus): Full automation - both infrastructure and apps managed as code
+- **Dusk** (on Terminus): Reuses the Pulumi-provisioned infrastructure, exploring different deployment approaches
 
 ---
 
@@ -288,9 +288,9 @@ pulumi login s3://my-state-bucket         # S3
 - ✅ Solo projects with simple, static infrastructure
 
 **For this project:**
-- **Dawn**: Manual infrastructure + YAML applications = Learn the fundamentals
-- **Day**: Pulumi for both layers = Learn full automation
-- **Dusk**: Manual infrastructure + ArgoCD = Learn GitOps CD
+- **Dawn** (Trantor): Manual infrastructure + YAML applications = Learn the fundamentals
+- **Day** (Terminus): Pulumi for both layers = Learn full automation
+- **Dusk** (Terminus): Pulumi infrastructure + TBD deployment = Explore deployment strategies
 
 ---
 
