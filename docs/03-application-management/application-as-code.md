@@ -544,7 +544,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --name terminus --region us-east-1
+          aws eks update-kubeconfig --name trantor --region us-east-1
 
       - name: Install dependencies
         run: |
@@ -581,7 +581,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --name terminus --region us-east-1
+          aws eks update-kubeconfig --name trantor --region us-east-1
 
       - name: Install dependencies
         run: |
