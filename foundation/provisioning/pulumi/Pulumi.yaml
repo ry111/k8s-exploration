@@ -1,6 +1,6 @@
 name: foundation
 runtime: python
-description: EKS infrastructure for Terminus cluster with spot instances
+description: EKS infrastructure for provisioning foundation clusters
 
 config:
   aws:region:
