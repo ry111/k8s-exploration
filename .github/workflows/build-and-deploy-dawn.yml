@@ -7,7 +7,7 @@ on:
     paths:
       - 'foundation/services/dawn/**'
       - 'foundation/gitops/manual_deploy/dawn/**'
-      - '.github/workflows/build-dawn.yml'
+      - '.github/workflows/build-and-deploy-dawn.yml'
   workflow_dispatch:  # Allow manual trigger
 
 env:
@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       ecr_registry: ${{ steps.login-ecr.outputs.registry }}
+      image_tag: ${{ github.sha }}
 
     steps:
       - name: Checkout code
@@ -98,11 +99,13 @@ jobs:
       - name: Deploy Dawn RC
         env:
           ECR_REGISTRY: ${{ needs.build-and-push.outputs.ecr_registry }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
         run: |
           echo "========================================="
           echo "Deploying Dawn Service (RC)"
           echo "========================================="
           echo "ECR Registry: $ECR_REGISTRY"
+          echo "Image Tag: $IMAGE_TAG"
           echo ""
 
           # Create temporary deployment files with ECR image URLs
@@ -112,8 +115,9 @@ jobs:
           # Copy RC manifests to temp directory
           cp -r foundation/gitops/manual_deploy/dawn/rc $TEMP_DIR/
 
-          # Update image URLs in temp files
-          sed -i "s|image: dawn:rc|image: ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:rc|g" $TEMP_DIR/rc/deployment.yaml
+          # Update image URLs and pull policy in temp files
+          sed -i "s|image: dawn:rc|image: ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}|g" $TEMP_DIR/rc/deployment.yaml
+          sed -i "s|imagePullPolicy: IfNotPresent|imagePullPolicy: Always|g" $TEMP_DIR/rc/deployment.yaml
 
           echo "Applying Dawn RC manifests..."
           kubectl apply -f $TEMP_DIR/rc/
@@ -132,6 +136,8 @@ jobs:
           echo "========================================="
           kubectl get all -n dawn-rc-ns
 
+          echo ""
+          echo "Deployed image: ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}"
           echo ""
           echo "✅ Dawn RC service deployed successfully!"
 
@@ -163,11 +169,13 @@ jobs:
       - name: Deploy Dawn Production
         env:
           ECR_REGISTRY: ${{ needs.build-and-push.outputs.ecr_registry }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
         run: |
           echo "========================================="
           echo "Deploying Dawn Service (Production)"
           echo "========================================="
           echo "ECR Registry: $ECR_REGISTRY"
+          echo "Image Tag: $IMAGE_TAG"
           echo ""
 
           # Create temporary deployment files with ECR image URLs
@@ -177,8 +185,9 @@ jobs:
           # Copy prod manifests to temp directory
           cp -r foundation/gitops/manual_deploy/dawn/prod $TEMP_DIR/
 
-          # Update image URLs in temp files
-          sed -i "s|image: dawn:latest|image: ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:latest|g" $TEMP_DIR/prod/deployment.yaml
+          # Update image URLs and pull policy in temp files
+          sed -i "s|image: dawn:latest|image: ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}|g" $TEMP_DIR/prod/deployment.yaml
+          sed -i "s|imagePullPolicy: IfNotPresent|imagePullPolicy: Always|g" $TEMP_DIR/prod/deployment.yaml
 
           echo "Applying Dawn Production manifests..."
           kubectl apply -f $TEMP_DIR/prod/
@@ -197,5 +206,7 @@ jobs:
           echo "========================================="
           kubectl get all -n dawn-ns
 
+          echo ""
+          echo "Deployed image: ${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}"
           echo ""
           echo "✅ Dawn Production service deployed successfully!"
