@@ -8,7 +8,7 @@ This project demonstrates **two configuration approaches** (YAML vs IaC):
 
 | Service | Configuration Approach | Key Learning |
 |---------|------------------------|--------------|
-| **Dawn** | kubectl + YAML | Kubernetes fundamentals |
+| **Dawn** | YAML (kubectl) | Kubernetes fundamentals |
 | **Day** | IaC (Pulumi) | Application & infrastructure as code |
 | **Dusk** | TBD | Continuous deployment with ArgoCD (GitOps CD strategy) |
 
@@ -317,7 +317,7 @@ pulumi destroy
 - ✅ You're the only person managing it
 
 **For this learning project:**
-- ✅ Dawn (kubectl + YAML via GitHub Actions) - Learn Kubernetes fundamentals
+- ✅ Dawn (YAML via kubectl, deployed via GitHub Actions) - Learn Kubernetes fundamentals
 - ✅ Day (Pulumi IaC via GitHub Actions) - Learn infrastructure as code
 - ✅ Dusk (ArgoCD) - Learn continuous deployment
 

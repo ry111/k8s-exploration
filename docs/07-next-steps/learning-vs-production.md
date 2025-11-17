@@ -53,7 +53,7 @@ This project demonstrates **two configuration approaches** (YAML and IaC) with d
 
 | Service | Cluster | Configuration Approach | CD Strategy | Why This Approach |
 |---------|---------|------------------------|-------------|-------------------|
-| **Dawn** | Trantor | kubectl + YAML | GitHub Actions (push-based) | Learn Kubernetes fundamentals hands-on |
+| **Dawn** | Trantor | YAML (kubectl) | GitHub Actions (push-based) | Learn Kubernetes fundamentals hands-on |
 | **Day** | Trantor | IaC (Pulumi) | GitHub Actions (push-based) | Understand application-as-code |
 | **Dusk** | Terminus | TBD | ArgoCD (pull-based GitOps) | Master continuous deployment |
 
@@ -81,7 +81,7 @@ Terminus cluster (Pulumi-managed)
 - **Cost-effective** - 2 clusters instead of 3 (~$147/month vs $220/month)
 - **Learn namespace isolation** - Services isolated by namespaces, not clusters
 - **Two provisioning methods** - Manual (Trantor) vs IaC (Terminus)
-- **Two configuration approaches** - kubectl + YAML and Pulumi IaC
+- **Two configuration approaches** - YAML (kubectl) and Pulumi IaC
 - **Different CD strategies** - Push-based (GitHub Actions) and pull-based (ArgoCD)
 - **Safe to experiment** - Can still delete entire cluster if needed
 

@@ -10,7 +10,7 @@ This project demonstrates **two configuration approaches** for Kubernetes resour
 
 | Service | Configuration Approach | Why |
 |---------|------------------------|-----|
-| **Dawn** | kubectl + YAML | Learn Kubernetes fundamentals |
+| **Dawn** | YAML (kubectl) | Learn Kubernetes fundamentals |
 | **Day** ← You are here | Pulumi IaC | Application-as-code with type safety |
 | **Dusk** | TBD | Will demonstrate ArgoCD as a CD strategy |
 

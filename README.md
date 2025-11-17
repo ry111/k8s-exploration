@@ -26,7 +26,7 @@ This project demonstrates a **decoupled multi-cluster architecture** with differ
 
 | Service | Cluster | CI/CD | Configuration Approach |
 |---------|---------|-------|------------------------|
-| **Dawn** | Trantor | GitHub Actions | kubectl + YAML |
+| **Dawn** | Trantor | GitHub Actions | YAML (kubectl) |
 | **Day** | Trantor | GitHub Actions | IaC (Pulumi) |
 | **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD |
 
