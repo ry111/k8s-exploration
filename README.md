@@ -109,7 +109,7 @@ cd ../../gitops/manual_deploy
 # Create Terminus cluster with IaC
 cd foundation/provisioning/pulumi
 pulumi login
-pulumi stack select terminus
+pulumi stack select prod
 pulumi up
 ```
 

@@ -32,7 +32,7 @@ foundation/
         ├── __main__.py              # Manages: Deployment, Service, ConfigMap, HPA, Ingress
         ├── Pulumi.yaml
         ├── Pulumi.dev.yaml
-        └── Pulumi.production.yaml
+        └── Pulumi.prod.yaml
 ```
 
 ### Why Separate Programs?
@@ -122,7 +122,7 @@ pulumi config
 # Create production stack
 pulumi stack init production
 
-# Configuration is already set in Pulumi.production.yaml
+# Configuration is already set in Pulumi.prod.yaml
 pulumi config
 ```
 
@@ -266,7 +266,7 @@ pulumi up
 # Test in dev...
 
 # Promote to production
-pulumi stack select production
+pulumi stack select prod
 pulumi config set image_tag v1.2.5
 pulumi preview  # Always preview first!
 pulumi up
@@ -293,7 +293,7 @@ config:
   day-service-app:database_host: postgres.dev.svc.cluster.local
 ```
 
-### Production (`Pulumi.production.yaml`)
+### Production (`Pulumi.prod.yaml`)
 
 ```yaml
 config:
@@ -491,7 +491,7 @@ curl http://$ALB_HOST/api/v1/status
 ### Step 4: Promote to Production
 ```bash
 # Switch to production stack
-pulumi stack select production
+pulumi stack select prod
 
 # Set production image tag
 pulumi config set image_tag v1.2.5
@@ -681,7 +681,7 @@ kubectl apply -f foundation/k8s/day/
 foundation/gitops/pulumi_deploy/pulumi/
 ├── __main__.py          # Single file, type-safe
 ├── Pulumi.dev.yaml      # Dev config
-└── Pulumi.production.yaml  # Prod config
+└── Pulumi.prod.yaml  # Prod config
 ```
 
 **Deployment:**

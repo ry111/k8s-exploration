@@ -82,7 +82,7 @@ pulumi up
 # Pulumi.dev.yaml - creates "dev" namespace
 day-service-app:namespace: dev
 
-# Pulumi.production.yaml - creates "production" namespace
+# Pulumi.prod.yaml - creates "production" namespace
 day-service-app:namespace: production
 ```
 
@@ -191,7 +191,7 @@ production/      ← One namespace for all production services
 # Pulumi.dev.yaml
 day-service-app:namespace: dev
 
-# Pulumi.production.yaml
+# Pulumi.prod.yaml
 day-service-app:namespace: production
 ```
 
@@ -211,7 +211,7 @@ namespace = config.get("namespace") or f"{app_name}-production"
 # Pulumi.dev.yaml
 day-service-app:namespace: day-service-dev
 
-# Pulumi.production.yaml
+# Pulumi.prod.yaml
 day-service-app:namespace: day-service-production
 ```
 

@@ -114,7 +114,7 @@ Outputs:
 **Tier 2: Application Pulumi Stack**
 ```
 Location: foundation/gitops/pulumi_deploy/
-Stack: dev, production
+Stack: dev, prod
 Manages:
   - Kubernetes Deployment
   - Service (ClusterIP)
@@ -200,7 +200,7 @@ pulumi up       # Apply after team review
 **Application changes (frequent):**
 ```bash
 cd foundation/gitops/day
-pulumi stack select production
+pulumi stack select prod
 pulumi config set image_tag v1.2.3  # Update version
 pulumi preview  # See what will change
 pulumi up       # Deploy (triggers rolling update)
@@ -314,7 +314,7 @@ Applications:   foundation/k8s/dawn/*.yaml (kubectl)
 ### Day Service: Two-Tier Pulumi
 ```
 Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: day)
-Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: dev, production)
+Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: dev, prod)
 ```
 
 ### Dusk Service: Pulumi Infrastructure + kubectl Applications

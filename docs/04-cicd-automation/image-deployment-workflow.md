@@ -321,7 +321,7 @@ pulumi up
 pulumi stack history
 
 # Rollback to specific update
-pulumi stack select production
+pulumi stack select prod
 pulumi cancel  # if needed
 pulumi refresh
 # Manually set to previous image tag

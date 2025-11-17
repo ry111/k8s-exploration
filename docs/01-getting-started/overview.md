@@ -195,7 +195,7 @@ foundation/
 ├── provisioning/
 │   ├── pulumi/              # Infrastructure as Code (Pulumi)
 │   │   ├── __main__.py      # EKS cluster, VPC, nodes
-│   │   └── Pulumi.terminus.yaml  # Terminus cluster config
+│   │   └── Pulumi.prod.yaml  # Terminus cluster config
 │   └── manual/              # Manual cluster provisioning scripts (Trantor)
 │       ├── create-trantor-cluster.sh
 │       └── install-alb-controller-trantor.sh
