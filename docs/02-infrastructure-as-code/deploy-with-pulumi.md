@@ -102,12 +102,12 @@ After the cluster is created, deploy the Day service:
 aws eks update-kubeconfig --name terminus --region us-east-1
 
 # Apply manifests
-kubectl apply -f foundation/k8s/day/namespace.yaml
-kubectl apply -f foundation/k8s/day/configmap.yaml
-kubectl apply -f foundation/k8s/day/deployment.yaml
-kubectl apply -f foundation/k8s/day/service.yaml
-kubectl apply -f foundation/k8s/day/hpa.yaml
-kubectl apply -f foundation/k8s/day/ingress.yaml
+kubectl apply -f foundation/k8s/day/prod/namespace.yaml
+kubectl apply -f foundation/k8s/day/prod/configmap.yaml
+kubectl apply -f foundation/k8s/day/prod/deployment.yaml
+kubectl apply -f foundation/k8s/day/prod/service.yaml
+kubectl apply -f foundation/k8s/day/prod/hpa.yaml
+kubectl apply -f foundation/k8s/day/prod/ingress.yaml
 ```
 
 ### Option 2: Create Deployment Script

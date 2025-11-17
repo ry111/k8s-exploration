@@ -248,14 +248,25 @@ Both create:
 **Applications (YAML + kubectl):**
 ```
 Location: foundation/k8s/dawn/, foundation/k8s/dusk/
-Files:
-  - deployment.yaml
-  - service.yaml
-  - configmap.yaml
-  - hpa.yaml
-  - ingress.yaml
+Structure:
+  ├── prod/          # Production manifests
+  │   ├── namespace.yaml
+  │   ├── configmap.yaml
+  │   ├── deployment.yaml
+  │   ├── service.yaml
+  │   ├── hpa.yaml
+  │   └── ingress.yaml
+  └── rc/            # RC manifests
+      └── ...
+
 Deploy:
-  kubectl apply -f foundation/k8s/dawn/
+  # Using helper script (applies both prod + rc)
+  cd foundation/k8s
+  ./apply-service.sh dawn all trantor us-east-1
+
+  # Or apply manually
+  kubectl apply -f foundation/k8s/dawn/prod/
+  kubectl apply -f foundation/k8s/dawn/rc/
 ```
 
 ### Advantages of Infrastructure Tool + GitOps
@@ -281,10 +292,15 @@ pulumi up
 **Application changes (frequent):**
 ```bash
 # Edit YAML
-vim foundation/k8s/dawn/deployment.yaml
+vim foundation/k8s/dawn/prod/deployment.yaml
 
-# Apply directly
-kubectl apply -f foundation/k8s/dawn/
+# Apply using helper script
+cd foundation/k8s
+./apply-service.sh dawn all trantor us-east-1
+
+# OR apply manually
+kubectl apply -f foundation/k8s/dawn/prod/
+kubectl apply -f foundation/k8s/dawn/rc/
 
 # OR with GitOps (ArgoCD syncs automatically)
 git commit -m "Update dawn to v1.2.3"
@@ -308,7 +324,7 @@ We demonstrate **both approaches** to show they're equally valid:
 ### Dawn Service: eksctl (Manual) + kubectl Applications
 ```
 Infrastructure: foundation/provisioning/manual/create-trantor-cluster.sh (eksctl manual script)
-Applications:   foundation/k8s/dawn/*.yaml (kubectl)
+Applications:   foundation/k8s/dawn/prod/*.yaml (kubectl)
 ```
 
 ### Day Service: Two-Tier Pulumi
@@ -320,7 +336,7 @@ Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: dev, prod)
 ### Dusk Service: Pulumi Infrastructure + kubectl Applications
 ```
 Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: dusk)
-Applications:   foundation/k8s/dusk/*.yaml (kubectl)
+Applications:   foundation/k8s/dusk/prod/*.yaml (kubectl)
 ```
 
 ## Detailed Resource Breakdown
@@ -408,7 +424,7 @@ deployment = k8s.apps.v1.Deployment(
 
 **kubectl/GitOps Version:**
 ```yaml
-# foundation/k8s/dawn/deployment.yaml
+# foundation/k8s/dawn/prod/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -478,7 +494,7 @@ spec:
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 │                                                            │
 │ Option B: GitOps/kubectl (Dawn, Dusk Services)            │
-│ - Location: foundation/k8s/dawn/, foundation/k8s/dusk/    │
+│ - Location: foundation/k8s/dawn/prod/, foundation/k8s/dusk/prod/    │
 │ - Tool: kubectl apply or ArgoCD                           │
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 └────────────────────────────────────────────────────────────┘
@@ -629,8 +645,8 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 ### Applications (Demonstrating Both Approaches)
 ✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`)
-✅ **Dawn Service** - kubectl/YAML (`foundation/k8s/dawn/`)
-✅ **Dusk Service** - kubectl/YAML (`foundation/k8s/dusk/`)
+✅ **Dawn Service** - kubectl/YAML (`foundation/k8s/dawn/prod/`)
+✅ **Dusk Service** - kubectl/YAML (`foundation/k8s/dusk/prod/`)
 
 **Key Insight:** We use both approaches in the same project successfully. The separation via stacks (for Pulumi) or directories (for YAML) is what matters, not the tool choice.
 
@@ -654,7 +670,7 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 
 - Two-tier Pulumi example: `foundation/gitops/pulumi_deploy/`
 - Infrastructure Pulumi: `foundation/provisioning/pulumi/__main__.py`
-- GitOps examples: `foundation/k8s/dawn/`, `foundation/k8s/dusk/`
+- GitOps examples: `foundation/k8s/dawn/prod/`, `foundation/k8s/dusk/prod/`
 - Application guide: [application-as-code.md](../03-application-management/application-as-code.md)
 - Deployment concepts: [deployment-hierarchy.md](../05-kubernetes-deep-dives/deployment-hierarchy.md)
 - Pulumi Best Practices: https://www.pulumi.com/docs/using-pulumi/best-practices/

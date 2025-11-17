@@ -47,19 +47,24 @@ cp -r ../../k8s/dawn $TEMP_DIR/
 # Update image URLs in temp files (macOS and Linux compatible)
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # macOS
-  sed -i '' "s|image: dawn:latest|image: ${ECR_REGISTRY}/dawn:latest|g" $TEMP_DIR/dawn/deployment.yaml
+  sed -i '' "s|image: dawn:latest|image: ${ECR_REGISTRY}/dawn:latest|g" $TEMP_DIR/dawn/prod/deployment.yaml
+  sed -i '' "s|image: dawn:rc|image: ${ECR_REGISTRY}/dawn:rc|g" $TEMP_DIR/dawn/rc/deployment.yaml
 else
   # Linux
-  sed -i "s|image: dawn:latest|image: ${ECR_REGISTRY}/dawn:latest|g" $TEMP_DIR/dawn/deployment.yaml
+  sed -i "s|image: dawn:latest|image: ${ECR_REGISTRY}/dawn:latest|g" $TEMP_DIR/dawn/prod/deployment.yaml
+  sed -i "s|image: dawn:rc|image: ${ECR_REGISTRY}/dawn:rc|g" $TEMP_DIR/dawn/rc/deployment.yaml
 fi
 
-echo "Applying Dawn manifests..."
-kubectl apply -f $TEMP_DIR/dawn/
+echo "Applying Dawn manifests (prod + rc)..."
+kubectl apply -f $TEMP_DIR/dawn/prod/
+kubectl apply -f $TEMP_DIR/dawn/rc/
 
 echo ""
-echo "Waiting for Dawn deployment to be ready..."
+echo "Waiting for Dawn deployments to be ready..."
 kubectl wait --for=condition=available --timeout=300s \
-  deployment/dawn -n dawn-ns 2>/dev/null || echo "⚠️  Deployment may still be in progress"
+  deployment/dawn -n dawn-ns 2>/dev/null || echo "⚠️  Production deployment may still be in progress"
+kubectl wait --for=condition=available --timeout=300s \
+  deployment/dawn-rc -n dawn-rc-ns 2>/dev/null || echo "⚠️  RC deployment may still be in progress"
 
 # Cleanup temp directory
 rm -rf $TEMP_DIR
@@ -69,16 +74,22 @@ echo "========================================="
 echo "Dawn Service Status"
 echo "========================================="
 echo ""
+echo "Production (dawn-ns):"
 kubectl get all -n dawn-ns
+echo ""
+echo "RC (dawn-rc-ns):"
+kubectl get all -n dawn-rc-ns
 
 echo ""
 echo "========================================="
 echo "✅ Dawn service deployed successfully!"
 echo "========================================="
 echo ""
-echo "Get service URL:"
-echo "  kubectl get ingress -n dawn-ns"
+echo "Get service URLs:"
+echo "  kubectl get ingress -n dawn-ns        # Production"
+echo "  kubectl get ingress -n dawn-rc-ns     # RC"
 echo ""
-echo "Test service:"
+echo "Test services:"
 echo "  curl http://\$(kubectl get ingress dawn-ingress -n dawn-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/health"
+echo "  curl http://\$(kubectl get ingress dawn-rc-ingress -n dawn-rc-ns -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')/health"
 echo ""

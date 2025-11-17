@@ -210,13 +210,17 @@ foundation/
 │   ├── dawn/
 │   ├── day/
 │   └── dusk/
-├── k8s/              # Kubernetes manifests
-│   ├── dawn/         # Production manifests
-│   ├── dawn-rc/      # RC manifests
+├── k8s/              # Kubernetes manifests (kubectl deployments)
+│   ├── apply-service.sh  # Script to apply manifests for any service
+│   ├── dawn/
+│   │   ├── prod/         # Production manifests
+│   │   └── rc/           # RC manifests
 │   ├── day/
-│   ├── day-rc/
-│   ├── dusk/
-│   └── dusk-rc/
+│   │   ├── prod/
+│   │   └── rc/
+│   └── dusk/
+│       ├── prod/
+│       └── rc/
 └── scripts/          # Interactive learning scripts
     └── explore/
         ├── explore-deployment-hierarchy.sh

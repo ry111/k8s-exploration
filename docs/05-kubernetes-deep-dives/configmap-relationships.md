@@ -86,7 +86,7 @@ ConfigMap
 
 ### Example from This Repository
 
-From `foundation/k8s/day/configmap.yaml`:
+From `foundation/k8s/day/prod/configmap.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -119,7 +119,7 @@ data:
 
 The Deployment itself doesn't directly "know about" ConfigMaps. The pod template within the Deployment spec contains the reference.
 
-From `foundation/k8s/day/deployment.yaml:25-27`:
+From `foundation/k8s/day/prod/deployment.yaml:25-27`:
 
 ```yaml
 apiVersion: apps/v1
@@ -279,7 +279,7 @@ There are three ways to use ConfigMaps in Pods:
 
 ### Method 1: All Keys as Environment Variables (Your Current Setup)
 
-From `foundation/k8s/day/deployment.yaml:25-27`:
+From `foundation/k8s/day/prod/deployment.yaml:25-27`:
 
 ```yaml
 envFrom:
@@ -417,10 +417,10 @@ cat /etc/config/app/log-level.txt
 
 ```bash
 # 1. Create ConfigMap first
-kubectl apply -f foundation/k8s/day/configmap.yaml
+kubectl apply -f foundation/k8s/day/prod/configmap.yaml
 
 # 2. Create Deployment
-kubectl apply -f foundation/k8s/day/deployment.yaml
+kubectl apply -f foundation/k8s/day/prod/deployment.yaml
 ```
 
 **What happens:**
@@ -437,10 +437,10 @@ T+1s:  Deployment created
 
 ```bash
 # 1. Create Deployment first (ConfigMap doesn't exist)
-kubectl apply -f foundation/k8s/day/deployment.yaml
+kubectl apply -f foundation/k8s/day/prod/deployment.yaml
 
 # 2. Create ConfigMap
-kubectl apply -f foundation/k8s/day/configmap.yaml
+kubectl apply -f foundation/k8s/day/prod/configmap.yaml
 ```
 
 **What happens:**
@@ -730,7 +730,7 @@ Looking at your repository structure:
 
 ### Production Configuration
 
-`foundation/k8s/day/configmap.yaml`:
+`foundation/k8s/day/prod/configmap.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -745,7 +745,7 @@ data:
   SERVICE_NAME: "Day"
 ```
 
-`foundation/k8s/day/deployment.yaml`:
+`foundation/k8s/day/prod/deployment.yaml`:
 
 ```yaml
 metadata:
@@ -762,7 +762,7 @@ spec:
 
 ### RC (Release Candidate) Configuration
 
-`foundation/k8s/day-rc/configmap.yaml`:
+`foundation/k8s/day/rc/configmap.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -777,7 +777,7 @@ data:
   SERVICE_NAME: "Day-RC"
 ```
 
-`foundation/k8s/day-rc/deployment.yaml`:
+`foundation/k8s/day/rc/deployment.yaml`:
 
 ```yaml
 metadata:
@@ -1304,7 +1304,7 @@ Events:
 **Solution:**
 ```bash
 # Create missing ConfigMap
-kubectl apply -f foundation/k8s/day/configmap.yaml
+kubectl apply -f foundation/k8s/day/prod/configmap.yaml
 
 # Restart deployment to recreate pods
 kubectl rollout restart deployment day -n day-ns
@@ -1330,7 +1330,7 @@ kubectl get configmap day-config -n default -o yaml | \
 
 # Or recreate in correct namespace
 kubectl delete configmap day-config -n default
-kubectl apply -f foundation/k8s/day/configmap.yaml
+kubectl apply -f foundation/k8s/day/prod/configmap.yaml
 ```
 
 ### Problem 3: ConfigMap Updated But Pods Have Old Values
@@ -1509,8 +1509,8 @@ kubectl rollout undo deployment day -n day-ns
 ---
 
 **Related files in this repository:**
-- `foundation/k8s/day/configmap.yaml` - Production ConfigMap
-- `foundation/k8s/day-rc/configmap.yaml` - RC ConfigMap
-- `foundation/k8s/day/deployment.yaml` - Deployment referencing ConfigMap
+- `foundation/k8s/day/prod/configmap.yaml` - Production ConfigMap
+- `foundation/k8s/day/rc/configmap.yaml` - RC ConfigMap
+- `foundation/k8s/day/prod/deployment.yaml` - Deployment referencing ConfigMap
 - `deployment-hierarchy.md` - How Deployments create Pods
 - `foundation/scripts/explore/explore-configmap-relationships.sh` - Interactive demonstration script
