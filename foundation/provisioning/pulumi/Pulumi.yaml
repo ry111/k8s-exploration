@@ -1,4 +1,4 @@
-name: foundation
+name: foundation-provisioning
 runtime: python
 description: EKS infrastructure for provisioning foundation clusters
 
@@ -6,8 +6,8 @@ config:
   aws:region:
     description: AWS region for deployment
     value: us-east-1
-  foundation:cluster_name:
+  foundation-provisioning:cluster_name:
     description: EKS cluster name for resource naming
-  foundation:vpc_cidr:
+  foundation-provisioning:vpc_cidr:
     description: VPC CIDR block (must be unique per cluster)
     default: 10.1.0.0/16
