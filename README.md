@@ -24,8 +24,8 @@ This project demonstrates a **decoupled multi-cluster architecture** with differ
 
 ### Services (Application Layer)
 
-| Service | Cluster | CI/CD | Deployment Strategy |
-|---------|---------|-------|---------------------|
+| Service | Cluster | CI/CD | Update Tool |
+|---------|---------|-------|-------------|
 | **Dawn** | Trantor | GitHub Actions | kubectl + YAML |
 | **Day** | Trantor | GitHub Actions | IaC (Pulumi) |
 | **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD |
