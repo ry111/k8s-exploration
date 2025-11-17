@@ -82,27 +82,31 @@ kubectl get nodes
 
 ---
 
-### Step 2: Install AWS Load Balancer Controller (~5 minutes)
+### Step 2: Install AWS Load Balancer Controller + Metrics Server (~5 minutes)
 
 ```bash
 ./install-alb-controller-trantor.sh us-east-1
 ```
 
-The AWS Load Balancer Controller automatically creates AWS Application Load Balancers (ALBs) when you create Kubernetes Ingress resources.
+This script installs two essential cluster components:
 
-**What it does:**
+**AWS Load Balancer Controller:**
 - Watches for Ingress resources in your cluster
 - Provisions AWS ALBs automatically
 - Configures routing rules
 - Manages target groups pointing to your pods
 
-**Verify the controller is running:**
+**Metrics Server:**
+- Collects resource metrics (CPU, memory) from nodes and pods
+- Required for HorizontalPodAutoscaler (HPA) to function
+- Enables `kubectl top nodes` and `kubectl top pods` commands
+
+**Verify both are running:**
 ```bash
 kubectl get deployment -n kube-system aws-load-balancer-controller
+kubectl get deployment -n kube-system metrics-server
 
-# Should show:
-# NAME                           READY   UP-TO-DATE   AVAILABLE
-# aws-load-balancer-controller   2/2     2            2
+# Both should show READY status
 ```
 
 ---
@@ -352,7 +356,7 @@ These scripts show you exactly how Kubernetes manages your application!
 # Get all pods across all namespaces
 kubectl get pods --all-namespaces
 
-# Check node resource usage (requires metrics-server)
+# Check node resource usage
 kubectl top nodes
 
 # Check pod resource usage
