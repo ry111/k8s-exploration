@@ -4,6 +4,18 @@
 
 This guide shows you how to manage your **Day service Kubernetes application resources** (Deployment, Service, ConfigMap, HPA, Ingress) using **Pulumi** instead of YAML manifests.
 
+### Deployment Strategy Progression
+
+This project demonstrates three deployment approaches with increasing automation:
+
+| Service | Deployment Strategy | Why |
+|---------|---------------------|-----|
+| **Dawn** | Manual kubectl + YAML | Learn Kubernetes fundamentals |
+| **Day** ← You are here | Pulumi (IaC) | Application-as-code, version control |
+| **Dusk** | ArgoCD (GitOps) | Continuous deployment automation |
+
+**Day service** represents the next step in deployment maturity: managing applications as code rather than imperative kubectl commands. This approach gives you version control, repeatability, and preview-before-apply capabilities.
+
 ## The Architecture: Two Separate Pulumi Programs
 
 ```

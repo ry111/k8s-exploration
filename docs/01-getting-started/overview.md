@@ -18,23 +18,31 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 
 **Decoupled Design: Clusters ≠ Services**
 
-- **2 EKS Clusters:**
-  - **Trantor** - General-purpose cluster (manual provisioning)
-  - **Terminus** - IaC-managed cluster (Pulumi-managed)
+### Clusters (Infrastructure Layer)
 
-- **Multiple Services per Cluster:**
-  - Clusters can host multiple services
-  - Each service has its own namespaces (prod + RC)
-  - Service deployment is independent of cluster provisioning
+| Cluster | Provisioning | VPC CIDR | Purpose |
+|---------|--------------|----------|---------|
+| **Trantor** | Manual (eksctl) | 10.0.0.0/16 | Learn manual cluster creation |
+| **Terminus** | IaC (Pulumi) | 10.2.0.0/16 | Learn declarative infrastructure |
 
-- **Namespace Isolation:**
-  - Services use dedicated namespaces (e.g., service-ns, service-rc-ns)
-  - Isolation via Kubernetes namespaces
-  - Multiple services can share cluster infrastructure
+### Services (Application Layer)
 
-Each service deployment includes:
+This project demonstrates **three deployment strategies** with increasing automation:
+
+| Service | Cluster | CI/CD | Deployment Strategy | Learning Goal |
+|---------|---------|-------|---------------------|---------------|
+| **Dawn** | Trantor | GitHub Actions | Manual deployment (kubectl + YAML) | Understand Kubernetes fundamentals |
+| **Day** | Trantor | GitHub Actions | Pulumi deployment (IaC) | Learn application-as-code |
+| **Dusk** | Terminus | GitHub Actions | ArgoCD (GitOps) | Master continuous deployment |
+
+**Key Learning:** This progression shows how deployment strategies evolve from manual processes to fully automated GitOps. Each service demonstrates a different approach while using the same underlying Kubernetes concepts.
+
+### Service Isolation
+
+- Each service has its own namespaces (prod + RC)
 - Production deployment (2-5 replicas)
 - RC deployment (1-3 replicas)
+- Multiple services share cluster infrastructure via namespace isolation
 
 ## Prerequisites
 
