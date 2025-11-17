@@ -1,7 +1,7 @@
 config:
   # Kubernetes provider configuration
   day-service-app:use_stack_reference: "true" # Set to false to use local kubeconfig
-  day-service-app:infra_stack_name: ry111-org/service-infrastructure/day
+  day-service-app:infra_stack_name: ry111-org/foundation/day
   # Application settings
   day-service-app:namespace: production
   day-service-app:image_registry: 612974049499.dkr.ecr.us-east-1.amazonaws.com # Set to: {account-id}.dkr.ecr.us-east-1.amazonaws.com

@@ -162,7 +162,7 @@ eksctl delete cluster --name trantor
 **Pulumi approach (Terminus cluster):**
 ```yaml
 # Edit Pulumi.terminus.yaml
-service-infrastructure:max_nodes: "6"  # Changed from "4"
+foundation:max_nodes: "6"  # Changed from "4"
 ```
 ```bash
 pulumi stack select terminus

@@ -33,7 +33,7 @@ if use_stack_reference is None:
 
 if use_stack_reference:
     # Get the infrastructure stack name from config
-    infra_stack_name = config.get("infra_stack_name") or "ry111/service-infrastructure/day"
+    infra_stack_name = config.get("infra_stack_name") or "ry111/foundation/day"
 
     # Create stack reference to infrastructure stack
     infra_stack = pulumi.StackReference(infra_stack_name)
