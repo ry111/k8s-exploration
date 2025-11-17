@@ -189,7 +189,7 @@ deployment = k8s.apps.v1.Deployment(
         "labels": labels,
     },
     spec={
-        "replicas": replicas,
+        # "replicas": replicas,  # Commented out to allow HPA to manage replicas
         "selector": {
             "match_labels": deployment_selector,
         },
