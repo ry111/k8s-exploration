@@ -10,7 +10,7 @@ This project demonstrates **two configuration approaches** (YAML vs IaC):
 |---------|------------------------|--------------|
 | **Dawn** | YAML (kubectl) | Kubernetes fundamentals |
 | **Day** | IaC (Pulumi) | Application & infrastructure as code |
-| **Dusk** | TBD | Continuous deployment with ArgoCD (GitOps CD strategy) |
+| **Dusk** | YAML (kubectl) | Continuous deployment with ArgoCD (GitOps CD strategy) |
 
 This progression shows YAML configuration (Dawn) versus IaC configuration (Day), both deployed via GitHub Actions. Dusk will demonstrate ArgoCD as a CD strategy. Each approach builds on the previous, showing different benefits and trade-offs.
 
@@ -45,9 +45,12 @@ In this project, you started with manual deployment using shell scripts:
 
 ```bash
 cd foundation/provisioning/manual
-./create-trantor-cluster.sh us-east-1      # Creates cluster manually
-./build-and-push-dawn.sh us-east-1      # Builds and pushes image
-./deploy-dawn.sh us-east-1               # Deploys application
+./create-trantor-cluster.sh us-east-1                # Creates cluster manually
+./install-alb-controller-trantor.sh us-east-1        # Installs ALB controller
+
+cd ../../gitops/manual_deploy
+./deploy-dawn.sh trantor us-east-1                   # Deploys Dawn service
+# (Images are built automatically by GitHub Actions, not locally)
 ```
 
 **This works great for learning!** But it has limitations:
@@ -113,7 +116,7 @@ config:
   vpc_cidr: 10.1.0.0/16
   desired_nodes: 2
 
-# Pulumi.prod.yaml
+# Pulumi.production.yaml
 config:
   service_name: day
   vpc_cidr: 10.2.0.0/16
@@ -126,7 +129,7 @@ pulumi stack select dev
 pulumi up
 
 # Deploy to production (same code, different config)
-pulumi stack select prod
+pulumi stack select production
 pulumi up
 ```
 

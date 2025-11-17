@@ -225,7 +225,7 @@ The project includes a pre-configured stack for the Terminus cluster:
 
 ```bash
 # Select and deploy Terminus cluster
-pulumi stack select prod
+pulumi stack select production
 pulumi up
 
 # View all stacks
@@ -233,7 +233,7 @@ pulumi stack ls
 ```
 
 Each stack maintains separate state and resources. Configuration is pre-defined in:
-- `Pulumi.prod.yaml` - Terminus cluster (VPC: 10.2.0.0/16)
+- `Pulumi.production.yaml` - Terminus cluster (VPC: 10.2.0.0/16)
 
 ## Cost Estimate
 
