@@ -2,6 +2,18 @@
 
 This brief guide explains the benefits of Infrastructure as Code (IaC) and why this project uses Pulumi to manage Kubernetes infrastructure.
 
+## Your Learning Journey
+
+This project demonstrates **three deployment strategies** with increasing automation:
+
+| Service | Deployment Approach | Key Learning |
+|---------|---------------------|--------------|
+| **Dawn** | Manual scripts (kubectl + YAML) | Kubernetes fundamentals |
+| **Day** | Pulumi IaC | Application & infrastructure as code |
+| **Dusk** | ArgoCD GitOps | Continuous deployment |
+
+This progression mirrors how teams evolve their deployment practices from manual to fully automated. Each step builds on the previous, showing the benefits and trade-offs of each approach.
+
 ## What is Infrastructure as Code?
 
 **Infrastructure as Code (IaC)** is the practice of managing and provisioning infrastructure through code instead of manual processes.
