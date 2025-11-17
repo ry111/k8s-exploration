@@ -43,13 +43,11 @@ kubernetes:kubeconfig:
 **Option B: Use local kubeconfig** (recommended for local development)
 
 ```bash
-# Get kubeconfig from your EKS cluster
-aws eks update-kubeconfig --name terminus --region us-east-1
+# Get kubeconfig from your Trantor EKS cluster
+aws eks update-kubeconfig --name trantor --region us-east-1
 
-# Or from infrastructure Pulumi stack
-cd ../../provisioning/pulumi
-pulumi stack output kubeconfig --show-secrets > ~/.kube/terminus-config
-export KUBECONFIG=~/.kube/terminus-config
+# Verify connection
+kubectl get nodes
 ```
 
 ### 3. Initialize Stack
@@ -272,11 +270,11 @@ pulumi preview
 ### Can't connect to cluster
 
 ```bash
-# Verify kubeconfig
+# Verify kubeconfig points to Trantor
 kubectl get nodes
 
 # Or update kubeconfig
-aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
+aws eks update-kubeconfig --name trantor --region us-east-1
 ```
 
 ### Deployment stuck in pending
