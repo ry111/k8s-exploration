@@ -95,10 +95,10 @@ Pulumi needs to store state. Choose one:
 
 4. **Initialize the Terminus stack:**
    ```bash
-   pulumi stack init terminus
+   pulumi stack init production
    ```
 
-5. **Configuration is pre-set in stack files** (Pulumi.prod.yaml)
+5. **Configuration is pre-set in stack files** (Pulumi.production.yaml)
    - No additional config needed - VPC CIDR (10.2.0.0/16), service name, etc. already set
 
 ## Deploy Infrastructure
