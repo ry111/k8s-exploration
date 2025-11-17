@@ -121,7 +121,7 @@ Pods:
 - ✅ Rollback (revert to previous version)
 - ✅ Self-healing (pod crashes → automatically replaced)
 
-See [deployment-hierarchy.md](deployment-hierarchy.md) for deep dive.
+See [deployment-hierarchy.md](../05-kubernetes-deep-dives/deployment-hierarchy.md) for deep dive.
 
 ### 4. Services
 
@@ -207,7 +207,7 @@ data:
 - Environment variables
 - Mounted as files
 
-See [configmap-relationships.md](configmap-relationships.md) for details.
+See [configmap-relationships.md](../05-kubernetes-deep-dives/configmap-relationships.md) for details.
 
 ### 7. Ingress
 
@@ -1316,7 +1316,7 @@ User receives: {"status": "healthy"}
 
 ## Real-World Example from This Project
 
-Our Day cluster demonstrates all these concepts:
+Our project demonstrates all these concepts using the Terminus cluster:
 
 ### Infrastructure Stack (Pulumi)
 ```python
@@ -1457,7 +1457,7 @@ Developer → kubectl → API Server → etcd
 **Try it yourself:**
 - [first-deployment.md](first-deployment.md) - Deploy your first cluster
 - [deploy-with-pulumi.md](../02-infrastructure-as-code/deploy-with-pulumi.md) - Pulumi-managed cluster
-- Exploration scripts: `foundation/gitops/manual_deploy/explore/`
+- Exploration scripts: `foundation/scripts/explore/`
 
 **Official documentation:**
 - [Kubernetes Documentation](https://kubernetes.io/docs/)
