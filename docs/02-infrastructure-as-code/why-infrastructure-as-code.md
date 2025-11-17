@@ -10,7 +10,7 @@ This project demonstrates **three update tools** with different approaches:
 |---------|-------------|--------------|
 | **Dawn** | kubectl + YAML (via GitHub Actions) | Kubernetes fundamentals |
 | **Day** | IaC (Pulumi via GitHub Actions) | Application & infrastructure as code |
-| **Dusk** | TBD (ArgoCD - GitOps operator) | Continuous deployment |
+| **Dusk** | TBD (ArgoCD) | Continuous deployment |
 
 This progression shows how update tools evolve from imperative push-based approaches to declarative pull-based GitOps. Each step builds on the previous, showing the benefits and trade-offs of each approach.
 
@@ -319,7 +319,7 @@ pulumi destroy
 **For this learning project:**
 - ✅ Dawn (kubectl + YAML via GitHub Actions) - Learn Kubernetes fundamentals
 - ✅ Day (Pulumi IaC via GitHub Actions) - Learn infrastructure as code
-- ✅ Dusk (ArgoCD - GitOps operator) - Learn continuous deployment
+- ✅ Dusk (ArgoCD) - Learn continuous deployment
 
 ---
 

@@ -12,7 +12,7 @@ This project demonstrates three different update tools (all automated via CI/CD)
 |---------|-------------|-----|
 | **Dawn** | kubectl + YAML (via GitHub Actions) | Learn Kubernetes fundamentals |
 | **Day** ← You are here | Pulumi IaC (via GitHub Actions) | Application-as-code, declarative |
-| **Dusk** | ArgoCD (GitOps operator) | Continuous reconciliation |
+| **Dusk** | ArgoCD | Continuous reconciliation |
 
 **Day service** represents a declarative approach: managing applications as code with Pulumi instead of kubectl. Both are automated via GitHub Actions (push-based), but Pulumi offers type safety, preview capabilities, and infrastructure-as-code benefits.
 

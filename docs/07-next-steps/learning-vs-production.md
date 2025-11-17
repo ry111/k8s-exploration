@@ -55,7 +55,7 @@ This project demonstrates **three update tools** with different approaches:
 |---------|---------|-------------|-------------------|
 | **Dawn** | Trantor | kubectl + YAML (via GitHub Actions) | Learn Kubernetes fundamentals hands-on |
 | **Day** | Trantor | IaC (Pulumi via GitHub Actions) | Understand application-as-code |
-| **Dusk** | Terminus | TBD (ArgoCD - GitOps operator) | Master continuous deployment |
+| **Dusk** | Terminus | TBD (ArgoCD) | Master continuous deployment |
 
 **Why this progression:**
 - **Pedagogical** - Each approach builds on the previous
@@ -73,7 +73,7 @@ Trantor cluster (manually provisioned)
 └── day-service (day-ns, day-rc-ns) - Pulumi IaC (via GitHub Actions)
 
 Terminus cluster (Pulumi-managed)
-└── dusk-service (dusk-ns, dusk-rc-ns) - ArgoCD GitOps (continuous reconciliation)
+└── dusk-service (dusk-ns, dusk-rc-ns) - ArgoCD
 ```
 
 **Why we use this decoupled architecture:**
