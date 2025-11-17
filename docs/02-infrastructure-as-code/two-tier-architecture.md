@@ -350,7 +350,160 @@ pulumi up       # Deploy (triggers rolling update)
 - ✅ Infrastructure: Trantor cluster manually provisioned with eksctl
 - ✅ Application: Day service deployed with Pulumi
 
-## Approach 3: Traditional Manual + YAML (No Pulumi)
+## Approach 3: Infrastructure-Layer Pulumi Only (Pulumi Infrastructure + YAML Applications)
+
+This approach uses **Pulumi for infrastructure provisioning** but **YAML manifests for application deployment**. We do NOT use this approach in this project, but it's a perfectly valid strategy used by many teams.
+
+### Architecture
+
+**Tier 1: Infrastructure Pulumi Stack**
+```
+Location: foundation/provisioning/pulumi/ (hypothetical)
+Stack: production
+Manages:
+  - EKS Cluster
+  - VPC and Networking
+  - Managed Node Groups
+  - IAM Roles for IRSA
+  - ALB Controller (Helm)
+Outputs:
+  - cluster_name
+  - kubeconfig
+```
+
+**Tier 2: Applications (YAML + kubectl)**
+```
+Location: foundation/gitops/manual_deploy/ (hypothetical)
+Structure:
+  ├── prod/          # Production manifests
+  │   ├── namespace.yaml
+  │   ├── configmap.yaml
+  │   ├── deployment.yaml
+  │   ├── service.yaml
+  │   ├── hpa.yaml
+  │   └── ingress.yaml
+  └── rc/            # RC manifests
+      └── ...
+
+Deploy:
+  # Apply manually or via GitOps
+  kubectl apply -f foundation/gitops/manual_deploy/prod/
+```
+
+### How It Works
+
+**Infrastructure Stack:**
+```python
+# foundation/provisioning/pulumi/__main__.py
+cluster = eks.Cluster("my-cluster", ...)
+node_group = aws.eks.NodeGroup(...)
+alb_controller = k8s.helm.v3.Release(...)
+
+# Export for kubectl access
+pulumi.export("kubeconfig", cluster.kubeconfig)
+pulumi.export("cluster_name", cluster.eks_cluster.name)
+```
+
+**Application (YAML):**
+```yaml
+# foundation/gitops/manual_deploy/prod/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-service
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: my-service
+        image: my-registry/my-service:v1.2.3
+```
+
+**Deployment:**
+```bash
+# Get kubeconfig from Pulumi
+cd foundation/provisioning/pulumi
+pulumi stack output kubeconfig --show-secrets > kubeconfig.yaml
+export KUBECONFIG=$(pwd)/kubeconfig.yaml
+
+# Deploy applications with kubectl
+kubectl apply -f foundation/gitops/manual_deploy/prod/
+```
+
+### Advantages of Infrastructure-Layer Pulumi
+
+✅ **IaC for infrastructure** - Preview, track, and version infrastructure
+✅ **Standard apps** - Applications use familiar YAML and kubectl
+✅ **Team separation** - Platform team uses Pulumi, app teams use YAML
+✅ **GitOps ready** - Applications work with ArgoCD/Flux out of the box
+✅ **Tool flexibility** - App teams can use Helm, Kustomize, etc.
+✅ **Easier app adoption** - Developers don't need to learn Pulumi
+✅ **Incremental IaC** - Can adopt IaC for infra first, apps later
+
+### Deployment Workflow
+
+**Infrastructure changes (platform team):**
+```bash
+cd foundation/provisioning/pulumi
+pulumi stack select production
+pulumi preview  # Review infrastructure changes
+pulumi up       # Apply after team review
+```
+
+**Application changes (app team):**
+```bash
+# Edit YAML
+vim foundation/gitops/manual_deploy/prod/deployment.yaml
+
+# Apply manually
+kubectl apply -f foundation/gitops/manual_deploy/prod/
+
+# OR with GitOps (ArgoCD syncs automatically)
+git commit -m "Update service to v1.2.3"
+git push
+```
+
+**CI/CD Integration:**
+```yaml
+# Infrastructure CI/CD
+- name: Deploy Infrastructure
+  uses: pulumi/actions@v4
+  with:
+    work-dir: foundation/provisioning/pulumi
+    stack-name: production
+    command: up
+
+# Application CI/CD
+- name: Deploy Applications
+  run: |
+    aws eks update-kubeconfig --name my-cluster
+    kubectl apply -f foundation/gitops/manual_deploy/prod/
+```
+
+### When to Use Infrastructure-Layer Pulumi
+
+✅ **Platform team owns infra** - Platform team comfortable with Pulumi
+✅ **App teams know YAML** - Developers familiar with Kubernetes YAML
+✅ **GitOps for apps** - Want to use ArgoCD/Flux for application deployment
+✅ **Separation of tools** - Different tools for different concerns
+✅ **Large organizations** - Multiple app teams deploying to shared infrastructure
+✅ **Existing YAML** - Already have YAML manifests, don't want to rewrite
+✅ **Helm/Kustomize** - App teams want to use these tools
+
+### Why We Don't Use This Approach
+
+In this project, we don't use this approach because:
+- We already have Terminus cluster provisioned with Pulumi (infrastructure)
+- We wanted to demonstrate Pulumi for applications (Approach 1 for Dusk)
+- We wanted to show manual infrastructure + Pulumi apps (Approach 2 for Day)
+- We demonstrate traditional YAML approach on manual cluster (Approach 4 for Dawn)
+
+However, **this is a very common and valid approach** in production environments, especially in large organizations where:
+- Platform/SRE teams manage infrastructure with Pulumi/Terraform
+- Application teams deploy using familiar YAML + GitOps tools
+
+## Approach 4: Traditional Manual + YAML (No Pulumi)
 
 This approach uses **manual infrastructure** and **YAML manifests** for applications. This is what we use for the **Dawn service** on the Trantor cluster.
 
