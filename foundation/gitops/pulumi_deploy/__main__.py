@@ -58,14 +58,31 @@ else:
 # Configuration
 # ============================================================================
 
-# Application settings
-app_name = "day-service"
+# Base service name
+service_name = "day"
+
+# Namespace configuration
 namespace = config.get("namespace") or "production"
+
+# Determine tier based on namespace
+tier = "rc" if "rc" in namespace else "production"
+
+# Resource naming (matches manual deploy pattern)
+# Production: day, day-service, day-ingress, day-config, day-hpa
+# RC: day-rc, day-rc-service, day-rc-ingress, day-rc-config, day-rc-hpa
+deployment_name = f"{service_name}-{tier}" if tier == "rc" else service_name
+service_resource_name = f"{service_name}-{tier}-service" if tier == "rc" else f"{service_name}-service"
+ingress_name = f"{service_name}-{tier}-ingress" if tier == "rc" else f"{service_name}-ingress"
+configmap_name = f"{service_name}-{tier}-config" if tier == "rc" else f"{service_name}-config"
+hpa_name = f"{service_name}-{tier}-hpa" if tier == "rc" else f"{service_name}-hpa"
+
+# Ingress host configuration
+ingress_host = f"{service_name}-{tier}.example.com" if tier == "rc" else f"{service_name}.example.com"
+
+# Image configuration
 image_registry = config.get("image_registry") or "your-registry"
 image_tag = config.get("image_tag") or "latest"
-
-# Image configuration (ECR repository name may differ from app_name)
-image_name = config.get("image_name") or "day"  # ECR repository name
+image_name = config.get("image_name") or service_name  # ECR repository name
 
 # Deployment settings
 replicas = config.get_int("replicas") or 3
@@ -92,11 +109,16 @@ feature_new_ui = config.get_bool("feature_new_ui") or True
 # Labels and Metadata
 # ============================================================================
 
-# Determine tier based on namespace
-tier = "rc" if "rc" in namespace else "production"
+# Pod labels (include all labels for identification)
+pod_labels = {
+    "app": service_name,
+    "tier": tier,
+    "cluster": "trantor",
+}
 
+# Resource metadata labels (for deployments, services, etc.)
 labels = {
-    "app": app_name,
+    "app": service_name,
     "managed-by": "pulumi",
     "environment": namespace,
     "tier": tier,
@@ -116,7 +138,7 @@ ns = k8s.core.v1.Namespace(
         "labels": {
             "name": namespace,
             "managed-by": "pulumi",
-            "app": app_name,
+            "app": service_name,
             "tier": tier,
             "cluster": "trantor",
             "environment": "production" if tier == "production" else "rc",
@@ -130,9 +152,9 @@ ns = k8s.core.v1.Namespace(
 # ============================================================================
 
 config_map = k8s.core.v1.ConfigMap(
-    f"{app_name}-config",
+    f"{configmap_name}-configmap",
     metadata={
-        "name": f"{app_name}-config",
+        "name": configmap_name,
         "namespace": namespace,
         "labels": labels,
     },
@@ -152,25 +174,32 @@ config_map = k8s.core.v1.ConfigMap(
 # Deployment
 # ============================================================================
 
+# Deployment selector (matches manual deploy pattern)
+# Production: only app label
+# RC: app + tier labels
+deployment_selector = {"app": service_name}
+if tier == "rc":
+    deployment_selector["tier"] = tier
+
 deployment = k8s.apps.v1.Deployment(
-    f"{app_name}-deployment",
+    f"{deployment_name}-deployment",
     metadata={
-        "name": app_name,
+        "name": deployment_name,
         "namespace": namespace,
         "labels": labels,
     },
     spec={
         "replicas": replicas,
         "selector": {
-            "match_labels": labels,
+            "match_labels": deployment_selector,
         },
         "template": {
             "metadata": {
-                "labels": labels,
+                "labels": pod_labels,
             },
             "spec": {
                 "containers": [{
-                    "name": app_name,
+                    "name": service_name,
                     "image": f"{image_registry}/{image_name}:{image_tag}",
                     "ports": [{
                         "container_port": 8001,  # Match Dockerfile EXPOSE port
@@ -221,16 +250,23 @@ deployment = k8s.apps.v1.Deployment(
 # Service
 # ============================================================================
 
+# Service selector (matches manual deploy pattern and deployment selector)
+# Production: only app label
+# RC: app + tier labels
+service_selector = {"app": service_name}
+if tier == "rc":
+    service_selector["tier"] = tier
+
 service = k8s.core.v1.Service(
-    f"{app_name}-service",
+    f"{service_resource_name}-k8s-service",
     metadata={
-        "name": app_name,
+        "name": service_resource_name,
         "namespace": namespace,
         "labels": labels,
     },
     spec={
         "type": "ClusterIP",
-        "selector": labels,
+        "selector": service_selector,
         "ports": [{
             "port": 80,
             "target_port": 8001,  # Match container port
@@ -249,9 +285,9 @@ service = k8s.core.v1.Service(
 # ============================================================================
 
 hpa = k8s.autoscaling.v2.HorizontalPodAutoscaler(
-    f"{app_name}-hpa",
+    f"{hpa_name}-resource",
     metadata={
-        "name": f"{app_name}-hpa",
+        "name": hpa_name,
         "namespace": namespace,
         "labels": labels,
     },
@@ -259,7 +295,7 @@ hpa = k8s.autoscaling.v2.HorizontalPodAutoscaler(
         "scale_target_ref": {
             "api_version": "apps/v1",
             "kind": "Deployment",
-            "name": app_name,
+            "name": deployment_name,
         },
         "min_replicas": min_replicas,
         "max_replicas": max_replicas,
@@ -297,9 +333,9 @@ hpa = k8s.autoscaling.v2.HorizontalPodAutoscaler(
 # ============================================================================
 
 ingress = k8s.networking.v1.Ingress(
-    f"{app_name}-ingress",
+    f"{ingress_name}-resource",
     metadata={
-        "name": app_name,
+        "name": ingress_name,
         "namespace": namespace,
         "labels": labels,
         "annotations": {
@@ -313,13 +349,14 @@ ingress = k8s.networking.v1.Ingress(
     },
     spec={
         "rules": [{
+            "host": ingress_host,  # CRITICAL: Add host for shared ALB routing
             "http": {
                 "paths": [{
                     "path": "/",
                     "path_type": "Prefix",
                     "backend": {
                         "service": {
-                            "name": app_name,
+                            "name": service_resource_name,
                             "port": {
                                 "number": 80,
                             },
@@ -343,9 +380,12 @@ pulumi.export("deployment_name", deployment.metadata["name"])
 pulumi.export("service_name", service.metadata["name"])
 pulumi.export("hpa_name", hpa.metadata["name"])
 pulumi.export("ingress_name", ingress.metadata["name"])
+pulumi.export("configmap_name", config_map.metadata["name"])
 pulumi.export("namespace", namespace)
+pulumi.export("tier", tier)
 pulumi.export("replicas", replicas)
 pulumi.export("image", f"{image_registry}/{image_name}:{image_tag}")
+pulumi.export("ingress_host", ingress_host)
 
 # Export ALB hostname once ingress is created
 pulumi.export("alb_hostname", ingress.status.apply(
