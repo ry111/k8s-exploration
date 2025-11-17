@@ -4,15 +4,15 @@ This brief guide explains the benefits of Infrastructure as Code (IaC) and why t
 
 ## Your Learning Journey
 
-This project demonstrates **three deployment strategies** with increasing automation:
+This project demonstrates **three update tools** with increasing automation:
 
-| Service | Deployment Approach | Key Learning |
-|---------|---------------------|--------------|
-| **Dawn** | Manual scripts (kubectl + YAML) | Kubernetes fundamentals |
-| **Day** | Pulumi IaC | Application & infrastructure as code |
-| **Dusk** | ArgoCD GitOps | Continuous deployment |
+| Service | Update Tool | Key Learning |
+|---------|-------------|--------------|
+| **Dawn** | kubectl + YAML | Kubernetes fundamentals |
+| **Day** | IaC (Pulumi) | Application & infrastructure as code |
+| **Dusk** | TBD | Continuous deployment |
 
-This progression mirrors how teams evolve their deployment practices from manual to fully automated. Each step builds on the previous, showing the benefits and trade-offs of each approach.
+This progression mirrors how teams evolve their update practices from manual to fully automated. Each step builds on the previous, showing the benefits and trade-offs of each approach.
 
 ## What is Infrastructure as Code?
 

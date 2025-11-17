@@ -27,15 +27,15 @@ This project demonstrates deploying Python microservices (Dawn, Day, Dusk) to AW
 
 ### Services (Application Layer)
 
-This project demonstrates **three deployment strategies** with increasing automation:
+This project demonstrates **three update tools** with increasing automation:
 
-| Service | Cluster | CI/CD | Deployment Strategy | Learning Goal |
-|---------|---------|-------|---------------------|---------------|
-| **Dawn** | Trantor | GitHub Actions | Manual deployment (kubectl + YAML) | Understand Kubernetes fundamentals |
-| **Day** | Trantor | GitHub Actions | Pulumi deployment (IaC) | Learn application-as-code |
-| **Dusk** | Terminus | GitHub Actions | ArgoCD (GitOps) | Master continuous deployment |
+| Service | Cluster | CI/CD | Update Tool | Learning Goal |
+|---------|---------|-------|-------------|---------------|
+| **Dawn** | Trantor | GitHub Actions | kubectl + YAML | Understand Kubernetes fundamentals |
+| **Day** | Trantor | GitHub Actions | IaC (Pulumi) | Learn application-as-code |
+| **Dusk** | Terminus | GitHub Actions (CI) + ArgoCD (CD) | TBD | Master continuous deployment |
 
-**Key Learning:** This progression shows how deployment strategies evolve from manual processes to fully automated GitOps. Each service demonstrates a different approach while using the same underlying Kubernetes concepts.
+**Key Learning:** This progression shows how update tools evolve from manual processes to fully automated GitOps. Each service demonstrates a different approach while using the same underlying Kubernetes concepts.
 
 ### Service Isolation
 

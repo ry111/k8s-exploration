@@ -45,21 +45,21 @@ Congratulations! By working through this project, you've learned:
 
 ## Learning Patterns vs Production Patterns
 
-### 1. Deployment Strategy Progression
+### 1. Update Tool Progression
 
 #### Learning (This Project)
 
-This project demonstrates **three deployment strategies** with increasing automation:
+This project demonstrates **three update tools** with increasing automation:
 
-| Service | Cluster | Deployment Strategy | Why This Approach |
-|---------|---------|---------------------|-------------------|
-| **Dawn** | Trantor | Manual (kubectl + YAML) | Learn Kubernetes fundamentals hands-on |
-| **Day** | Trantor | Pulumi (IaC) | Understand application-as-code |
-| **Dusk** | Terminus | ArgoCD (GitOps) | Master continuous deployment |
+| Service | Cluster | Update Tool | Why This Approach |
+|---------|---------|-------------|-------------------|
+| **Dawn** | Trantor | kubectl + YAML | Learn Kubernetes fundamentals hands-on |
+| **Day** | Trantor | IaC (Pulumi) | Understand application-as-code |
+| **Dusk** | Terminus | TBD | Master continuous deployment |
 
 **Why this progression:**
 - **Pedagogical** - Each approach builds on the previous
-- **Realistic** - Shows how teams mature their deployment practices
+- **Realistic** - Shows how teams mature their update practices
 - **Comparative** - Easy to see trade-offs between approaches
 - **Practical** - All three are used in production systems
 
@@ -81,7 +81,7 @@ Terminus cluster (Pulumi-managed)
 - **Cost-effective** - 2 clusters instead of 3 (~$147/month vs $220/month)
 - **Learn namespace isolation** - Services isolated by namespaces, not clusters
 - **Two provisioning methods** - Manual (Trantor) vs IaC (Terminus)
-- **Three deployment strategies** - Manual → IaC → GitOps progression
+- **Three update tools** - kubectl + YAML → IaC → GitOps progression
 - **Safe to experiment** - Can still delete entire cluster if needed
 
 **Cost:** ~$147/month (2 clusters × $0.10/hour control plane)
