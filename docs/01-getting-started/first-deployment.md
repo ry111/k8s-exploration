@@ -168,11 +168,11 @@ The GitHub Actions workflows will automatically create ECR repositories and buil
 Deploy each service individually by specifying the target cluster:
 
 ```bash
-# Deploy Dawn service to Trantor cluster
+# Deploy Dawn service to Trantor cluster (kubectl + YAML)
 ./deploy-dawn.sh trantor us-east-1
 
-# Deploy Day service to Trantor cluster
-./deploy-day.sh trantor us-east-1
+# Day service is deployed via Pulumi
+# See docs/03-application-management/application-as-code.md
 ```
 
 **What gets deployed:**
@@ -274,10 +274,10 @@ cd foundation/provisioning/manual
 aws ecr describe-images --repository-name dawn --region us-east-1
 aws ecr describe-images --repository-name day --region us-east-1
 
-# 4. Deploy services (~5 min)
+# 4. Deploy Dawn service (~5 min)
 cd ../../gitops/manual_deploy
 ./deploy-dawn.sh trantor us-east-1
-./deploy-day.sh trantor us-east-1
+# Day service uses Pulumi deployment (see application-as-code docs)
 
 # 5. Wait for ALB to be ready (~2-3 min)
 watch kubectl get ingress -n dawn-ns

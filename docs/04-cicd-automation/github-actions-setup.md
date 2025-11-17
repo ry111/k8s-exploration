@@ -582,7 +582,7 @@ Red X = build failed
 Add to your workflow to get notified of failures:
 
 ```yaml
-# .github/workflows/build-dawn.yml
+# .github/workflows/build-and-deploy-dawn.yml
 - name: Notify on failure
   if: failure()
   run: |

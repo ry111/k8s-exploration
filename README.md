@@ -66,14 +66,12 @@ k8s-exploration/
 │   │   ├── pulumi/                 # IaC provisioning (Terminus cluster)
 │   │   └── manual/                 # Manual provisioning (Trantor cluster)
 │   ├── gitops/
-│   │   ├── manual_deploy/          # Manual kubectl deployments (Dawn)
+│   │   ├── manual_deploy/          # Manual kubectl deployments + manifests
+│   │   │   ├── deploy-dawn.sh      # Deploy Dawn service script
+│   │   │   ├── dawn/, day/, dusk/  # Kubernetes YAML manifests (prod/rc)
+│   │   │   └── delete-service-images.sh
 │   │   └── pulumi_deploy/          # Pulumi IaC deployments (Day)
 │   ├── services/                   # Application source code (Dawn, Day, Dusk)
-│   ├── k8s/                        # Kubernetes YAML manifests
-│   │   ├── apply-service.sh        # Script to apply manifests for any service
-│   │   ├── dawn/prod/, dawn/rc/    # Dawn service manifests
-│   │   ├── day/prod/, day/rc/      # Day service manifests
-│   │   └── dusk/prod/, dusk/rc/    # Dusk service manifests
 │   └── scripts/
 │       └── explore/                # Interactive learning scripts
 │
