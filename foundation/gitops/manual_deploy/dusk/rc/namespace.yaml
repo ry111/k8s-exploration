@@ -6,3 +6,4 @@ metadata:
     name: dusk-rc-ns
     environment: rc
     tier: rc
+    cluster: trantor

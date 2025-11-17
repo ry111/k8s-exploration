@@ -5,3 +5,5 @@ metadata:
   labels:
     name: dusk-ns
     environment: production
+    tier: production
+    cluster: trantor
