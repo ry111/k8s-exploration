@@ -457,19 +457,33 @@ When you're done experimenting, clean up all resources:
 
 **⚠️ WARNING: This deletes everything!**
 
+Cleanup follows the separation of concerns - infrastructure and applications are deleted separately:
+
+**Step 1: Delete application images (optional)**
 ```bash
 cd foundation/gitops/manual_deploy
-./cleanup-trantor.sh us-east-1
+
+# Delete Dawn service images
+./delete-service-images.sh dawn us-east-1
+
+# Delete Day service images
+./delete-service-images.sh day us-east-1
 ```
 
-This will:
-- Delete the Trantor EKS cluster and all workloads
-- Delete worker nodes
-- Delete ECR repository and images
-- Delete ALBs
-- Remove IAM roles
+**Step 2: Delete infrastructure**
+```bash
+cd ../../provisioning/manual
 
-You'll need to type `DELETE` to confirm.
+# Delete the Trantor cluster
+./delete-cluster.sh trantor us-east-1
+```
+
+This approach:
+- **Application cleanup** (delete-service-images.sh): Deletes ECR repositories and container images
+- **Infrastructure cleanup** (delete-cluster.sh): Deletes EKS cluster, nodes, ALBs, and IAM roles
+- Each script requires typing `DELETE` to confirm
+
+You can delete the cluster without deleting ECR images (to redeploy later) or vice versa.
 
 ---
 
