@@ -84,11 +84,11 @@ kubectl get pods -A
 
 | Resource | Name | Details |
 |----------|------|---------|
-| **VPC** | day-vpc | 10.1.0.0/16 CIDR |
-| **Subnets** | day-public-subnet-1/2 | us-east-1a, us-east-1b |
+| **VPC** | terminus-vpc | 10.2.0.0/16 CIDR |
+| **Subnets** | terminus-public-subnet-1/2 | us-east-1a, us-east-1b |
 | **EKS Cluster** | terminus | v1.28+ |
-| **Node Group** | Managed spot instances | 2x t3.small (1-3 range) |
-| **IAM Role** | day-alb-controller-role | For ALB controller IRSA |
+| **Node Group** | Managed spot instances | 2x t3.small (1-4 range) |
+| **IAM Role** | terminus-alb-controller-role | For ALB controller IRSA |
 | **ALB Controller** | Helm release | In kube-system namespace |
 
 ## Deploy Day Application
@@ -158,7 +158,7 @@ aws eks update-kubeconfig --name trantor --region us-east-1
 kubectl get pods -A
 
 # Work with Terminus cluster (Pulumi-managed)
-pulumi stack select prod
+pulumi stack select production
 aws eks update-kubeconfig --name terminus --region us-east-1
 kubectl get pods -A
 ```
@@ -174,10 +174,10 @@ kubectl config use-context arn:aws:eks:us-east-1:612974049499:cluster/terminus
 To change cluster configuration:
 
 ```bash
-# Edit Pulumi.day.yaml
-# For example, increase max nodes from 3 to 5:
-vim Pulumi.day.yaml
-# Change: foundation:max_nodes: "5"
+# Edit Pulumi.production.yaml
+# For example, increase max nodes from 4 to 6:
+vim Pulumi.production.yaml
+# Change: foundation-provisioning:max_nodes: "6"
 
 # Preview changes
 pulumi preview
@@ -193,13 +193,13 @@ Changes are applied **in-place** without recreating the cluster.
 When done experimenting:
 
 ```bash
-pulumi stack select day
+pulumi stack select production
 pulumi destroy
 ```
 
 ⚠️ **WARNING**: This deletes all resources including the cluster!
 
-Type the stack name to confirm (e.g., "production" for infrastructure stack, "day" for application stack).
+Type the stack name to confirm.
 
 ## CI/CD Integration
 
@@ -235,7 +235,7 @@ Simply change code and create PR - infrastructure updates automatically.
 ```bash
 # Verify stack is selected
 pulumi stack ls
-pulumi stack select prod
+pulumi stack select production
 ```
 
 ### AWS authentication errors

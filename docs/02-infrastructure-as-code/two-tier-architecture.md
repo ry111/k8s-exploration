@@ -97,7 +97,7 @@ This is what we actually built for the Day service, proving Pulumi works great f
 **Tier 1: Infrastructure Pulumi Stack**
 ```
 Location: foundation/provisioning/pulumi/
-Stack: day (or dusk)
+Stack: production
 Manages:
   - AWS EKS Cluster
   - VPC and Networking
@@ -114,7 +114,7 @@ Outputs:
 **Tier 2: Application Pulumi Stack**
 ```
 Location: foundation/gitops/pulumi_deploy/
-Stack: dev, prod
+Stacks: day-production, day-rc
 Manages:
   - Kubernetes Deployment
   - Service (ClusterIP)
@@ -192,15 +192,15 @@ ingress = k8s.networking.v1.Ingress(...)
 **Infrastructure changes (rare):**
 ```bash
 cd foundation/provisioning/pulumi
-pulumi stack select day
+pulumi stack select production
 pulumi preview  # Review infrastructure changes
 pulumi up       # Apply after team review
 ```
 
 **Application changes (frequent):**
 ```bash
-cd foundation/gitops/day
-pulumi stack select prod
+cd foundation/gitops/pulumi_deploy
+pulumi stack select day-production
 pulumi config set image_tag v1.2.3  # Update version
 pulumi preview  # See what will change
 pulumi up       # Deploy (triggers rolling update)
@@ -281,7 +281,7 @@ Deploy:
 **Infrastructure changes (rare):**
 ```bash
 cd foundation/provisioning/pulumi
-pulumi stack select dusk
+pulumi stack select production
 pulumi up
 ```
 
@@ -321,14 +321,14 @@ Applications:   foundation/gitops/manual_deploy/dawn/prod/*.yaml (kubectl)
 
 ### Day Service: Two-Tier Pulumi
 ```
-Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: day)
-Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: dev, prod)
+Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: production)
+Applications:   foundation/gitops/pulumi_deploy/ (Pulumi stacks: day-production, day-rc)
 ```
 
-### Dusk Service: Pulumi Infrastructure + TBD Applications
+### Dusk Service: YAML + kubectl
 ```
-Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: dusk)
-Applications:   TBD (exploring deployment options)
+Infrastructure: foundation/provisioning/pulumi/ (Pulumi stack: production - shares Terminus cluster)
+Applications:   foundation/gitops/manual_deploy/dusk/ (YAML manifests)
 ```
 
 ## Detailed Resource Breakdown
@@ -464,8 +464,8 @@ spec:
 │ - VPC, Subnets, IAM Roles                                 │
 │ - Managed by: Platform Team                               │
 │ - Change Frequency: Monthly                               │
-│ - Repository: foundation/provisioning/pulumi/           │
-│ - Stacks: day, dusk                                       │
+│ - Repository: foundation/provisioning/pulumi/             │
+│ - Stack: production                                       │
 └────────────────────────────────────────────────────────────┘
                          ↓
 ┌────────────────────────────────────────────────────────────┐
@@ -474,19 +474,20 @@ spec:
 │ - ALB Controller, Metrics Server                          │
 │ - Managed by: Platform Team                               │
 │ - Change Frequency: Weekly                                │
-│ - Repository: foundation/provisioning/pulumi/           │
+│ - Repository: foundation/provisioning/pulumi/             │
 └────────────────────────────────────────────────────────────┘
                          ↓
 ┌────────────────────────────────────────────────────────────┐
 │ Layer 3: Applications (CHOOSE ONE)                        │
 │                                                            │
 │ Option A: Two-Tier Pulumi (Day Service)                   │
-│ - Location: foundation/gitops/pulumi_deploy/   │
-│ - Stacks: dev, production                                 │
+│ - Location: foundation/gitops/pulumi_deploy/              │
+│ - Stacks: day-production, day-rc                          │
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 │                                                            │
 │ Option B: GitOps/kubectl (Dawn, Dusk Services)            │
-│ - Location: foundation/gitops/manual_deploy/dawn/prod/, foundation/gitops/manual_deploy/dusk/prod/    │
+│ - Location: foundation/gitops/manual_deploy/dawn/prod/,   │
+│              foundation/gitops/manual_deploy/dusk/prod/   │
 │ - Tool: kubectl apply or ArgoCD                           │
 │ - Manages: Deployment, Service, ConfigMap, HPA, Ingress   │
 └────────────────────────────────────────────────────────────┘
@@ -632,11 +633,11 @@ pulumi state delete kubernetes:apps/v1:Deployment::day-service
 ## What We Actually Built
 
 ### Infrastructure (Multiple Approaches)
-✅ `foundation/provisioning/pulumi/` - Terminus cluster (Pulumi)
+✅ `foundation/provisioning/pulumi/` - Terminus cluster (Pulumi, stack: production)
 ✅ `foundation/provisioning/manual/create-trantor-cluster.sh` - Trantor cluster (eksctl manual script)
 
 ### Applications (Demonstrating Both Approaches)
-✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`)
+✅ **Day Service** - Two-Tier Pulumi (`foundation/gitops/pulumi_deploy/`, stacks: day-production, day-rc)
 ✅ **Dawn Service** - kubectl/YAML (`foundation/gitops/manual_deploy/dawn/prod/`)
 ✅ **Dusk Service** - kubectl/YAML (`foundation/gitops/manual_deploy/dusk/prod/`)
 

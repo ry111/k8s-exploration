@@ -24,15 +24,14 @@ foundation/
 │   └── pulumi/                      # Infrastructure Pulumi Program
 │       ├── __main__.py              # Manages: EKS cluster, VPC, nodes, ALB controller
 │       ├── Pulumi.yaml
-│       ├── Pulumi.day.yaml
-│       └── Pulumi.dusk.yaml
+│       └── Pulumi.production.yaml
 │
 └── gitops/
-    └── day/                         # Application Pulumi Program (SEPARATE)
+    └── pulumi_deploy/               # Application Pulumi Program (SEPARATE)
         ├── __main__.py              # Manages: Deployment, Service, ConfigMap, HPA, Ingress
         ├── Pulumi.yaml
-        ├── Pulumi.dev.yaml
-        └── Pulumi.prod.yaml
+        ├── Pulumi.day-production.yaml
+        └── Pulumi.day-rc.yaml
 ```
 
 ### Why Separate Programs?
@@ -43,7 +42,7 @@ foundation/
 | **Owned by** | Platform/DevOps team | Application team |
 | **Changes** | Monthly | Daily/Hourly |
 | **Impact** | Entire cluster | Single service |
-| **Stack names** | `day`, `dusk` | `dev`, `staging`, `production` |
+| **Stack names** | `production` | `day-production`, `day-rc` |
 
 ## What Gets Managed
 
@@ -67,7 +66,7 @@ foundation/
 1. **Infrastructure already deployed**
    ```bash
    cd foundation/provisioning/pulumi
-   pulumi stack select day
+   pulumi stack select production
    pulumi stack output cluster_name  # Should show: terminus
    ```
 
@@ -107,22 +106,22 @@ pulumi version
 ### Development Stack
 
 ```bash
-cd foundation/gitops/pulumi_deploy/pulumi
+cd foundation/gitops/pulumi_deploy
 
-# Create dev stack
-pulumi stack init dev
+# Create day-rc stack
+pulumi stack init day-rc
 
-# Configuration is already set in Pulumi.dev.yaml
+# Configuration is already set in Pulumi.day-rc.yaml
 pulumi config
 ```
 
 ### Production Stack
 
 ```bash
-# Create production stack
-pulumi stack init production
+# Create day-production stack
+pulumi stack init day-production
 
-# Configuration is already set in Pulumi.prod.yaml
+# Configuration is already set in Pulumi.day-production.yaml
 pulumi config
 ```
 
@@ -132,16 +131,16 @@ pulumi config
 
 ```bash
 # Select stack
-pulumi stack select dev
+pulumi stack select day-rc
 
 # Preview what will be created
 pulumi preview
 
 # Expected output:
-# Previewing update (dev)
+# Previewing update (day-rc)
 #
 #     Type                                         Name                    Plan
-# +   pulumi:pulumi:Stack                          day-service-app-dev     create
+# +   pulumi:pulumi:Stack                          foundation-services-day-rc create
 # +   ├─ kubernetes:core/v1:ConfigMap              day-service-config      create
 # +   ├─ kubernetes:apps/v1:Deployment             day-service             create
 # +   ├─ kubernetes:core/v1:Service                day-service             create
@@ -199,10 +198,10 @@ pulumi config set image_tag v1.2.4
 pulumi preview
 
 # Expected output:
-# Previewing update (dev)
+# Previewing update (day-rc)
 #
 #     Type                                Name              Plan       Info
-#     pulumi:pulumi:Stack                 day-service-app
+#     pulumi:pulumi:Stack                 foundation-services-day-rc
 # ~   └─ kubernetes:apps/v1:Deployment    day-service       update     [diff: ~spec]
 #
 # Resources:
@@ -213,7 +212,7 @@ pulumi preview
 pulumi up
 
 # Watch the rolling update
-kubectl rollout status deployment/day-service -n dev
+kubectl rollout status deployment/day-service -n day-rc-ns
 ```
 
 ### 2. Scale Application
@@ -258,15 +257,15 @@ pulumi up
 ### 5. Switch Between Environments
 
 ```bash
-# Work on dev
-pulumi stack select dev
+# Work on RC
+pulumi stack select day-rc
 pulumi config set image_tag v1.2.5-rc1
 pulumi up
 
-# Test in dev...
+# Test in RC...
 
 # Promote to production
-pulumi stack select prod
+pulumi stack select day-production
 pulumi config set image_tag v1.2.5
 pulumi preview  # Always preview first!
 pulumi up
@@ -276,38 +275,38 @@ pulumi up
 
 All configuration is set in the stack-specific YAML files:
 
-### Development (`Pulumi.dev.yaml`)
+### RC (`Pulumi.day-rc.yaml`)
 
 ```yaml
 config:
-  day-service-app:namespace: dev
-  day-service-app:image_tag: latest
-  day-service-app:replicas: 1
-  day-service-app:min_replicas: 1
-  day-service-app:max_replicas: 3
-  day-service-app:cpu_request: 50m
-  day-service-app:memory_request: 64Mi
-  day-service-app:cpu_limit: 200m
-  day-service-app:memory_limit: 256Mi
-  day-service-app:log_level: DEBUG
-  day-service-app:database_host: postgres.dev.svc.cluster.local
+  foundation-services:namespace: day-rc-ns
+  foundation-services:image_tag: rc
+  foundation-services:replicas: 1
+  foundation-services:min_replicas: 1
+  foundation-services:max_replicas: 3
+  foundation-services:cpu_request: 50m
+  foundation-services:memory_request: 64Mi
+  foundation-services:cpu_limit: 200m
+  foundation-services:memory_limit: 256Mi
+  foundation-services:log_level: DEBUG
+  foundation-services:database_host: postgres.day-rc-ns.svc.cluster.local
 ```
 
-### Production (`Pulumi.prod.yaml`)
+### Production (`Pulumi.day-production.yaml`)
 
 ```yaml
 config:
-  day-service-app:namespace: production
-  day-service-app:image_tag: v1.2.3
-  day-service-app:replicas: 5
-  day-service-app:min_replicas: 3
-  day-service-app:max_replicas: 20
-  day-service-app:cpu_request: 200m
-  day-service-app:memory_request: 256Mi
-  day-service-app:cpu_limit: 1000m
-  day-service-app:memory_limit: 1Gi
-  day-service-app:log_level: INFO
-  day-service-app:database_host: postgres.production.svc.cluster.local
+  foundation-services:namespace: day-ns
+  foundation-services:image_tag: v1.2.3
+  foundation-services:replicas: 5
+  foundation-services:min_replicas: 3
+  foundation-services:max_replicas: 20
+  foundation-services:cpu_request: 200m
+  foundation-services:memory_request: 256Mi
+  foundation-services:cpu_limit: 1000m
+  foundation-services:memory_limit: 1Gi
+  foundation-services:log_level: INFO
+  foundation-services:database_host: postgres.day-ns.svc.cluster.local
 ```
 
 ## Understanding the Code
@@ -554,17 +553,17 @@ jobs:
           cd foundation/gitops/pulumi_deploy/pulumi
           pip install -r requirements.txt
 
-      - name: Deploy to Dev
+      - name: Deploy to RC
         uses: pulumi/actions@v4
         with:
-          work-dir: foundation/gitops/pulumi_deploy/pulumi
-          stack-name: dev
+          work-dir: foundation/gitops/pulumi_deploy
+          stack-name: day-rc
           command: up
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
   deploy-production:
-    needs: deploy-dev
+    needs: deploy-rc
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment: production  # Requires approval
@@ -594,8 +593,8 @@ jobs:
       - name: Deploy to Production
         uses: pulumi/actions@v4
         with:
-          work-dir: foundation/gitops/pulumi_deploy/pulumi
-          stack-name: production
+          work-dir: foundation/gitops/pulumi_deploy
+          stack-name: day-production
           command: up
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
@@ -620,14 +619,14 @@ kubectl get nodes
 
 ```bash
 # Check deployment status
-kubectl describe deployment day-service -n dev
+kubectl describe deployment day-service -n day-rc-ns
 
 # Check pod events
-kubectl get pods -n dev
-kubectl describe pod <pod-name> -n dev
+kubectl get pods -n day-rc-ns
+kubectl describe pod <pod-name> -n day-rc-ns
 
 # Check logs
-kubectl logs -f deployment/day-service -n dev
+kubectl logs -f deployment/day-service -n day-rc-ns
 ```
 
 ### Pulumi state conflicts
@@ -644,8 +643,8 @@ pulumi stack export
 
 ```bash
 # Pulumi doesn't generate YAML, but you can inspect with kubectl
-kubectl get deployment day-service -n dev -o yaml
-kubectl get service day-service -n dev -o yaml
+kubectl get deployment day-service -n day-ns -o yaml
+kubectl get service day-service -n day-ns -o yaml
 ```
 
 ## Comparison: Pulumi vs YAML
@@ -678,10 +677,10 @@ kubectl apply -f foundation/k8s/day/prod/
 
 **Single Python program:**
 ```bash
-foundation/gitops/pulumi_deploy/pulumi/
-├── __main__.py          # Single file, type-safe
-├── Pulumi.dev.yaml      # Dev config
-└── Pulumi.prod.yaml  # Prod config
+foundation/gitops/pulumi_deploy/
+├── __main__.py                 # Single file, type-safe
+├── Pulumi.day-rc.yaml          # RC config
+└── Pulumi.day-production.yaml  # Production config
 ```
 
 **Deployment:**
@@ -703,13 +702,13 @@ pulumi up
 
 1. **Customize the configuration** for your Day service
    ```bash
-   cd foundation/gitops/pulumi_deploy/pulumi
-   vim Pulumi.dev.yaml  # Update image registry, etc.
+   cd foundation/gitops/pulumi_deploy
+   vim Pulumi.day-rc.yaml  # Update image registry, etc.
    ```
 
-2. **Deploy to dev**
+2. **Deploy to RC**
    ```bash
-   pulumi stack select dev
+   pulumi stack select day-rc
    pulumi up
    ```
 
