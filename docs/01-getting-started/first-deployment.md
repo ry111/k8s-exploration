@@ -150,14 +150,14 @@ Step 2/8 : WORKDIR /app
 
 ### Step 4: Deploy Services (~5 minutes)
 
-Deploy each service individually (they can be deployed to any cluster):
+Deploy each service individually by specifying the target cluster:
 
 ```bash
-# Deploy Dawn service
-./deploy-dawn.sh us-east-1
+# Deploy Dawn service to Trantor cluster
+./deploy-dawn.sh trantor us-east-1
 
-# Deploy Day service
-./deploy-day.sh us-east-1
+# Deploy Day service to Trantor cluster
+./deploy-day.sh trantor us-east-1
 ```
 
 **What gets deployed:**
@@ -178,7 +178,7 @@ Deploy each service individually (they can be deployed to any cluster):
 
 > 💡 **Deployment Strategy**
 >
-> These scripts are **cluster-agnostic** - they deploy to whatever cluster is configured in your kubectl context. This demonstrates the separation between infrastructure (clusters) and applications (services).
+> These scripts are **cluster-agnostic** - they can deploy to any cluster by name. The first argument explicitly specifies the target cluster, making it clear and safe. This demonstrates the separation between infrastructure (clusters) and applications (services).
 
 **Verify your pods are running:**
 ```bash
@@ -259,8 +259,8 @@ cd ../../gitops/manual_deploy
 ./build-and-push-day.sh us-east-1
 
 # 4. Deploy services (~5 min)
-./deploy-dawn.sh us-east-1
-./deploy-day.sh us-east-1
+./deploy-dawn.sh trantor us-east-1
+./deploy-day.sh trantor us-east-1
 
 # 5. Wait for ALB to be ready (~2-3 min)
 watch kubectl get ingress -n dawn-ns

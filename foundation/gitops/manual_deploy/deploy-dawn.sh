@@ -1,13 +1,21 @@
 #!/bin/bash
 
-# Script to deploy Dawn service to the current kubectl context
-# Works with any cluster - uses whatever is configured in kubectl
-# Usage: ./deploy-dawn.sh [region] [aws-account-id]
+# Script to deploy Dawn service to a specified EKS cluster
+# Usage: ./deploy-dawn.sh <cluster-name> [region] [aws-account-id]
+# Example: ./deploy-dawn.sh trantor us-east-1
 
 set -e
 
-REGION=${1:-us-east-1}
-AWS_ACCOUNT_ID=${2}
+CLUSTER_NAME=${1}
+REGION=${2:-us-east-1}
+AWS_ACCOUNT_ID=${3}
+
+if [ -z "$CLUSTER_NAME" ]; then
+  echo "Error: Cluster name is required"
+  echo "Usage: $0 <cluster-name> [region] [aws-account-id]"
+  echo "Example: $0 trantor us-east-1"
+  exit 1
+fi
 
 if [ -z "$AWS_ACCOUNT_ID" ]; then
   echo "Getting AWS Account ID..."
@@ -16,16 +24,17 @@ fi
 
 ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
-# Get current kubectl context
-CURRENT_CONTEXT=$(kubectl config current-context)
-CURRENT_CLUSTER=$(kubectl config view -o jsonpath="{.contexts[?(@.name=='$CURRENT_CONTEXT')].context.cluster}")
-
 echo "========================================="
 echo "Deploying Dawn Service"
 echo "========================================="
-echo "Target cluster: $CURRENT_CLUSTER"
+echo "Target cluster: $CLUSTER_NAME"
 echo "ECR Registry: $ECR_REGISTRY"
 echo "Region: $REGION"
+echo ""
+
+# Set kubectl context to the specified cluster
+echo "Setting kubectl context to cluster: $CLUSTER_NAME"
+aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$REGION"
 echo ""
 
 # Create temporary deployment files with ECR image URLs
