@@ -113,7 +113,7 @@ Outputs:
 **Tier 2: Application Pulumi Stack**
 ```
 Location: foundation/gitops/pulumi_deploy/ (for Dusk)
-Stacks: dusk-production, dusk-rc (to be created)
+Stacks: dusk-production, dusk-rc (configured and ready)
 Manages:
   - Kubernetes Deployment
   - Service (ClusterIP)

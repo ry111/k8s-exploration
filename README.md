@@ -30,7 +30,7 @@ This project demonstrates a **decoupled multi-cluster architecture** with differ
 |---------|---------|--------|---------------|-------------|
 | **Dawn** | Trantor | ✅ Deployed | YAML (kubectl) | GitHub Actions (push-based) |
 | **Day** | Trantor | ✅ Deployed | IaC (Pulumi) | GitHub Actions (push-based) |
-| **Dusk** | Terminus | 📋 Planned | YAML (kubectl) | ArgoCD (pull-based) |
+| **Dusk** | Terminus | ✅ Configured | IaC (Pulumi) | GitHub Actions (push-based) |
 
 **Key Learning:** Clusters are infrastructure, services are applications. This decoupling demonstrates real-world patterns where multiple services share cluster infrastructure with different configuration approaches (YAML vs IaC) and CD strategies (push-based via GitHub Actions vs pull-based via ArgoCD).
 
@@ -117,12 +117,13 @@ pulumi stack select production
 pulumi up
 
 # Note: This creates the Terminus cluster infrastructure.
-# Dusk service deployment on Terminus is planned but not yet implemented.
-# For now, use Option 1 to deploy and interact with a working service.
+# Dusk service deployment is configured and ready.
+# To deploy Dusk: Trigger the GitHub Actions workflow or use Pulumi CLI
+# For hands-on learning, use Option 1 first to understand the fundamentals.
 ```
 
 **Time:** ~30 minutes | **Best for:** Learning automation and repeatability
-**Note:** Creates cluster infrastructure; service deployment coming in future iterations
+**Note:** Creates cluster infrastructure and deploys Dusk service via Pulumi IaC
 
 ## 🎯 What You'll Learn
 

@@ -1,0 +1,204 @@
+name: Build and Deploy Dusk Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'foundation/services/dusk/**'
+      - 'foundation/gitops/pulumi_deploy/**'
+      - '.github/workflows/build-and-deploy-dusk.yml'
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: dusk
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+      ecr_registry: ${{ steps.login-ecr.outputs.registry }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Create ECR repository if it doesn't exist
+        run: |
+          aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} --region ${{ env.AWS_REGION }} || \
+          aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }} --region ${{ env.AWS_REGION }}
+
+      - name: Set image tag
+        id: meta
+        run: |
+          # Use git SHA as version tag
+          echo "image_tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ steps.meta.outputs.image_tag }}
+        run: |
+          cd foundation/services/dusk
+
+          # Build and push with SHA tag
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+          # Also tag and push as rc for RC deployments
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:rc
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:rc
+
+          echo "✅ Pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "✅ Pushed: $ECR_REGISTRY/$ECR_REPOSITORY:rc"
+
+  deploy-rc:
+    name: Deploy to RC on Terminus
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig for Terminus cluster
+        run: |
+          # Verify AWS credentials are working
+          echo "Testing AWS credentials..."
+          aws sts get-caller-identity
+
+          # Update kubeconfig for Terminus cluster
+          aws eks update-kubeconfig --name terminus --region us-east-1
+
+          # Verify kubeconfig was created
+          echo "Kubeconfig location: $HOME/.kube/config"
+          ls -la $HOME/.kube/config
+
+          # Test eks get-token command directly
+          echo "Testing eks get-token..."
+          aws eks get-token --cluster-name terminus --region us-east-1
+
+          # Test kubectl connection
+          echo "Testing kubectl connection..."
+          kubectl cluster-info
+
+      - name: Install dependencies
+        run: |
+          cd foundation/gitops/pulumi_deploy
+          pip install -r requirements.txt
+
+      - name: Deploy to RC on Terminus
+        uses: pulumi/actions@v4
+        with:
+          work-dir: foundation/gitops/pulumi_deploy
+          stack-name: dusk-rc
+          command: up
+          config-map: |
+            {
+              "use_stack_reference": { "value": "true" },
+              "infra_stack_name": { "value": "ry111/foundation-provisioning/production" },
+              "service_name": { "value": "dusk" },
+              "container_port": { "value": "8002" },
+              "cluster_name": { "value": "terminus" },
+              "image_registry": { "value": "${{ needs.build-and-push.outputs.ecr_registry }}" },
+              "image_name": { "value": "dusk" },
+              "image_tag": { "value": "rc" }
+            }
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+
+  deploy-production:
+    name: Deploy to Production on Terminus
+    needs: [build-and-push, deploy-rc]
+    runs-on: ubuntu-latest
+    environment: production  # Requires manual approval
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig for Terminus cluster
+        run: |
+          # Verify AWS credentials are working
+          echo "Testing AWS credentials..."
+          aws sts get-caller-identity
+
+          # Update kubeconfig for Terminus cluster
+          aws eks update-kubeconfig --name terminus --region us-east-1
+
+          # Verify kubeconfig was created
+          echo "Kubeconfig location: $HOME/.kube/config"
+          ls -la $HOME/.kube/config
+
+          # Test eks get-token command directly
+          echo "Testing eks get-token..."
+          aws eks get-token --cluster-name terminus --region us-east-1
+
+          # Test kubectl connection
+          echo "Testing kubectl connection..."
+          kubectl cluster-info
+
+      - name: Install dependencies
+        run: |
+          cd foundation/gitops/pulumi_deploy
+          pip install -r requirements.txt
+
+      - name: Deploy to Production on Terminus
+        uses: pulumi/actions@v4
+        with:
+          work-dir: foundation/gitops/pulumi_deploy
+          stack-name: dusk-production
+          command: up
+          config-map: |
+            {
+              "use_stack_reference": { "value": "true" },
+              "infra_stack_name": { "value": "ry111/foundation-provisioning/production" },
+              "service_name": { "value": "dusk" },
+              "container_port": { "value": "8002" },
+              "cluster_name": { "value": "terminus" },
+              "image_registry": { "value": "${{ needs.build-and-push.outputs.ecr_registry }}" },
+              "image_name": { "value": "dusk" },
+              "image_tag": { "value": "${{ needs.build-and-push.outputs.image_tag }}" }
+            }
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
