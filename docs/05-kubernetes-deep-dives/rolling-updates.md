@@ -1234,123 +1234,123 @@ strategy:
 │ INITIAL STATE                                               │
 │                                                             │
 │ Deployment: image=day:v1, replicas=2                        │
-│     └─→ ReplicaSet-v1: replicas=2                          │
-│             ├─→ Pod-1 (Running v1)                         │
-│             └─→ Pod-2 (Running v1)                         │
+│     └─→ ReplicaSet-v1: replicas=2                           │
+│             ├─→ Pod-1 (Running v1)                          │
+│             └─→ Pod-2 (Running v1)                          │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ User updates: image=day:v2
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 1: New ReplicaSet Created                            │
+│ STATE 1: New ReplicaSet Created                             │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=2 (old)                   │
-│     │       ├─→ Pod-1 (Running v1)                        │
-│     │       └─→ Pod-2 (Running v1)                        │
-│     └─→ ReplicaSet-v2: replicas=0 (new) ← JUST CREATED    │
+│     ├─→ ReplicaSet-v1: replicas=2 (old)                     │
+│     │       ├─→ Pod-1 (Running v1)                          │
+│     │       └─→ Pod-2 (Running v1)                          │
+│     └─→ ReplicaSet-v2: replicas=0 (new) ← JUST CREATED      │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Controller scales up new
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 2: Scaling Up New                                    │
+│ STATE 2: Scaling Up New                                     │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=2                         │
-│     │       ├─→ Pod-1 (Running v1)                        │
-│     │       └─→ Pod-2 (Running v1)                        │
-│     └─→ ReplicaSet-v2: replicas=0→1                       │
-│             └─→ Pod-3 (ContainerCreating v2) ← NEW        │
+│     ├─→ ReplicaSet-v1: replicas=2                           │
+│     │       ├─→ Pod-1 (Running v1)                          │
+│     │       └─→ Pod-2 (Running v1)                          │
+│     └─→ ReplicaSet-v2: replicas=0→1                         │
+│             └─→ Pod-3 (ContainerCreating v2) ← NEW          │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Wait for readiness
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 3: New Pod Ready                                     │
+│ STATE 3: New Pod Ready                                      │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=2                         │
-│     │       ├─→ Pod-1 (Running v1)                        │
-│     │       └─→ Pod-2 (Running v1)                        │
-│     └─→ ReplicaSet-v2: replicas=1                         │
-│             └─→ Pod-3 (Running v2) ✓                      │
+│     ├─→ ReplicaSet-v1: replicas=2                           │
+│     │       ├─→ Pod-1 (Running v1)                          │
+│     │       └─→ Pod-2 (Running v1)                          │
+│     └─→ ReplicaSet-v2: replicas=1                           │
+│             └─→ Pod-3 (Running v2) ✓                        │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Controller scales down old
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 4: Scaling Down Old                                  │
+│ STATE 4: Scaling Down Old                                   │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=2→1                       │
-│     │       ├─→ Pod-1 (Running v1)                        │
-│     │       └─→ Pod-2 (Terminating v1) ← TERMINATING      │
-│     └─→ ReplicaSet-v2: replicas=1                         │
-│             └─→ Pod-3 (Running v2)                        │
+│     ├─→ ReplicaSet-v1: replicas=2→1                         │
+│     │       ├─→ Pod-1 (Running v1)                          │
+│     │       └─→ Pod-2 (Terminating v1) ← TERMINATING        │
+│     └─→ ReplicaSet-v2: replicas=1                           │
+│             └─→ Pod-3 (Running v2)                          │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Wait for termination
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 5: Old Pod Terminated                                │
+│ STATE 5: Old Pod Terminated                                 │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=1                         │
-│     │       └─→ Pod-1 (Running v1)                        │
-│     └─→ ReplicaSet-v2: replicas=1                         │
-│             └─→ Pod-3 (Running v2)                        │
+│     ├─→ ReplicaSet-v1: replicas=1                           │
+│     │       └─→ Pod-1 (Running v1)                          │
+│     └─→ ReplicaSet-v2: replicas=1                           │
+│             └─→ Pod-3 (Running v2)                          │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Controller scales up new again
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 6: Scaling Up New Again                              │
+│ STATE 6: Scaling Up New Again                               │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=1                         │
-│     │       └─→ Pod-1 (Running v1)                        │
-│     └─→ ReplicaSet-v2: replicas=1→2                       │
-│             ├─→ Pod-3 (Running v2)                        │
-│             └─→ Pod-4 (ContainerCreating v2) ← NEW        │
+│     ├─→ ReplicaSet-v1: replicas=1                           │
+│     │       └─→ Pod-1 (Running v1)                          │
+│     └─→ ReplicaSet-v2: replicas=1→2                         │
+│             ├─→ Pod-3 (Running v2)                          │
+│             └─→ Pod-4 (ContainerCreating v2) ← NEW          │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Wait for readiness
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 7: Second New Pod Ready                              │
+│ STATE 7: Second New Pod Ready                               │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=1                         │
-│     │       └─→ Pod-1 (Running v1)                        │
-│     └─→ ReplicaSet-v2: replicas=2                         │
-│             ├─→ Pod-3 (Running v2)                        │
-│             └─→ Pod-4 (Running v2) ✓                      │
+│     ├─→ ReplicaSet-v1: replicas=1                           │
+│     │       └─→ Pod-1 (Running v1)                          │
+│     └─→ ReplicaSet-v2: replicas=2                           │
+│             ├─→ Pod-3 (Running v2)                          │
+│             └─→ Pod-4 (Running v2) ✓                        │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Controller scales down old to 0
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ STATE 8: Scaling Old to Zero                               │
+│ STATE 8: Scaling Old to Zero                                │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=1→0                       │
-│     │       └─→ Pod-1 (Terminating v1) ← TERMINATING      │
-│     └─→ ReplicaSet-v2: replicas=2                         │
-│             ├─→ Pod-3 (Running v2)                        │
-│             └─→ Pod-4 (Running v2)                        │
+│     ├─→ ReplicaSet-v1: replicas=1→0                         │
+│     │       └─→ Pod-1 (Terminating v1) ← TERMINATING        │
+│     └─→ ReplicaSet-v2: replicas=2                           │
+│             ├─→ Pod-3 (Running v2)                          │
+│             └─→ Pod-4 (Running v2)                          │
 └─────────────────────────────────────────────────────────────┘
                           │
                           │ Wait for termination
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ FINAL STATE: Update Complete                               │
+│ FINAL STATE: Update Complete                                │
 │                                                             │
 │ Deployment: image=day:v2, replicas=2                        │
-│     ├─→ ReplicaSet-v1: replicas=0 ← KEPT FOR ROLLBACK     │
-│     └─→ ReplicaSet-v2: replicas=2 ← ACTIVE                │
-│             ├─→ Pod-3 (Running v2)                        │
-│             └─→ Pod-4 (Running v2)                        │
+│     ├─→ ReplicaSet-v1: replicas=0 ← KEPT FOR ROLLBACK       │
+│     └─→ ReplicaSet-v2: replicas=2 ← ACTIVE                  │
+│             ├─→ Pod-3 (Running v2)                          │
+│             └─→ Pod-4 (Running v2)                          │
 └─────────────────────────────────────────────────────────────┘
 ```
 

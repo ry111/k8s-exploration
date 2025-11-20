@@ -12,47 +12,47 @@ This project demonstrates **both approaches working successfully**:
 **Separate Pulumi stacks for infrastructure and applications**
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ INFRASTRUCTURE PULUMI STACK                         │
-│ foundation/provisioning/pulumi/                   │
-├─────────────────────────────────────────────────────┤
-│ ✅ EKS Cluster, VPC, Nodes                          │
-│ ✅ IAM Roles, OIDC Provider                         │
-│ ✅ ALB Controller (Helm)                            │
-└─────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────┐
+│ INFRASTRUCTURE PULUMI STACK                           │
+│ foundation/provisioning/pulumi/                       │
+├───────────────────────────────────────────────────────┤
+│ ✅ EKS Cluster, VPC, Nodes                            │
+│ ✅ IAM Roles, OIDC Provider                           │
+│ ✅ ALB Controller (Helm)                              │
+└───────────────────────────────────────────────────────┘
                      ↓ references via stack outputs
-┌─────────────────────────────────────────────────────┐
-│ APPLICATION PULUMI STACK                            │
-│ foundation/gitops/pulumi_deploy/         │
-├─────────────────────────────────────────────────────┤
-│ ✅ Deployments, Services, Ingresses                 │
-│ ✅ ConfigMaps, Secrets                              │
-│ ✅ HorizontalPodAutoscalers                         │
-└─────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────┐
+│ APPLICATION PULUMI STACK                              │
+│ foundation/gitops/pulumi_deploy/                      │
+├───────────────────────────────────────────────────────┤
+│ ✅ Deployments, Services, Ingresses                   │
+│ ✅ ConfigMaps, Secrets                                │
+│ ✅ HorizontalPodAutoscalers                           │
+└───────────────────────────────────────────────────────┘
 ```
 
 ### Approach 2: Infrastructure Tool + GitOps (Dawn/Dusk Services)
 **Pulumi/eksctl for infrastructure, kubectl/YAML for applications**
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ INFRASTRUCTURE LAYER (Pulumi or eksctl)             │
-├─────────────────────────────────────────────────────┤
-│ ✅ EKS Cluster, VPC, Nodes                          │
-│ ✅ IAM Roles, OIDC Provider                         │
-│ ✅ ALB Controller (Helm)                            │
-│                                                     │
-│ Terminus: Pulumi (foundation/provisioning/pulumi/)   │
+┌───────────────────────────────────────────────────────┐
+│ INFRASTRUCTURE LAYER (Pulumi or eksctl)               │
+├───────────────────────────────────────────────────────┤
+│ ✅ EKS Cluster, VPC, Nodes                            │
+│ ✅ IAM Roles, OIDC Provider                           │
+│ ✅ ALB Controller (Helm)                              │
+│                                                       │
+│ Terminus: Pulumi (foundation/provisioning/pulumi/)    │
 │ Trantor: eksctl (foundation/provisioning/manual/...)  │
-└─────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────┘
                      ↓
-┌─────────────────────────────────────────────────────┐
-│ KUBECTL/YAML MANAGES (Application Layer)           │
-├─────────────────────────────────────────────────────┤
-│ ✅ Deployments, Services, Ingresses                 │
-│ ✅ ConfigMaps, Secrets                              │
-│ ✅ HorizontalPodAutoscalers                         │
-└─────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────┐
+│ KUBECTL/YAML MANAGES (Application Layer)              │
+├───────────────────────────────────────────────────────┤
+│ ✅ Deployments, Services, Ingresses                   │
+│ ✅ ConfigMaps, Secrets                                │
+│ ✅ HorizontalPodAutoscalers                           │
+└───────────────────────────────────────────────────────┘
 ```
 
 **Both are valid!** The key is separating concerns and preventing infrastructure and application changes from blocking each other.

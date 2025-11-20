@@ -261,41 +261,41 @@ AWS EBS Volume / EFS / S3
 Kubernetes cluster = **Control Plane** + **Worker Nodes**
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    KUBERNETES CLUSTER                       │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │         CONTROL PLANE (Master Nodes)                │   │
-│  │                                                     │   │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐         │   │
-│  │  │ API      │  │Scheduler │  │Controller│         │   │
-│  │  │ Server   │  │          │  │ Manager  │         │   │
-│  │  └──────────┘  └──────────┘  └──────────┘         │   │
-│  │                                                     │   │
+┌───────────────────────────────────────────────────────────┐
+│                    KUBERNETES CLUSTER                     │
+│                                                           │
+│  ┌────────────────────────────────────────────────────┐   │
+│  │         CONTROL PLANE (Master Nodes)               │   │
+│  │                                                    │   │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐          │   │
+│  │  │ API      │  │Scheduler │  │Controller│          │   │
+│  │  │ Server   │  │          │  │ Manager  │          │   │
+│  │  └──────────┘  └──────────┘  └──────────┘          │   │
+│  │                                                    │   │
 │  │  ┌─────────────────────────────────────┐           │   │
 │  │  │         etcd (cluster store)        │           │   │
 │  │  └─────────────────────────────────────┘           │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                          │                                  │
-│                          │ manages                          │
-│                          ↓                                  │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │              WORKER NODES (Data Plane)              │   │
-│  │                                                     │   │
-│  │  ┌─────────────────┐  ┌─────────────────┐         │   │
-│  │  │ Node 1          │  │ Node 2          │         │   │
-│  │  │                 │  │                 │         │   │
-│  │  │ ┌─────┐ ┌─────┐ │  │ ┌─────┐ ┌─────┐ │         │   │
-│  │  │ │Pod 1│ │Pod 2│ │  │ │Pod 3│ │Pod 4│ │   ...   │   │
-│  │  │ └─────┘ └─────┘ │  │ └─────┘ └─────┘ │         │   │
-│  │  │                 │  │                 │         │   │
-│  │  │ kubelet         │  │ kubelet         │         │   │
-│  │  │ kube-proxy      │  │ kube-proxy      │         │   │
-│  │  │ Container       │  │ Container       │         │   │
-│  │  │ Runtime         │  │ Runtime         │         │   │
-│  │  └─────────────────┘  └─────────────────┘         │   │
-│  └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+│  └────────────────────────────────────────────────────┘   │
+│                          │                                │
+│                          │ manages                        │
+│                          ↓                                │
+│  ┌────────────────────────────────────────────────────┐   │
+│  │              WORKER NODES (Data Plane)             │   │
+│  │                                                    │   │
+│  │  ┌─────────────────┐  ┌─────────────────┐          │   │
+│  │  │ Node 1          │  │ Node 2          │          │   │
+│  │  │                 │  │                 │          │   │
+│  │  │ ┌─────┐ ┌─────┐ │  │ ┌─────┐ ┌─────┐ │          │   │
+│  │  │ │Pod 1│ │Pod 2│ │  │ │Pod 3│ │Pod 4│ │   ...    │   │
+│  │  │ └─────┘ └─────┘ │  │ └─────┘ └─────┘ │          │   │
+│  │  │                 │  │                 │          │   │
+│  │  │ kubelet         │  │ kubelet         │          │   │
+│  │  │ kube-proxy      │  │ kube-proxy      │          │   │
+│  │  │ Container       │  │ Container       │          │   │
+│  │  │ Runtime         │  │ Runtime         │          │   │
+│  │  └─────────────────┘  └─────────────────┘          │   │
+│  └────────────────────────────────────────────────────┘   │
+└───────────────────────────────────────────────────────────┘
 ```
 
 ### Control Plane vs Data Plane
@@ -618,9 +618,9 @@ Kubernetes architecture can be understood as layers of abstraction.
 ┌──────────────────────────────────────────┐
 │   Infrastructure (Cloud/Bare Metal)      │
 │                                          │
-│   AWS: EC2, VPC, EBS, IAM               │
-│   GCP: Compute Engine, VPC, Disks       │
-│   On-prem: Physical servers, storage    │
+│   AWS: EC2, VPC, EBS, IAM                │
+│   GCP: Compute Engine, VPC, Disks        │
+│   On-prem: Physical servers, storage     │
 └──────────────────────────────────────────┘
 ```
 
@@ -633,7 +633,7 @@ Kubernetes architecture can be understood as layers of abstraction.
 ┌──────────────────────────────────────────┐
 │      Kubernetes Cluster                  │
 │                                          │
-│   Control Plane + Worker Nodes          │
+│   Control Plane + Worker Nodes           │
 │   Networking (CNI)                       │
 │   Storage (CSI)                          │
 └──────────────────────────────────────────┘
@@ -648,7 +648,7 @@ Kubernetes architecture can be understood as layers of abstraction.
 ┌──────────────────────────────────────────┐
 │   Platform Services (Add-ons)            │
 │                                          │
-│   Ingress Controller (ALB/NGINX)        │
+│   Ingress Controller (ALB/NGINX)         │
 │   Monitoring (Prometheus)                │
 │   Logging (Fluentd)                      │
 │   Service Mesh (Istio) - optional        │
@@ -664,7 +664,7 @@ Kubernetes architecture can be understood as layers of abstraction.
 ┌──────────────────────────────────────────┐
 │        Applications                      │
 │                                          │
-│   Deployments, Services, ConfigMaps     │
+│   Deployments, Services, ConfigMaps      │
 │   Your microservices                     │
 └──────────────────────────────────────────┘
 ```
@@ -698,23 +698,23 @@ Kubernetes interfaces with cloud providers through **Cloud Controller Manager** 
 ### Integration Points
 
 ```
-┌───────────────────────────────────────────────────────────┐
-│                    KUBERNETES CLUSTER                     │
-│                                                           │
-│  ┌─────────────────────────────────────────────────┐     │
-│  │   Cloud Controller Manager                      │     │
-│  │                                                 │     │
-│  │   ┌───────────┐  ┌────────────┐  ┌──────────┐ │     │
-│  │   │   Node    │  │  Service   │  │  Route   │ │     │
-│  │   │Controller │  │ Controller │  │Controller│ │     │
-│  │   └─────┬─────┘  └──────┬─────┘  └────┬─────┘ │     │
-│  └─────────┼────────────────┼─────────────┼───────┘     │
+┌─────────────────────────────────────────────────────────┐
+│                    KUBERNETES CLUSTER                   │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐    │
+│  │   Cloud Controller Manager                      │    │
+│  │                                                 │    │
+│  │   ┌───────────┐  ┌────────────┐  ┌──────────┐   │    │
+│  │   │   Node    │  │  Service   │  │  Route   │   │    │
+│  │   │Controller │  │ Controller │  │Controller│   │    │
+│  │   └─────┬─────┘  └──────┬─────┘  └────┬─────┘   │    │
+│  └─────────┼────────────────┼─────────────┼───────-┘    │
 │            │                │             │             │
 │            ↓                ↓             ↓             │
 │  ┌─────────────────────────────────────────────────┐    │
 │  │        Cloud Provider APIs (AWS)                │    │
 │  └─────────────────────────────────────────────────┘    │
-└───────────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────────┘
          │              │              │
          ↓              ↓              ↓
     ┌────────┐     ┌────────┐    ┌────────┐
@@ -960,39 +960,39 @@ s3.list_buckets()        # Works if IAM role has s3:ListBuckets
 ### EKS Architecture
 
 ```
-┌───────────────────────────────────────────────────────┐
-│                    AWS ACCOUNT                        │
-│                                                       │
-│  ┌─────────────────────────────────────────────┐     │
-│  │  EKS Control Plane (AWS-managed VPC)        │     │
-│  │                                             │     │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  │     │
-│  │  │ API      │  │Scheduler │  │   etcd   │  │     │
-│  │  │ Server   │  │          │  │          │  │     │
-│  │  └──────────┘  └──────────┘  └──────────┘  │     │
-│  │                                             │     │
-│  │  Multi-AZ, Auto-scaled, Highly Available    │     │
-│  └─────────────────┬───────────────────────────┘     │
-│                    │                                 │
-│                    │ Secured endpoint                │
-│                    │ (public or private)             │
-│                    ↓                                 │
+┌─────────────────────────────────────────────────────┐
+│                    AWS ACCOUNT                      │
+│                                                     │
+│  ┌─────────────────────────────────────────────┐    │
+│  │  EKS Control Plane (AWS-managed VPC)        │    │
+│  │                                             │    │
+│  │  ┌──────────┐  ┌──────────┐  ┌──────────┐   │    │
+│  │  │ API      │  │Scheduler │  │   etcd   │   │    │
+│  │  │ Server   │  │          │  │          │   │    │
+│  │  └──────────┘  └──────────┘  └──────────┘   │    │
+│  │                                             │    │
+│  │  Multi-AZ, Auto-scaled, Highly Available    │    │
+│  └─────────────────┬───────────────────────────┘    │
+│                    │                                │
+│                    │ Secured endpoint               │
+│                    │ (public or private)            │
+│                    ↓                                │
 │  ┌─────────────────────────────────────────────┐    │
 │  │     Your VPC (10.1.0.0/16)                  │    │
 │  │                                             │    │
-│  │  ┌─────────────┐  ┌─────────────┐          │    │
-│  │  │  Subnet 1   │  │  Subnet 2   │          │    │
-│  │  │  us-east-1a │  │  us-east-1b │          │    │
-│  │  │             │  │             │          │    │
-│  │  │ ┌─────────┐ │  │ ┌─────────┐ │          │    │
-│  │  │ │ Node 1  │ │  │ │ Node 2  │ │          │    │
-│  │  │ │ (EC2)   │ │  │ │ (EC2)   │ │          │    │
-│  │  │ │         │ │  │ │         │ │          │    │
-│  │  │ │ Pods    │ │  │ │ Pods    │ │          │    │
-│  │  │ └─────────┘ │  │ └─────────┘ │          │    │
-│  │  └─────────────┘  └─────────────┘          │    │
+│  │  ┌─────────────┐  ┌─────────────┐           │    │
+│  │  │  Subnet 1   │  │  Subnet 2   │           │    │
+│  │  │  us-east-1a │  │  us-east-1b │           │    │
+│  │  │             │  │             │           │    │
+│  │  │ ┌─────────┐ │  │ ┌─────────┐ │           │    │
+│  │  │ │ Node 1  │ │  │ │ Node 2  │ │           │    │
+│  │  │ │ (EC2)   │ │  │ │ (EC2)   │ │           │    │
+│  │  │ │         │ │  │ │         │ │           │    │
+│  │  │ │ Pods    │ │  │ │ Pods    │ │           │    │
+│  │  │ └─────────┘ │  │ └─────────┘ │           │    │
+│  │  └─────────────┘  └─────────────┘           │    │
 │  └─────────────────────────────────────────────┘    │
-└───────────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────────┘
 ```
 
 ### How EKS Relates to Kubernetes
@@ -1086,17 +1086,17 @@ Permissions (verbs on resources)
 │  Node (EC2 instance)                 │
 │                                      │
 │  Primary ENI (eth0)                  │
-│  - Primary IP: 10.1.1.50            │
+│  - Primary IP: 10.1.1.50             │
 │  - Secondary IPs:                    │
-│    - 10.1.1.51 → Pod 1              │
-│    - 10.1.1.52 → Pod 2              │
-│    - 10.1.1.53 → Pod 3              │
-│    - 10.1.1.54 → Pod 4              │
+│    - 10.1.1.51 → Pod 1               │
+│    - 10.1.1.52 → Pod 2               │
+│    - 10.1.1.53 → Pod 3               │
+│    - 10.1.1.54 → Pod 4               │
 │                                      │
 │  Secondary ENI (eth1) if needed      │
-│  - Primary IP: 10.1.1.60            │
+│  - Primary IP: 10.1.1.60             │
 │  - Secondary IPs:                    │
-│    - 10.1.1.61 → Pod 5              │
+│    - 10.1.1.61 → Pod 5               │
 │    - ...                             │
 └──────────────────────────────────────┘
 ```

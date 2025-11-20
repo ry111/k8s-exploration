@@ -46,33 +46,33 @@ Kubernetes uses a **control loop pattern** where specialized controllers continu
 ┌─────────────────────────────────────────────┐
 │         KUBERNETES CONTROL PLANE            │
 │                                             │
-│  ┌──────────────────────────────────┐      │
-│  │   Deployment Controller          │      │
-│  │   - Watches: Deployments         │      │
-│  │   - Creates: ReplicaSets         │      │
-│  └──────────────────────────────────┘      │
+│  ┌──────────────────────────────────┐       │
+│  │   Deployment Controller          │       │
+│  │   - Watches: Deployments         │       │
+│  │   - Creates: ReplicaSets         │       │
+│  └──────────────────────────────────┘       │
 │                                             │
-│  ┌──────────────────────────────────┐      │
-│  │   ReplicaSet Controller          │      │
-│  │   - Watches: ReplicaSets         │      │
-│  │   - Creates: Pods                │      │
-│  └──────────────────────────────────┘      │
+│  ┌──────────────────────────────────┐       │
+│  │   ReplicaSet Controller          │       │
+│  │   - Watches: ReplicaSets         │       │
+│  │   - Creates: Pods                │       │
+│  └──────────────────────────────────┘       │
 │                                             │
-│  ┌──────────────────────────────────┐      │
-│  │   Scheduler                      │      │
-│  │   - Watches: Unscheduled Pods    │      │
-│  │   - Assigns: Pods to Nodes       │      │
-│  └──────────────────────────────────┘      │
+│  ┌──────────────────────────────────┐       │
+│  │   Scheduler                      │       │
+│  │   - Watches: Unscheduled Pods    │       │
+│  │   - Assigns: Pods to Nodes       │       │
+│  └──────────────────────────────────┘       │
 └─────────────────────────────────────────────┘
                      ↓
 ┌─────────────────────────────────────────────┐
 │           WORKER NODES                      │
 │                                             │
-│  ┌──────────────────────────────────┐      │
-│  │   Kubelet                        │      │
-│  │   - Watches: Pods assigned to me │      │
-│  │   - Starts: Containers           │      │
-│  └──────────────────────────────────┘      │
+│  ┌──────────────────────────────────┐       │
+│  │   Kubelet                        │       │
+│  │   - Watches: Pods assigned to me │       │
+│  │   - Starts: Containers           │       │
+│  └──────────────────────────────────┘       │
 └─────────────────────────────────────────────┘
 ```
 

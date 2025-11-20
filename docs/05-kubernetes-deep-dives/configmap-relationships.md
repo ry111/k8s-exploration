@@ -230,32 +230,32 @@ spec:
 ┌─────────────────────────────────────────────────────────┐
 │ Deployment: day                                         │
 │ • Pod template contains: configMapRef: day-config       │
-│ • Does NOT create ConfigMap                            │
-│ • Does NOT own ConfigMap                               │
-│ • Passes reference to ReplicaSet                       │
+│ • Does NOT create ConfigMap                             │
+│ • Does NOT own ConfigMap                                │
+│ • Passes reference to ReplicaSet                        │
 └────────────────────┬────────────────────────────────────┘
                      │
                      │ creates & owns
                      │
                      ↓
 ┌─────────────────────────────────────────────────────────┐
-│ ReplicaSet: day-7d4f9c8b5f                             │
-│ • ownerReferences → Deployment                         │
+│ ReplicaSet: day-7d4f9c8b5f                              │
+│ • ownerReferences → Deployment                          │
 │ • Pod template contains: configMapRef: day-config       │
-│ • Does NOT create ConfigMap                            │
-│ • Does NOT own ConfigMap                               │
-│ • Passes reference to Pods                             │
+│ • Does NOT create ConfigMap                             │
+│ • Does NOT own ConfigMap                                │
+│ • Passes reference to Pods                              │
 └────────────────────┬────────────────────────────────────┘
                      │
                      │ creates & owns
                      │
                      ↓
 ┌─────────────────────────────────────────────────────────┐
-│ Pod: day-7d4f9c8b5f-abc12                              │
-│ • ownerReferences → ReplicaSet                         │
+│ Pod: day-7d4f9c8b5f-abc12                               │
+│ • ownerReferences → ReplicaSet                          │
 │ • Spec contains: configMapRef: day-config               │
-│ • Does NOT own ConfigMap                               │
-│ • Kubelet USES ConfigMap at container startup          │
+│ • Does NOT own ConfigMap                                │
+│ • Kubelet USES ConfigMap at container startup           │
 └─────────────────────────────────────────────────────────┘
 ```
 
