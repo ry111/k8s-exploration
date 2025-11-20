@@ -58,8 +58,14 @@ else:
 # Configuration
 # ============================================================================
 
-# Base service name
-service_name = "day"
+# Base service name (configurable to support multiple services)
+service_name = config.get("service_name") or "day"
+
+# Container port (varies by service: day=8001, dusk=8002, dawn=8000)
+container_port = config.get_int("container_port") or 8001
+
+# Cluster name (trantor or terminus)
+cluster_name = config.get("cluster_name") or "trantor"
 
 # Namespace configuration
 namespace = config.get("namespace") or "production"
@@ -113,7 +119,7 @@ feature_new_ui = config.get_bool("feature_new_ui") or True
 pod_labels = {
     "app": service_name,
     "tier": tier,
-    "cluster": "trantor",
+    "cluster": cluster_name,
 }
 
 # Resource metadata labels (for deployments, services, etc.)
@@ -122,7 +128,7 @@ labels = {
     "managed-by": "pulumi",
     "environment": namespace,
     "tier": tier,
-    "cluster": "trantor",
+    "cluster": cluster_name,
 }
 
 # ============================================================================
@@ -140,7 +146,7 @@ ns = k8s.core.v1.Namespace(
             "managed-by": "pulumi",
             "app": service_name,
             "tier": tier,
-            "cluster": "trantor",
+            "cluster": cluster_name,
             "environment": "production" if tier == "production" else "rc",
         },
     },
@@ -202,7 +208,7 @@ deployment = k8s.apps.v1.Deployment(
                     "name": service_name,
                     "image": f"{image_registry}/{image_name}:{image_tag}",
                     "ports": [{
-                        "container_port": 8001,  # Match Dockerfile EXPOSE port
+                        "container_port": container_port,  # Match Dockerfile EXPOSE port
                         "name": "http",
                     }],
                     "env_from": [{
@@ -223,7 +229,7 @@ deployment = k8s.apps.v1.Deployment(
                     "liveness_probe": {
                         "http_get": {
                             "path": "/health",
-                            "port": 8001,  # Match service port
+                            "port": container_port,  # Match service port
                         },
                         "initial_delay_seconds": 30,
                         "period_seconds": 10,
@@ -231,7 +237,7 @@ deployment = k8s.apps.v1.Deployment(
                     "readiness_probe": {
                         "http_get": {
                             "path": "/health",  # Use /health instead of /ready
-                            "port": 8001,  # Match service port
+                            "port": container_port,  # Match service port
                         },
                         "initial_delay_seconds": 5,
                         "period_seconds": 5,
@@ -269,7 +275,7 @@ service = k8s.core.v1.Service(
         "selector": service_selector,
         "ports": [{
             "port": 80,
-            "target_port": 8001,  # Match container port
+            "target_port": container_port,  # Match container port
             "protocol": "TCP",
             "name": "http",
         }],
@@ -341,7 +347,7 @@ ingress = k8s.networking.v1.Ingress(
         "annotations": {
             # AWS Load Balancer Controller annotations
             "kubernetes.io/ingress.class": "alb",
-            "alb.ingress.kubernetes.io/group.name": "trantor-cluster",
+            "alb.ingress.kubernetes.io/group.name": f"{cluster_name}-cluster",
             "alb.ingress.kubernetes.io/scheme": "internet-facing",
             "alb.ingress.kubernetes.io/target-type": "ip",
             "alb.ingress.kubernetes.io/healthcheck-path": "/health",
