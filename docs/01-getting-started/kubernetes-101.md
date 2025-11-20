@@ -1316,7 +1316,7 @@ User receives: {"status": "healthy"}
 
 ## Real-World Example from This Project
 
-Our project demonstrates all these concepts using the Terminus cluster:
+Our project demonstrates all these concepts using both Trantor (manual) and Terminus (Pulumi) clusters:
 
 ### Infrastructure Stack (Pulumi)
 ```python

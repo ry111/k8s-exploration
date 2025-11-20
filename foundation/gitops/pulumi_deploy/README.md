@@ -43,13 +43,11 @@ kubernetes:kubeconfig:
 **Option B: Use local kubeconfig** (recommended for local development)
 
 ```bash
-# Get kubeconfig from your EKS cluster
-aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
+# Get kubeconfig from your Trantor EKS cluster
+aws eks update-kubeconfig --name trantor --region us-east-1
 
-# Or from infrastructure Pulumi stack
-cd ../../../pulumi
-pulumi stack output kubeconfig --show-secrets > ~/.kube/day-cluster-config
-export KUBECONFIG=~/.kube/day-cluster-config
+# Verify connection
+kubectl get nodes
 ```
 
 ### 3. Initialize Stack
@@ -57,11 +55,11 @@ export KUBECONFIG=~/.kube/day-cluster-config
 ```bash
 cd foundation/gitops/pulumi_deploy
 
-# Create dev stack
-pulumi stack init dev
+# Create day-rc stack
+pulumi stack init day-rc
 
-# Or create production stack
-pulumi stack init production
+# Or create day-production stack
+pulumi stack init day-production
 ```
 
 ## Deployment
@@ -69,7 +67,7 @@ pulumi stack init production
 ### Preview Changes
 
 ```bash
-pulumi stack select dev  # or production
+pulumi stack select day-rc  # or day-production
 pulumi preview
 ```
 
@@ -145,12 +143,12 @@ pulumi up
 ### Switch Between Environments
 
 ```bash
-# Deploy to dev
-pulumi stack select dev
+# Deploy to day-rc
+pulumi stack select day-rc
 pulumi up
 
-# Deploy to production
-pulumi stack select production
+# Deploy to day-production
+pulumi stack select day-production
 pulumi up
 ```
 
@@ -195,7 +193,7 @@ jobs:
         uses: pulumi/actions@v4
         with:
           work-dir: foundation/gitops/pulumi_deploy
-          stack-name: production
+          stack-name: day-production
           command: up
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
@@ -203,15 +201,15 @@ jobs:
 
 ## Stack Configuration Reference
 
-### Development (`Pulumi.dev.yaml`)
-- Namespace: `dev`
+### RC (`Pulumi.day-rc.yaml`)
+- Namespace: `day-rc-ns`
 - Replicas: 1
 - Min/Max replicas: 1-3
 - Resources: Small (50m CPU, 64Mi memory)
 - Log level: DEBUG
 
-### Production (`Pulumi.production.yaml`)
-- Namespace: `production`
+### Production (`Pulumi.day-production.yaml`)
+- Namespace: `day-ns`
 - Replicas: 5
 - Min/Max replicas: 3-20
 - Resources: Large (200m-1000m CPU, 256Mi-1Gi memory)
@@ -228,15 +226,15 @@ vim __main__.py
 # 2. Preview changes
 pulumi preview
 
-# 3. Deploy to dev
-pulumi stack select dev
+# 3. Deploy to RC
+pulumi stack select day-rc
 pulumi up
 
-# 4. Test in dev environment
+# 4. Test in RC environment
 curl http://$(pulumi stack output alb_hostname)/health
 
 # 5. If working, deploy to production
-pulumi stack select production
+pulumi stack select day-production
 pulumi config set image_tag v1.2.5
 pulumi up
 ```
@@ -245,14 +243,14 @@ pulumi up
 
 ```bash
 # 1. Update image tag in stack config
-pulumi stack select production
+pulumi stack select day-production
 pulumi config set image_tag v1.2.5
 
 # 2. Preview changes
 pulumi preview
 
-# 3. Create PR with changes to Pulumi.production.yaml
-git add Pulumi.production.yaml
+# 3. Create PR with changes to Pulumi.day-production.yaml
+git add Pulumi.day-production.yaml
 git commit -m "Update day-service to v1.2.5"
 git push
 
@@ -272,29 +270,29 @@ pulumi preview
 ### Can't connect to cluster
 
 ```bash
-# Verify kubeconfig
+# Verify kubeconfig points to Trantor
 kubectl get nodes
 
 # Or update kubeconfig
-aws eks update-kubeconfig --name day-cluster-eksCluster-f3c27b8 --region us-east-1
+aws eks update-kubeconfig --name trantor --region us-east-1
 ```
 
 ### Deployment stuck in pending
 
 ```bash
 # Check events
-kubectl describe deployment day-service -n production
+kubectl describe deployment day-service -n day-ns
 
 # Check pods
-kubectl get pods -n production
-kubectl describe pod <pod-name> -n production
+kubectl get pods -n day-ns
+kubectl describe pod <pod-name> -n day-ns
 ```
 
 ### Want to see the generated Kubernetes YAML
 
 ```bash
 # Pulumi doesn't generate YAML files, but you can inspect with kubectl
-kubectl get deployment day-service -n production -o yaml
+kubectl get deployment day-service -n day-ns -o yaml
 ```
 
 ## Comparison: This Approach vs YAML

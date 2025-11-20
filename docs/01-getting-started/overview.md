@@ -33,14 +33,14 @@ This project demonstrates **two configuration approaches** (YAML vs IaC) and dif
 |---------|---------|--------|---------------|-------------|---------------|
 | **Dawn** | Trantor | ✅ Active | YAML (kubectl) | GitHub Actions (push) | Kubernetes fundamentals |
 | **Day** | Trantor | ✅ Active | IaC (Pulumi) | GitHub Actions (push) | Application-as-code |
-| **Dusk** | Terminus | 📋 Planned | YAML (kubectl) | ArgoCD (pull) | GitOps workflow |
+| **Dusk** | Terminus | 📋 Planned | TBD | TBD | Exploring deployment strategies |
 
 **Key Learning:** This project demonstrates different deployment patterns:
 - **Dawn** uses traditional YAML manifests with kubectl
 - **Day** uses Pulumi IaC to manage Kubernetes resources as code
-- **Dusk** (planned) will demonstrate ArgoCD for pull-based GitOps deployment
+- **Dusk** will explore different deployment strategies on Pulumi-provisioned infrastructure
 
-All services use GitHub Actions for CI (building images), but differ in how they handle CD (deploying to Kubernetes).
+Dawn and Day both use GitHub Actions for CI (building images) and push-based CD (deploying to Kubernetes).
 
 ### Service Isolation
 
