@@ -119,7 +119,7 @@ jobs:
           config-map: |
             {
               "use_stack_reference": { "value": "true" },
-              "infra_stack_name": { "value": "ry111/foundation-provisioning/production" },
+              "infra_stack_name": { "value": "ry111-org/foundation-provisioning/production" },
               "service_name": { "value": "dusk" },
               "container_port": { "value": "8002" },
               "cluster_name": { "value": "terminus" },
@@ -189,7 +189,7 @@ jobs:
           config-map: |
             {
               "use_stack_reference": { "value": "true" },
-              "infra_stack_name": { "value": "ry111/foundation-provisioning/production" },
+              "infra_stack_name": { "value": "ry111-org/foundation-provisioning/production" },
               "service_name": { "value": "dusk" },
               "container_port": { "value": "8002" },
               "cluster_name": { "value": "terminus" },
