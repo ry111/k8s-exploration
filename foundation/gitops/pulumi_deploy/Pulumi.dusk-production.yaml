@@ -1,7 +1,7 @@
 config:
   # Kubernetes provider configuration
   foundation-services:use_stack_reference: "true" # Use stack reference to Terminus infrastructure
-  foundation-services:infra_stack_name: ry111/foundation-provisioning/production # Terminus cluster stack
+  foundation-services:infra_stack_name: ry111-org/foundation-provisioning/production # Terminus cluster stack
 
   # Service configuration
   foundation-services:service_name: dusk
