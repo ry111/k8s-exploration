@@ -16,7 +16,7 @@ config:
   foundation-services:replicas: "1"
 
   # Autoscaling (smaller for RC)
-  foundation-services:min_replicas: "1"
+  foundation-services:min_replicas: "2"
   foundation-services:max_replicas: "3"
   foundation-services:cpu_target: "70"
   foundation-services:memory_target: "80"
