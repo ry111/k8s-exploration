@@ -3,6 +3,8 @@ config:
   foundation-services:use_stack_reference: "false" # Use local kubeconfig for trantor cluster
   # Application settings
   foundation-services:namespace: day-ns
+  foundation-services:cluster_name: trantor
+
   foundation-services:image_registry: 612974049499.dkr.ecr.us-east-1.amazonaws.com # Set to: {account-id}.dkr.ecr.us-east-1.amazonaws.com
   foundation-services:image_name: day # ECR repository name (matches build workflow)
   foundation-services:image_tag: v1.2.3

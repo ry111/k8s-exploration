@@ -13,7 +13,8 @@ echo ""
 echo "Configuration:"
 echo "  - Cluster name: trantor"
 echo "  - Node type: t3.small (spot instances)"
-echo "  - Nodes: 2 desired (1 min, 4 max)"
+echo "  - Nodes: 1 desired (1 min, 1 max)"
+echo "  - Max pods per node: 30"
 echo "  - Cost savings: ~70% vs on-demand"
 echo ""
 echo "⚠️  Note: Spot instances can be terminated with 2-minute warning"
@@ -38,13 +39,14 @@ eksctl create cluster \
   --version 1.28 \
   --nodegroup-name trantor-spot-nodes \
   --node-type t3.small \
-  --nodes 2 \
+  --nodes 1 \
   --nodes-min 1 \
-  --nodes-max 4 \
+  --nodes-max 1 \
   --managed \
   --spot \
   --with-oidc \
   --ssh-access=false \
+  --max-pods-per-node 30 \
   --tags "Environment=development,Cluster=trantor,CostCenter=learning"
 
 echo ""
